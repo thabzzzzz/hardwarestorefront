@@ -1,4 +1,4 @@
-import styles from '../styles/home.module.css'
+import styles from './header.module.css'
 
 export default function Header(): JSX.Element {
   return (
@@ -10,7 +10,9 @@ export default function Header(): JSX.Element {
         </div>
       </div>
       <div className={styles.brandRow}>
-        <div className={styles.logo}>Wootware</div>
+        <div className={styles.logo}>
+          <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+        </div>
         <nav className={styles.nav}>
           <a>HARDWARE</a>
           <a>PCS & LAPTOPS</a>

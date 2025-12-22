@@ -3,6 +3,7 @@
 .topbar{display:flex;justify-content:space-between;padding:8px 24px;background:#fafafa;color:#666;font-size:12px}
 .brandRow{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
 .logo{font-weight:800;color:#ff8c00;font-size:24px}
+.logoImage{height:40px;display:block}
 .nav a{margin-left:18px;color:#333;font-size:14px}
 .searchBox input{padding:6px 8px;border:1px solid #ddd;border-radius:4px}
 
@@ -34,39 +35,10 @@
   .heroSidebar{width:100%}
 }
 .page{min-height:100vh;background:#fff}
-.header{border-bottom:1px solid #eee}
-.topbar{display:flex;justify-content:space-between;padding:8px 24px;background:#fafafa;color:#666;font-size:12px}
-.brandRow{display:flex;align-items:center;justify-content:space-between;padding:18px 24px}
-.logo{font-weight:800;color:#ff8c00;font-size:24px}
-.nav a{margin-left:18px;color:#333;font-size:14px}
-.searchBox input{padding:6px 8px;border:1px solid #ddd;border-radius:4px}
-
 .main{max-width:1200px;margin:24px auto;padding:0 16px}
-.heroWrap{margin-bottom:24px}
-.heroMain{display:flex;gap:20px}
-.heroText{flex:1;padding:28px 18px;background:linear-gradient(90deg, rgba(120,80,255,0.06), rgba(255,140,0,0.03));border-radius:6px}
-.heroText h1{font-size:38px;margin:0 0 8px}
-.heroText p{color:#444;margin:0 0 12px}
-.cta{background:var(--accent);color:#fff;padding:10px 16px;border:none;border-radius:4px;cursor:pointer}
-.heroSidebar{width:280px;text-align:center}
-.heroSidebar img{width:100%;border-radius:6px}
-.featureTag{margin-top:8px;background:#fff;padding:8px;border-radius:4px;color:#ff8c00;font-weight:700}
-.bannerStrip{margin-top:12px;padding:18px;background:#111;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:6px}
-.buildBtn{background:var(--accent);border:none;color:#fff;padding:8px 12px;border-radius:4px}
-
-.hotDeals{margin-top:28px}
-.hotDeals h2{text-align:center;margin:0 0 18px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{background:#fff;border:1px solid #eee;border-radius:6px;overflow:hidden}
-.card img{width:100%;display:block}
-.cardBody{padding:10px}
-.cardTitle{font-size:13px;color:#333;height:36px;overflow:hidden}
-.cardPrice{color:var(--accent);font-weight:700;margin-top:6px}
 
 @media(max-width:900px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-  .heroMain{flex-direction:column}
-  .heroSidebar{width:100%}
+  .main{padding:0 12px}
 }
 .page{min-height:100vh;background:#fff}
 .header{border-bottom:1px solid #eee}

@@ -1,4 +1,4 @@
-import styles from '../styles/home.module.css'
+import styles from './hero.module.css'
 
 export default function Hero(): JSX.Element {
   return (
@@ -10,7 +10,7 @@ export default function Hero(): JSX.Element {
           <button className={styles.cta}>Shop Now</button>
         </div>
         <div className={styles.heroSidebar}>
-          <img src="https://via.placeholder.com/260x180" alt="featured" />
+          <img src="/products/prod-0001/1ed6bb69-400w.webp" alt="featured" />
           <div className={styles.featureTag}>FEATURED DEAL →</div>
         </div>
       </div>

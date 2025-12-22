@@ -1,6 +1,6 @@
-import styles from '../styles/home.module.css'
-import productsData from '../data/products.json'
-import type { Product } from '../types/product'
+import styles from './hotDeals.module.css'
+import productsData from '../../data/products.json'
+import type { Product } from '../../types/product'
 
 const products: Product[] = productsData as unknown as Product[]
 

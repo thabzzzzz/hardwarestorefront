@@ -1,0 +1,10 @@
+.header{border-bottom:1px solid #eee;position:relative}
+@font-face{font-family: 'Lexend';src: url('/fonts/Lexend/static/Lexend-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap}
+.topbar{display:flex;justify-content:space-between;padding:8px 24px;background:#fafafa;color:#666;font-size:12px}
+.brandRow{display:flex;align-items:center;justify-content:flex-start;padding:18px 24px}
+.logo{font-weight:800;color:#ff8c00;font-size:24px;position:relative;display:inline-flex;align-items:center}
+.logo::after{content:"";position:absolute;left:calc(100% + 20px);top:-18px;bottom:-18px;width:1px;background:#eee}
+.nav{margin-left:41px;display:flex;align-items:center;gap:18px}
+.nav a{color:#333;font-size:20px;font-family:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;font-weight:500}
+.searchBox input{padding:6px 8px;border:1px solid #ddd;border-radius:4px}
+.logoImage{height:40px;display:block}

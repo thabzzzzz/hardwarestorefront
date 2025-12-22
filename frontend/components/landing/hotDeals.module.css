@@ -1,0 +1,12 @@
+.hotDeals{margin-top:28px}
+.hotDeals h2{text-align:center;margin:0 0 18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid #eee;border-radius:6px;overflow:hidden}
+.card img{width:100%;display:block}
+.cardBody{padding:10px}
+.cardTitle{font-size:13px;color:#333;height:36px;overflow:hidden}
+.cardPrice{color:var(--accent);font-weight:700;margin-top:6px}
+
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
