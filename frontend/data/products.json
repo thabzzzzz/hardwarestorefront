@@ -1,9 +1,9 @@
 [
   {
     "id": "prod-0001",
-    "sku": "NZXT-H1-001",
-    "title": "NZXT H1 Mini-ITX Case",
-    "slug": "nzxt-h1-mini-itx-case",
+    "sku": "NZXT-H5-001",
+    "title": "NZXT H5 Mini-ITX Case",
+    "slug": "nzxt-h5-mini-itx-case",
     "description": "Compact Mini-ITX case with integrated PSU and AIO mounting.",
     "brand": "NZXT",
     "categories": ["cases","mini-itx"],
@@ -12,8 +12,11 @@
     "currency": "ZAR",
     "inventory": { "stock": 12, "reserved": 1, "status": "in_stock" },
     "images": [
-      { "url": "/images/products/nzxt-h1-1.jpg", "alt": "NZXT H1 front" },
-      { "url": "/images/products/nzxt-h1-2.jpg", "alt": "NZXT H1 side" }
+      { "url": "/products/prod-0001/1ed6bb69-orig.jpg", "alt": "NZXT H5 front", "is_primary": true },
+      { "url": "/products/prod-0001/1ed6bb69-thumb.webp", "alt": "NZXT H5 thumb", "variant": "thumb" },
+      { "url": "/products/prod-0001/1ed6bb69-400w.webp", "alt": "NZXT H5 400w", "variant": "400w" },
+      { "url": "/products/prod-0001/1ed6bb69-800w.webp", "alt": "NZXT H5 800w", "variant": "800w" },
+      { "url": "/products/prod-0001/1ed6bb69-1200w.webp", "alt": "NZXT H5 1200w", "variant": "1200w" }
     ],
     "weight_grams": 7000,
     "dimensions_mm": { "w": 187, "h": 350, "d": 356 },

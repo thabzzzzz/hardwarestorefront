@@ -1,33 +1,32 @@
 import styles from '../styles/home.module.css'
+import productsData from '../data/products.json'
+import type { Product } from '../types/product'
 
-type Item = {
-  id: number
-  title: string
-  price: string
-  img: string
-}
-
-const items: Item[] = new Array(6).fill(0).map((_, i) => ({
-  id: i,
-  title: `Sample Product ${i + 1}`,
-  price: `R ${(1000 + i * 250).toLocaleString()}`,
-  img: 'https://via.placeholder.com/220x140'
-}))
+const products: Product[] = productsData as unknown as Product[]
 
 export default function HotDeals(): JSX.Element {
+  const items = products.slice(0, 6)
+
   return (
     <section className={styles.hotDeals}>
       <h2>Hot Deals</h2>
       <div className={styles.grid}>
-        {items.map(item => (
-          <article key={item.id} className={styles.card}>
-            <img src={item.img} alt="product" />
-            <div className={styles.cardBody}>
-              <div className={styles.cardTitle}>{item.title}</div>
-              <div className={styles.cardPrice}>{item.price}</div>
-            </div>
-          </article>
-        ))}
+        {items.map((product) => {
+          const primary = (product.images && (product.images as any[]).find(i => i.is_primary)) || product.images?.[0]
+          const imgUrl = primary?.url || '/images/products/placeholder.png'
+          const alt = primary?.alt || product.title
+          const price = (product.price_cents / 100).toLocaleString()
+
+          return (
+            <article key={product.id} className={styles.card}>
+              <img src={imgUrl} alt={alt} />
+              <div className={styles.cardBody}>
+                <div className={styles.cardTitle}>{product.title}</div>
+                <div className={styles.cardPrice}>{product.currency} {price}</div>
+              </div>
+            </article>
+          )
+        })}
       </div>
     </section>
   )
