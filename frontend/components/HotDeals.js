@@ -1,4 +1,4 @@
-import styles from '../styles/Home.module.css'
+import styles from '../styles/home.module.css'
 
 const items = new Array(6).fill(0).map((_,i)=>({
   id:i,
@@ -25,3 +25,5 @@ export default function HotDeals(){
     </section>
   )
 }
+export { default } from './hotDeals'
+

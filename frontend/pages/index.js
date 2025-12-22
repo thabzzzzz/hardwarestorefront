@@ -1,7 +1,7 @@
-import Header from '../components/Header'
-import Hero from '../components/Hero'
-import HotDeals from '../components/HotDeals'
-import styles from '../styles/Home.module.css'
+import Header from '../components/header'
+import Hero from '../components/hero'
+import HotDeals from '../components/hotDeals'
+import styles from '../styles/home.module.css'
 
 export default function Home() {
   return (
