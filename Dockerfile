@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.4-fpm
 
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
     COMPOSER_HOME=/composer
@@ -17,7 +17,8 @@ WORKDIR /var/www/html
 
 COPY . /var/www/html
 
-RUN if [ -f composer.json ]; then composer install --no-interaction --prefer-dist --optimize-autoloader; fi
+RUN git config --global --add safe.directory /var/www/html || true \
+    && if [ -f composer.json ]; then composer install --no-interaction --prefer-dist --optimize-autoloader; fi
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
 

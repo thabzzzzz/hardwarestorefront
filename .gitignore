@@ -22,3 +22,28 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Frontend / Next.js
+/frontend/node_modules/
+/frontend/.next/
+/frontend/.vercel/
+/frontend/.cache/
+
+# Node / npm logs
+npm-debug.log*
+yarn-error.log*
+
+# Build outputs and archives
+*.tgz
+*.zip
+dist/
+build/
+
+# OS and editor files
+Thumbs.db
+desktop.ini
+
+# Temporary DB / dumps
+*.sql
+*.sqlite
+*.sqlite3
