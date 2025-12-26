@@ -3,14 +3,15 @@
 @font-face{font-family: 'LexendThin';src: url('/fonts/Lexend/static/Lexend-Thin.ttf') format('truetype');font-weight:100;font-style:normal;font-display:swap}
 @font-face{font-family: 'LexendLight';src: url('/fonts/Lexend/static/Lexend-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap}
 .topbar{display:flex;justify-content:space-between;padding:8px 24px;background:#fafafa;color:#666;font-size:12px}
-.brandRow{display:flex;align-items:center;justify-content:flex-start;padding:18px 24px}
+.brandRow{display:flex;align-items:center;justify-content:flex-start;padding:18px 24px;border-top:1px solid #eee}
 .logo{font-weight:800;color:#ff8c00;font-size:24px;position:relative;display:inline-flex;align-items:center}
 .logo::after{content:"";position:absolute;left:calc(100% + 20px);top:-18px;bottom:-18px;width:1px;background:#eee}
-.nav{margin-left:41px;display:flex;align-items:center;gap:18px}
-.nav a{color:#333;font-size:20px;font-family:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;font-weight:500}
-.navItem{position:relative}
-.hasSubmenu:hover .submenu{display:block}
-.submenu{display:none;position:absolute;top:100%;left:0;margin-top:8px;background:#fff;padding:18px;border:1px solid #eee;box-shadow:0 8px 20px rgba(0,0,0,0.08);z-index:1200;width:960px}
+.nav{margin-left:41px;display:flex;align-items:center;gap:21.6px;position:relative}
+.nav a{color:#333;font-size:20px;font-family:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.nav a svg{width:12px;height:12px;flex:0 0 12px;fill:currentColor}
+.navItem{position:static}
+.hasSubmenu:hover .submenu,.hasSubmenu:focus-within .submenu{visibility:visible;opacity:1;transform:none;pointer-events:auto}
+.submenu{visibility:hidden;opacity:0;transform:none;transition:opacity .12s ease;position:absolute;top:100%;left:0;background:#fff;padding:18px;border:1px solid #eee;box-shadow:0 8px 20px rgba(0,0,0,0.08);z-index:1200;width:960px;pointer-events:none}
 .submenuGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .category h4{margin:0 0 8px 0;font-weight:700;font-size:17px;color:#222}
 .category ul{list-style:none;margin:0;padding:0}

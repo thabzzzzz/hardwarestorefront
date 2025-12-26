@@ -15,7 +15,11 @@ export default function Header(): JSX.Element {
         </div>
         <nav className={styles.nav}>
           <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-            <a>HARDWARE</a>
+            <a>HARDWARE
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+              </svg>
+            </a>
             <div className={styles.submenu}>
               <div className={styles.submenuGrid}>
                 <div className={styles.category}>
@@ -69,9 +73,21 @@ export default function Header(): JSX.Element {
               </div>
             </div>
           </div>
-          <a>PCS & LAPTOPS</a>
-          <a>PROMOS</a>
-          <a>PC BUILDER</a>
+          <a>PCS & LAPTOPS
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+            </svg>
+          </a>
+          <a>PROMOS
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+            </svg>
+          </a>
+          <a>PC BUILDER
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+            </svg>
+          </a>
         </nav>
       </div>
     </header>
