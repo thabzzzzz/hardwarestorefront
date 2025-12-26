@@ -1,21 +1,249 @@
-.header{border-bottom:1px solid #eee;position:relative}
-@font-face{font-family: 'Lexend';src: url('/fonts/Lexend/static/Lexend-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family: 'LexendThin';src: url('/fonts/Lexend/static/Lexend-Thin.ttf') format('truetype');font-weight:100;font-style:normal;font-display:swap}
-@font-face{font-family: 'LexendLight';src: url('/fonts/Lexend/static/Lexend-Light.ttf') format('truetype');font-weight:300;font-style:normal;font-display:swap}
-.topbar{display:flex;justify-content:space-between;padding:8px 24px;background:#fafafa;color:#666;font-size:12px}
-.brandRow{display:flex;align-items:center;justify-content:flex-start;padding:18px 24px;border-top:1px solid #eee}
-.logo{font-weight:800;color:#ff8c00;font-size:24px;position:relative;display:inline-flex;align-items:center}
-.logo::after{content:"";position:absolute;left:calc(100% + 20px);top:-18px;bottom:-18px;width:1px;background:#eee}
-.nav{margin-left:41px;display:flex;align-items:center;gap:21.6px;position:relative}
-.nav a{color:#333;font-size:20px;font-family:'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;font-weight:500;display:inline-flex;align-items:center;gap:6px}
-.nav a svg{width:12px;height:12px;flex:0 0 12px;fill:currentColor}
-.navItem{position:static}
-.hasSubmenu:hover .submenu,.hasSubmenu:focus-within .submenu{visibility:visible;opacity:1;transform:none;pointer-events:auto}
-.submenu{visibility:hidden;opacity:0;transform:none;transition:opacity .12s ease;position:absolute;top:100%;left:0;background:#fff;padding:18px;border:1px solid #eee;box-shadow:0 8px 20px rgba(0,0,0,0.08);z-index:1200;width:960px;pointer-events:none}
-.submenuGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.category h4{margin:0 0 8px 0;font-weight:700;font-size:17px;color:#222}
-.category ul{list-style:none;margin:0;padding:0}
-.category li a{display:block;padding:6px 0;color:#666;text-decoration:none;font-family:'LexendLight', system-ui, -apple-system, 'Segoe UI', Roboto;font-weight:300;font-size:16px;transition:color .18s ease}
-.category li a:hover,.category li a:focus{color:#ff8c00}
-.searchBox input{padding:6px 8px;border:1px solid #ddd;border-radius:4px}
-.logoImage{height:40px;display:block}
+.header {
+	border-bottom: 1px solid #eee;
+	position: relative;
+}
+
+@font-face {
+	font-family: 'Lexend';
+	src: url('/fonts/Lexend/static/Lexend-Medium.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'LexendThin';
+	src: url('/fonts/Lexend/static/Lexend-Thin.ttf') format('truetype');
+	font-weight: 100;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'LexendLight';
+	src: url('/fonts/Lexend/static/Lexend-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+.topbar {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 24px;
+	background: #fafafa;
+	color: #666;
+	font-size: 12px;
+}
+
+.brandRow {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 18px 24px;
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	background: #fff;
+	z-index: 1100;
+	transition: top .18s ease;
+}
+
+.brandRowShifted {
+	top: var(--topbar-height, 0px);
+}
+
+.logo {
+	font-weight: 800;
+	color: #ff8c00;
+	font-size: 24px;
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+}
+
+.logo::after {
+	content: "";
+	position: absolute;
+	left: calc(100% + 20px);
+	top: -18px;
+	bottom: -18px;
+	width: 1px;
+	background: #eee;
+}
+
+.nav {
+	margin-left: 41px;
+	display: flex;
+	align-items: center;
+	gap: 21.6px;
+	position: relative;
+}
+
+.nav a {
+	color: #333;
+	font-size: 20px;
+	font-family: 'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	font-weight: 500;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.nav a svg {
+	width: 12px;
+	height: 12px;
+	flex: 0 0 12px;
+	fill: currentColor;
+}
+
+.navItem {
+	position: static;
+}
+
+.hasSubmenu:hover .submenu,
+.hasSubmenu:focus-within .submenu {
+	visibility: visible;
+	opacity: 1;
+	transform: none;
+	pointer-events: auto;
+}
+
+.submenu {
+	visibility: hidden;
+	opacity: 0;
+	transform: none;
+	transition: opacity .12s ease;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background: #fff;
+	padding: 18px;
+	border: 1px solid #eee;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+	z-index: 1200;
+	width: 960px;
+	pointer-events: none;
+}
+
+.submenuGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+}
+
+.category h4 {
+	margin: 0 0 8px 0;
+	font-weight: 700;
+	font-size: 17px;
+	color: #222;
+}
+
+.category ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.category li a {
+	display: block;
+	padding: 6px 0;
+	color: #666;
+	text-decoration: none;
+	font-family: 'LexendLight', system-ui, -apple-system, 'Segoe UI', Roboto;
+	font-weight: 300;
+	font-size: 16px;
+	transition: color .18s ease;
+}
+
+.category li a:hover,
+.category li a:focus {
+	color: #ff8c00;
+}
+
+.brandActions {
+	margin-left: auto;
+	display: flex;
+	align-items: stretch;
+	gap: 12px;
+}
+
+.cartButton {
+	padding-left: 20px;
+	display: inline-flex;
+	align-items: center;
+	position: relative;
+}
+
+.cartButton::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: -18px;
+	bottom: -18px;
+	width: 1px;
+	background: #eee;
+}
+
+.cartButton img {
+	width: 22px;
+	height: 22px;
+	display: block;
+	margin-left: 8px;
+}
+
+.brandDivider {
+	width: 1px;
+	background: #eee;
+	align-self: stretch;
+	margin: -18px 12px;
+}
+
+.logoImage {
+	height: 40px;
+	display: block;
+}
+
+/* enlarged search box inside brandRow */
+.searchBox {
+	position: relative;
+	display: flex;
+	align-items: center;
+	align-self: center;
+	width: 70%;
+	min-width: 700px;
+}
+
+.searchIcon {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.searchBox input {
+	width: 100%;
+	padding: 12px 12px 12px 44px;
+	height: 44px;
+	margin-top: -6px;
+	margin-bottom: -6px;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	font-size: 14px;
+	background: #fff;
+}
+
+.searchBox input:focus,
+.searchBox input:focus-visible {
+	outline: none;
+	border-color: #ff8c00;
+	box-shadow: 0 0 0 4px rgba(255,140,0,0.10), 0 6px 18px rgba(255,140,0,0.12);
+	transition: box-shadow .12s ease, border-color .12s ease;
+}

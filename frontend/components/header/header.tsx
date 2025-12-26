@@ -1,19 +1,46 @@
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './header.module.css'
 
 export default function Header(): JSX.Element {
+  const topbarRef = useRef<HTMLDivElement | null>(null)
+  const brandRef = useRef<HTMLDivElement | null>(null)
+  const [atTop, setAtTop] = useState<boolean>(true)
+  const [topbarHeight, setTopbarHeight] = useState<number>(0)
+  const [brandHeight, setBrandHeight] = useState<number>(0)
+
+  useEffect(() => {
+    function updateHeights() {
+      setTopbarHeight(topbarRef.current?.offsetHeight ?? 0)
+      setBrandHeight(brandRef.current?.offsetHeight ?? 0)
+    }
+
+    updateHeights()
+
+    const onScroll = () => setAtTop(window.scrollY === 0)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', updateHeights)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', updateHeights)
+    }
+  }, [])
+
   return (
-    <header className={styles.header}>
-      <div className={styles.topbar}>
-        <div className={styles.toplinks}>My Account &nbsp;|&nbsp; My Wishlist &nbsp;|&nbsp; My Basket</div>
-        <div className={styles.searchBox}>
-          <input placeholder="Search..." />
+    <>
+      <header className={styles.header}>
+        <div ref={topbarRef} className={styles.topbar}>
+          <div className={styles.toplinks}>My Account &nbsp;|&nbsp; My Wishlist &nbsp;|&nbsp; My Basket</div>
         </div>
-      </div>
-      <div className={styles.brandRow}>
-        <div className={styles.logo}>
-          <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
-        </div>
-        <nav className={styles.nav}>
+        <div
+          ref={brandRef}
+          className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}
+          style={{ ['--topbar-height' as any]: `${topbarHeight}px` }}
+        >
+          <div className={styles.logo}>
+            <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+          </div>
+          <nav className={styles.nav}>
           <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
             <a>HARDWARE
               <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -88,8 +115,21 @@ export default function Header(): JSX.Element {
               <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
             </svg>
           </a>
-        </nav>
-      </div>
-    </header>
+          </nav>
+          <div className={styles.brandDivider} aria-hidden="true" />
+          <div className={styles.brandActions}>
+            <div className={styles.searchBox}>
+              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} />
+              <input placeholder="search" />
+            </div>
+            <a href="/cart" className={styles.cartButton} aria-label="View cart">
+              <img src="/icons/cart.svg" alt="Cart" />
+            </a>
+          </div>
+        </div>
+      </header>
+      {/* spacer to prevent layout jump because brandRow is fixed */}
+      <div style={{ height: brandHeight }} aria-hidden="true" />
+    </>
   )
 }
