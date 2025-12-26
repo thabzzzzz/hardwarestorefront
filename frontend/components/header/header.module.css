@@ -15,7 +15,7 @@
 .submenuGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .category h4{margin:0 0 8px 0;font-weight:700;font-size:17px;color:#222}
 .category ul{list-style:none;margin:0;padding:0}
-.category li a{display:block;padding:6px 0;color:#666;text-decoration:none;font-family:'LexendLight', system-ui, -apple-system, 'Segoe UI', Roboto;font-weight:300;font-size:16px}
-.category li a:hover{color:#111}
+.category li a{display:block;padding:6px 0;color:#666;text-decoration:none;font-family:'LexendLight', system-ui, -apple-system, 'Segoe UI', Roboto;font-weight:300;font-size:16px;transition:color .18s ease}
+.category li a:hover,.category li a:focus{color:#ff8c00}
 .searchBox input{padding:6px 8px;border:1px solid #ddd;border-radius:4px}
 .logoImage{height:40px;display:block}
