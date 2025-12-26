@@ -69,8 +69,8 @@
 	content: "";
 	position: absolute;
 	left: calc(100% + 20px);
-	top: -18px;
-	bottom: -18px;
+	top: -27px;
+	bottom: -27px;
 	width: 1px;
 	background: #eee;
 }
@@ -196,10 +196,7 @@
 }
 
 .brandDivider {
-	width: 1px;
-	background: #eee;
-	align-self: stretch;
-	margin: -18px 12px;
+	display: none;
 }
 
 .logoImage {
