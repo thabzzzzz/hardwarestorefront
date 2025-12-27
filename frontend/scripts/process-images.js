@@ -51,10 +51,14 @@ async function main() {
     }
   }
 
-  // small thumbnail
+  // small thumbnail (use contain to avoid cropping important content)
   const thumbName = `${hash}-thumb.webp`
   const thumbPath = path.join(outDir, thumbName)
-  await sharp(buffer).rotate().resize({ width: 220, height: 140, fit: 'cover' }).webp({ quality: 70 }).toFile(thumbPath)
+  await sharp(buffer)
+    .rotate()
+    .resize({ width: 220, height: 140, fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 1 } })
+    .webp({ quality: 70 })
+    .toFile(thumbPath)
   const tmeta = await sharp(thumbPath).metadata()
   results.unshift({ url: `/products/${productId}/${thumbName}`, variant: 'thumb', width: tmeta.width, height: tmeta.height, mime: 'image/webp' })
 

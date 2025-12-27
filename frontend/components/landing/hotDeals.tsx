@@ -1,32 +1,42 @@
 import styles from './hotDeals.module.css'
-import productsData from '../../data/products.json'
-import type { Product } from '../../types/product'
+import React, { useEffect, useState } from 'react'
+import ProductCard from '../product/ProductCard'
 
-const products: Product[] = productsData as unknown as Product[]
+type HotDealItem = {
+  variant_id: string
+  title: string
+  sku?: string
+  thumbnail?: string | null
+  current_price?: { amount_cents: number; currency: string } | null
+}
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
 export default function HotDeals(): JSX.Element {
-  const items = products.slice(0, 6)
+  const [items, setItems] = useState<HotDealItem[]>([])
+
+  useEffect(()=>{
+    async function load(){
+      try{
+        const res = await fetch(`${API_BASE}/api/hot-deals`)
+        const json = await res.json()
+        setItems(json.data || [])
+      }catch(e){
+        console.error('fetch hot-deals failed', e)
+      }
+    }
+    load()
+  }, [])
 
   return (
     <section className={styles.hotDeals}>
       <h2>Hot Deals</h2>
       <div className={styles.grid}>
-        {items.map((product) => {
-          const primary = (product.images && (product.images as any[]).find(i => i.is_primary)) || product.images?.[0]
-          const imgUrl = primary?.url || '/images/products/placeholder.png'
-          const alt = primary?.alt || product.title
-          const price = (product.price_cents / 100).toLocaleString()
-
-          return (
-            <article key={product.id} className={styles.card}>
-              <img src={imgUrl} alt={alt} />
-              <div className={styles.cardBody}>
-                <div className={styles.cardTitle}>{product.title}</div>
-                <div className={styles.cardPrice}>{product.currency} {price}</div>
-              </div>
-            </article>
-          )
-        })}
+        {items.map(it => (
+          <div key={it.variant_id} className={styles.card}>
+            <ProductCard title={it.title} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} />
+          </div>
+        ))}
       </div>
     </section>
   )

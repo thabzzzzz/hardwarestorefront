@@ -50,7 +50,7 @@ export default function Home(): JSX.Element {
               <div key={it.variant_id} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6 }}>
                 <div style={{ height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
                   {it.thumbnail ? (
-                    <img src={it.thumbnail} alt={it.title} style={{ maxHeight: '100%', maxWidth: '100%' }} />
+                    <img src={(it.thumbnail.startsWith('http') ? it.thumbnail : `${API_BASE}${it.thumbnail}`)} alt={it.title} style={{ maxHeight: '100%', maxWidth: '100%' }} />
                   ) : (
                     <div style={{ color: '#999' }}>No image</div>
                   )}
