@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 type Props = {
   title: string
+  vendor?: string | null
   sku?: string
   thumbnail?: string | null
   price?: { amount_cents: number; currency: string } | null
@@ -11,14 +12,34 @@ type Props = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
-export default function ProductCard({ title, sku, thumbnail, price, slug }: Props) {
+export default function ProductCard({ title, vendor, sku, thumbnail, price, slug }: Props) {
   const src = thumbnail ? (thumbnail.startsWith('http') ? thumbnail : `${API_BASE}${thumbnail}`) : '/images/products/placeholder.png'
+
+  function escapeRegExp(s: string) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+
+  let displayTitle = title
+  let vendorLabel: string | null = vendor ? String(vendor).trim() : null
+  if (vendorLabel) {
+    // match vendor at start followed by separators (colon, dash, en-dash, or whitespace)
+    const rx = new RegExp('^\\s*' + escapeRegExp(vendorLabel) + '(?:[:\\s\\-–]+)', 'i')
+    if (rx.test(displayTitle)) {
+      displayTitle = displayTitle.replace(rx, '').trim()
+    }
+  } else {
+    vendorLabel = null
+  }
+
   const content = (
     <article style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, minHeight: 260 }}>
       <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
         <img src={src} alt={title} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
       </div>
-      <div style={{ fontSize: 14, fontWeight: 600 }}>{title}</div>
+      <div style={{ fontSize: 12, color: '#666', fontWeight: 700, marginBottom: 4 }}>
+        <span style={{ display: 'inline-block', minWidth: 80 }}>{vendorLabel || ''}</span>
+      </div>
+      <div style={{ fontSize: 14, fontWeight: 600 }}>{displayTitle}</div>
       <div style={{ color: '#666', fontSize: 13 }}>{sku}</div>
       <div style={{ marginTop: 8 }}>
         {price ? (

@@ -75,17 +75,15 @@ class ProductController extends Controller
             $specs = $variant->specs ?? [];
         }
 
-        // brand: prefer product.brand or vendor name
-        $brand = $product->brand;
-        if (empty($brand) && $product->vendor_id) {
-            $vendor = Vendor::find($product->vendor_id);
-            if ($vendor) $brand = $vendor->name;
-        }
+        // brand: prefer vendor name (vendor represents the card vendor like ASUS/XFX), include manufacturer separately
+        $brand = $product->vendor ? $product->vendor->name : $product->brand;
+        $manufacturer = $product->manufacturer;
 
         $payload = [
             'slug' => $product->slug,
             'title' => $product->name,
             'brand' => $brand,
+            'manufacturer' => $manufacturer,
             'product_id' => (string) $product->id,
             'thumbnail' => $thumbnail,
             'stock' => $stock,

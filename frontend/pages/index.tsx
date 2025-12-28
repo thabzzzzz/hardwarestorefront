@@ -49,7 +49,7 @@ export default function Home(): JSX.Element {
           {loading && <p>Loading…</p>}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
             {items.map((it) => (
-              <ProductCard key={it.variant_id} title={it.title} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={it.slug} />
+              <ProductCard key={it.variant_id} title={it.title} vendor={(it as any).brand} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={it.slug} />
             ))}
           </div>
         </section>
