@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import styles from './header.module.css'
 
 export default function Header(): JSX.Element {
@@ -38,7 +39,9 @@ export default function Header(): JSX.Element {
           style={{ ['--topbar-height' as any]: `${topbarHeight}px` }}
         >
           <div className={styles.logo}>
-            <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+            <Link href="/">
+              <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+            </Link>
           </div>
           <nav className={styles.nav}>
           <div className={`${styles.navItem} ${styles.hasSubmenu}`}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../components/header/header'
+import ProductCard from '../components/product/ProductCard'
 import Hero from '../components/landing/hero'
 import HotDeals from '../components/landing/hotDeals'
 import styles from '../styles/home.module.css'
@@ -12,6 +13,7 @@ type GpuItem = {
   current_price: { amount_cents: number; currency: string } | null
   thumbnail: string | null
   stock: { qty_available: number; status: string } | null
+  slug?: string
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
@@ -47,25 +49,7 @@ export default function Home(): JSX.Element {
           {loading && <p>Loading…</p>}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
             {items.map((it) => (
-              <div key={it.variant_id} style={{ border: '1px solid #eee', padding: 12, borderRadius: 6 }}>
-                <div style={{ height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-                  {it.thumbnail ? (
-                    <img src={(it.thumbnail.startsWith('http') ? it.thumbnail : `${API_BASE}${it.thumbnail}`)} alt={it.title} style={{ maxHeight: '100%', maxWidth: '100%' }} />
-                  ) : (
-                    <div style={{ color: '#999' }}>No image</div>
-                  )}
-                </div>
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{it.title}</div>
-                <div style={{ color: '#666', fontSize: 13 }}>{it.sku}</div>
-                <div style={{ marginTop: 8 }}>
-                  {it.current_price ? (
-                    <div style={{ color: '#ff8c00', fontWeight: 700 }}>{(it.current_price.amount_cents / 100).toLocaleString()} {it.current_price.currency}</div>
-                  ) : (
-                    <div style={{ color: '#999' }}>Price not available</div>
-                  )}
-                  {it.stock && <div style={{ fontSize: 12, color: it.stock.qty_available > 0 ? '#007a3d' : '#d9534f' }}>{it.stock.status} ({it.stock.qty_available})</div>}
-                </div>
-              </div>
+              <ProductCard key={it.variant_id} title={it.title} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={it.slug} />
             ))}
           </div>
         </section>

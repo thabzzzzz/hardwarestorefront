@@ -17,14 +17,15 @@ class HotDealsController extends Controller
                 ->join('product_variants as v', 'v.product_id', '=', 'p.id')
                 ->leftJoin('images as i', 'i.product_id', '=', 'p.id')
                 ->leftJoin('prices as pr', 'pr.variant_id', '=', 'v.id')
-                ->select('v.id as variant_id', 'p.name', 'v.title', 'v.sku', 'pr.amount_cents', 'pr.currency', 'i.path as thumbnail')
+                ->select('v.id as variant_id', 'p.id as product_id', 'p.slug as slug', 'p.name', 'v.title', 'v.sku', 'pr.amount_cents', 'pr.currency', 'i.path as thumbnail')
                 ->whereIn('p.slug', ['nzxt-h5-mini-itx-case'])
-                ->groupBy('v.id','p.name','v.title','v.sku','pr.amount_cents','pr.currency','i.path')
                 ->get();
 
-            return $rows->map(function($r){
+            return $rows->map(function ($r) {
                 return [
                     'variant_id' => $r->variant_id,
+                    'product_id' => $r->product_id,
+                    'slug' => $r->slug,
                     'title' => $r->title ?? $r->name,
                     'sku' => $r->sku,
                     'current_price' => $r->amount_cents ? ['amount_cents' => $r->amount_cents, 'currency' => $r->currency] : null,

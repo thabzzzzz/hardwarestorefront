@@ -34,7 +34,7 @@ export default function HotDeals(): JSX.Element {
       <div className={styles.grid}>
         {items.map(it => (
           <div key={it.variant_id} className={styles.card}>
-            <ProductCard title={it.title} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} />
+            <ProductCard title={it.title} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={it.slug} />
           </div>
         ))}
       </div>
