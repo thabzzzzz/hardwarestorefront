@@ -51,8 +51,8 @@ export default function Header(): JSX.Element {
               <div className={styles.submenuGrid}>
                 <div className={styles.category}>
                   <h4>Computer Components</h4>
-                  <ul>
-                    <li><a>Graphics Cards</a></li>
+                    <ul>
+                    <li><a href="/products/gpus">Graphics Cards</a></li>
                     <li><a>Processors / CPUs</a></li>
                     <li><a>Memory / RAM</a></li>
                   </ul>
