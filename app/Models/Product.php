@@ -12,7 +12,7 @@ class Product extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['id','slug','name','brand','manufacturer','vendor_id','category_id','model_number','release_date'];
+    protected $fillable = ['id', 'slug', 'name', 'brand', 'manufacturer', 'vendor_id', 'category_id', 'model_number', 'release_date'];
 
     public function variants()
     {

@@ -36,7 +36,7 @@ class ProductController extends Controller
         // prefer higher-resolution variants if they exist (1200w -> 800w -> 400w -> orig -> thumb)
         if ($thumbnail) {
             $ext = pathinfo($thumbnail, PATHINFO_EXTENSION);
-            $withoutExt = substr($thumbnail, 0, -(strlen($ext) + 1));
+            $withoutExt = substr($thumbnail, 0, - (strlen($ext) + 1));
             $preferredTags = ['1200w', '800w', '400w', 'orig', 'thumb'];
             foreach ($preferredTags as $tag) {
                 $candidate = $withoutExt . '-' . $tag . '.' . $ext;

@@ -12,22 +12,24 @@ class GpuController extends Controller
     {
         $perPage = max(1, (int) $request->query('per_page', 12));
 
-        $query = ProductVariant::with(['product','images','stock','prices'])
-            ->whereHas('product', function($q){ $q->where('category_id', '!=', null); })
+        $query = ProductVariant::with(['product', 'images', 'stock', 'prices'])
+            ->whereHas('product', function ($q) {
+                $q->where('category_id', '!=', null);
+            })
             ->where('is_active', true);
 
         if ($q = $request->query('q')) {
-            $query->where(function($b) use ($q) {
+            $query->where(function ($b) use ($q) {
                 $b->where('title', 'ilike', "%{$q}%")
-                  ->orWhere('sku','ilike',"%{$q}%");
+                    ->orWhere('sku', 'ilike', "%{$q}%");
             });
         }
 
         $page = $query->paginate($perPage);
 
-        $data = $page->through(function($variant){
+        $data = $page->through(function ($variant) {
             $price = $variant->prices()->orderByDesc('valid_from')->first();
-            $thumbnail = $variant->images()->where('role','thumbnail')->first() ?? $variant->product->images()->where('role','thumbnail')->first();
+            $thumbnail = $variant->images()->where('role', 'thumbnail')->first() ?? $variant->product->images()->where('role', 'thumbnail')->first();
 
             return [
                 'variant_id' => $variant->id,
