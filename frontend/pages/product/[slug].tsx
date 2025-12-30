@@ -56,9 +56,18 @@ export default function ProductPage(): JSX.Element {
           setProduct(null)
         } else {
           const json = await res.json()
-          // ensure thumbnail is an absolute URL for img src
-          if (json.thumbnail && String(json.thumbnail).startsWith('/')) {
-            json.thumbnail = `${API_BASE}${json.thumbnail}`
+          // normalize thumbnail: leave absolute paths (starting with '/') as-is
+          // so the browser requests them from the frontend origin. Only prefix
+          // with API_BASE when the API returned a relative path that does not
+          // start with '/'.
+          if (json.thumbnail && typeof json.thumbnail === 'string') {
+            if (json.thumbnail.startsWith('http')) {
+              // full URL, leave it
+            } else if (json.thumbnail.startsWith('/')) {
+              // absolute path on frontend origin, leave as-is
+            } else {
+              json.thumbnail = `${API_BASE}${json.thumbnail}`
+            }
           }
           setProduct(json)
         }

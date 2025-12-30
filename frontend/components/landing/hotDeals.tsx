@@ -18,7 +18,14 @@ export default function HotDeals(): JSX.Element {
   useEffect(()=>{
     async function load(){
       try{
-        const res = await fetch(`${API_BASE}/api/hot-deals`)
+        const res = await fetch(`${API_BASE}/api/products?featured=1&per_page=6`)
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) {
+          const text = await res.text()
+          console.error('fetch hot-deals failed (non-JSON)', res.status, text.slice(0,400))
+          setItems([])
+          return
+        }
         const json = await res.json()
         setItems(json.data || [])
       }catch(e){

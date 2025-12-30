@@ -71,6 +71,27 @@ async function main() {
     fingerprint: hash
   }
 
+  // merge this mapping into a manifest file under public/images/products/manifest.json
+  try {
+    const manifestDir = path.join(workspace, 'public', 'images', 'products')
+    fs.mkdirSync(manifestDir, { recursive: true })
+    const manifestPath = path.join(manifestDir, 'manifest.json')
+    let manifest = {}
+    if (fs.existsSync(manifestPath)) {
+      try {
+        manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+      } catch (err) {
+        console.error('Warning: failed to parse existing manifest, overwriting', err)
+        manifest = {}
+      }
+    }
+    manifest[productId] = mapping
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8')
+    console.log('Wrote manifest entry to', manifestPath)
+  } catch (err) {
+    console.error('Error writing manifest', err)
+  }
+
   // print JSON mapping to paste into your products.json `images` field
   console.log(JSON.stringify(mapping, null, 2))
   console.log('\nSaved files to', outDir)

@@ -26,7 +26,17 @@ export default function GpuListing(): JSX.Element {
       setLoading(true)
       try {
         const res = await fetch(`${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`)
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) {
+          const text = await res.text()
+          console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
+          setItems([])
+          setTotalPages(1)
+          return
+        }
+
         const json = await res.json()
+        // server already filters by category; use returned data as-is
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)

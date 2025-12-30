@@ -56,7 +56,7 @@ export default function Header(): JSX.Element {
                   <h4>Computer Components</h4>
                     <ul>
                     <li><a href="/products/gpus">Graphics Cards</a></li>
-                    <li><a>Processors / CPUs</a></li>
+                    <li><a href="/products/processors">Processors / CPUs</a></li>
                     <li><a>Memory / RAM</a></li>
                   </ul>
                 </div>

@@ -1,0 +1,108 @@
+import React, { useEffect, useState } from 'react'
+import Header from '../../components/header/header'
+import ProductCard from '../../components/product/ProductCard'
+import styles from '../../styles/home.module.css'
+
+type ProcessorItem = {
+  variant_id: string
+  title: string
+  sku?: string
+  current_price?: { amount_cents: number; currency: string } | null
+  thumbnail?: string | null
+  stock?: { qty_available: number; status: string } | null
+}
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+
+export default function ProcessorListing(): JSX.Element {
+  const [items, setItems] = useState<ProcessorItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(12)
+  const [totalPages, setTotalPages] = useState(1)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      try {
+        const res = await fetch(`${API_BASE}/api/cpus?per_page=${perPage}&page=${page}`)
+
+        // guard against non-JSON responses (404 HTML, etc.) which cause JSON.parse errors
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) {
+          const text = await res.text()
+          console.error('fetch cpus failed (non-JSON response)', res.status, text.slice(0, 400))
+          // do not fall back to local JSON; that produces invented products.
+          // Show empty list and surface the error in console for debugging.
+          setItems([])
+          setTotalPages(1)
+          return
+        }
+
+        const json = await res.json()
+        setItems(json.data || [])
+        const total = json.last_page || Math.ceil((json.total || 0) / perPage)
+        setTotalPages(total)
+      } catch (e) {
+        console.error('fetch cpus failed', e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [page, perPage])
+
+  return (
+    <div className={styles.page}>
+      <Header />
+      <main className={styles.main} style={{ padding: '24px' }}>
+        <nav style={{ fontSize: 13, marginBottom: 12 }}>Home / Hardware / CPUs</nav>
+        <h1 style={{ marginTop: 0 }}>CPUs</h1>
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <label style={{ fontSize: 13, display: 'flex', gap: 8, alignItems: 'center' }}>Sort By
+              <select disabled style={{ padding: '6px 8px', fontSize: 13 }}>
+                <option>Popularity</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+              </select>
+            </label>
+
+            <label style={{ fontSize: 13, display: 'flex', gap: 8, alignItems: 'center' }}>Show
+              <select disabled value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} style={{ padding: '6px 8px', fontSize: 13 }}>
+                <option value={12}>12</option>
+                <option value={24}>24</option>
+                <option value={48}>48</option>
+                <option value={100}>100</option>
+              </select>
+            </label>
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>Previous</button>
+            <div style={{ fontSize: 13 }}>Page {page} / {totalPages}</div>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>Next</button>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: 24 }}>
+          <aside style={{ width: 280, minHeight: 400, border: '1px solid #eee', padding: 12 }}>
+            <h3 style={{ marginTop: 0 }}>Sort & Filter</h3>
+            <div style={{ opacity: 0.6 }}>Placeholder controls (disabled)</div>
+          </aside>
+          <section style={{ flex: 1 }}>
+            {loading && <div>Loading…</div>}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
+              {items.map(it => (
+                <ProductCard key={it.variant_id} title={it.title} vendor={(it as any).brand} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={(it as any).slug} />
+              ))}
+            </div>
+
+            {/* pagination moved to the small nav row under the breadcrumb */}
+          </section>
+        </div>
+      </main>
+    </div>
+  )
+}

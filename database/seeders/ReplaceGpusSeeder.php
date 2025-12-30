@@ -20,39 +20,22 @@ class ReplaceGpusSeeder extends Seeder
             // Remove existing products in the GPUs category
             DB::table('products')->where('category_id', $categoryId)->delete();
 
-            // Mapping derived from frontend images
+            // Mapping derived from frontend images (titles/brands kept here; thumbs resolved from manifest)
             $mappings = [
-                [
-                    'slug' => 'palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9',
-                    'title' => 'Palit GeForce RTX 5070 Ti GamingPro S',
-                    'brand' => 'Palit',
-                    'thumb' => '797c8ab0-thumb.webp'
-                ],
-                [
-                    'slug' => 'r9060xtgaming-oc-16gd-candb-gigabyte',
-                    'title' => 'R9060XT Gaming OC 16GD',
-                    'brand' => 'Gigabyte',
-                    'thumb' => '3a7e70c5-thumb.webp'
-                ],
-                [
-                    'slug' => 'rtx3050-stormx-6gb-7-palit',
-                    'title' => 'RTX3050 StormX 6GB',
-                    'brand' => 'Palit',
-                    'thumb' => '58e4335d-thumb.webp'
-                ],
-                [
-                    'slug' => 'rx-97tmargb9-4-xfx',
-                    'title' => 'RX-97T MARGB 9-4',
-                    'brand' => 'XFX',
-                    'thumb' => '595038a3-thumb.webp'
-                ],
-                [
-                    'slug' => 'xfx-7600-swft210-card-box',
-                    'title' => 'XFX 7600 SWFT210',
-                    'brand' => 'XFX',
-                    'thumb' => '1f7827bc-thumb.webp'
-                ],
+                [ 'slug' => 'palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9', 'title' => 'Palit GeForce RTX 5070 Ti GamingPro S', 'brand' => 'Palit' ],
+                [ 'slug' => 'r9060xtgaming-oc-16gd-candb-gigabyte', 'title' => 'R9060XT Gaming OC 16GD', 'brand' => 'Gigabyte' ],
+                [ 'slug' => 'rtx3050-stormx-6gb-7-palit', 'title' => 'RTX3050 StormX 6GB', 'brand' => 'Palit' ],
+                [ 'slug' => 'rx-97tmargb9-4-xfx', 'title' => 'RX-97T MARGB 9-4', 'brand' => 'XFX' ],
+                [ 'slug' => 'xfx-7600-swft210-card-box', 'title' => 'XFX 7600 SWFT210', 'brand' => 'XFX' ],
             ];
+
+            // load generated manifest (if present) to resolve image filenames and dimensions
+            $manifest = [];
+            $manifestPath = base_path('frontend/public/images/products/manifest.json');
+            if (file_exists($manifestPath)) {
+                $json = @file_get_contents($manifestPath);
+                $manifest = $json ? json_decode($json, true) : [];
+            }
 
             foreach ($mappings as $map) {
                 $productId = (string) Str::uuid();
@@ -104,20 +87,48 @@ class ReplaceGpusSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ]);
 
-                // Add thumbnail image record pointing to public/images/products/<slug>/<thumb>
-                $imagePath = '/images/products/' . $map['slug'] . '/' . $map['thumb'];
+                // Resolve thumbnail path and dimensions from manifest when present
+                $imagePath = '/images/products/' . $map['slug'] . '/';
+                $width = 220;
+                $height = 140;
+                if (isset($manifest[$map['slug']]) && is_array($manifest[$map['slug']])) {
+                    $entry = $manifest[$map['slug']];
+                    // prefer explicit thumb variant
+                    $thumbImg = null;
+                    if (!empty($entry['images']) && is_array($entry['images'])) {
+                        foreach ($entry['images'] as $img) {
+                            if (!empty($img['variant']) && $img['variant'] === 'thumb') {
+                                $thumbImg = $img; break;
+                            }
+            }
+                        if (!$thumbImg) {
+                            // fallback to first image
+                            $thumbImg = $entry['images'][0];
+                        }
+                    }
+                    if (!empty($thumbImg['url'])) {
+                        $imagePath = $thumbImg['url'];
+                        $width = $thumbImg['width'] ?? $width;
+                        $height = $thumbImg['height'] ?? $height;
+                    }
+                } else {
+                    // manifest missing — attempt default thumbnail filename pattern
+                    $imagePath .= ($map['thumb'] ?? 'thumb.webp');
+                }
+
                 DB::table('images')->insert([
                     'product_id' => $productId,
                     'variant_id' => $variantId,
                     'role' => 'thumbnail',
                     'path' => $imagePath,
-                    'width' => 220,
-                    'height' => 140,
+                    'width' => $width,
+                    'height' => $height,
                     'alt' => $map['title'],
                     'sort_order' => 0,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
+
             }
 
             DB::commit();

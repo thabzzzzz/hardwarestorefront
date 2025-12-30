@@ -1,0 +1,542 @@
+{
+  "14400-0": {
+    "productId": "14400-0",
+    "original": "/images/products/14400-0/59665db5-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/14400-0/59665db5-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400-0/59665db5-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400-0/59665db5-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400-0/59665db5-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.312Z",
+    "fingerprint": "59665db5"
+  },
+  "14400f-0": {
+    "productId": "14400f-0",
+    "original": "/images/products/14400f-0/91c1af87-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/14400f-0/91c1af87-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400f-0/91c1af87-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400f-0/91c1af87-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/14400f-0/91c1af87-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.318Z",
+    "fingerprint": "91c1af87"
+  },
+  "amd-r5-7600-65w3dpib-01": {
+    "productId": "amd-r5-7600-65w3dpib-01",
+    "original": "/images/products/amd-r5-7600-65w3dpib-01/8bb76f61-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/amd-r5-7600-65w3dpib-01/8bb76f61-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r5-7600-65w3dpib-01/8bb76f61-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r5-7600-65w3dpib-01/8bb76f61-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r5-7600-65w3dpib-01/8bb76f61-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.321Z",
+    "fingerprint": "8bb76f61"
+  },
+  "amd-r79800x3d-01": {
+    "productId": "amd-r79800x3d-01",
+    "original": "/images/products/amd-r79800x3d-01/2b92a8e0-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/amd-r79800x3d-01/2b92a8e0-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r79800x3d-01/2b92a8e0-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r79800x3d-01/2b92a8e0-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-r79800x3d-01/2b92a8e0-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.324Z",
+    "fingerprint": "2b92a8e0"
+  },
+  "amd-ryzen-5-4500-01": {
+    "productId": "amd-ryzen-5-4500-01",
+    "original": "/images/products/amd-ryzen-5-4500-01/21460496-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/amd-ryzen-5-4500-01/21460496-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-4500-01/21460496-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-4500-01/21460496-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-4500-01/21460496-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.328Z",
+    "fingerprint": "21460496"
+  },
+  "amd-ryzen-5-5600gt-series-01-1": {
+    "productId": "amd-ryzen-5-5600gt-series-01-1",
+    "original": "/images/products/amd-ryzen-5-5600gt-series-01-1/5c3574fc-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/amd-ryzen-5-5600gt-series-01-1/5c3574fc-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-5600gt-series-01-1/5c3574fc-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-5600gt-series-01-1/5c3574fc-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-5-5600gt-series-01-1/5c3574fc-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.332Z",
+    "fingerprint": "5c3574fc"
+  },
+  "amd-ryzen-7-5700x-wof-01-1": {
+    "productId": "amd-ryzen-7-5700x-wof-01-1",
+    "original": "/images/products/amd-ryzen-7-5700x-wof-01-1/6313c1df-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/amd-ryzen-7-5700x-wof-01-1/6313c1df-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-7-5700x-wof-01-1/6313c1df-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-7-5700x-wof-01-1/6313c1df-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/amd-ryzen-7-5700x-wof-01-1/6313c1df-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.335Z",
+    "fingerprint": "6313c1df"
+  },
+  "intel-alder-lake-corei3-box-1-1-12100": {
+    "productId": "intel-alder-lake-corei3-box-1-1-12100",
+    "original": "/images/products/intel-alder-lake-corei3-box-1-1-12100/493793ba-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/intel-alder-lake-corei3-box-1-1-12100/493793ba-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-alder-lake-corei3-box-1-1-12100/493793ba-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-alder-lake-corei3-box-1-1-12100/493793ba-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-alder-lake-corei3-box-1-1-12100/493793ba-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.338Z",
+    "fingerprint": "493793ba"
+  },
+  "intel-core265-7kf-1": {
+    "productId": "intel-core265-7kf-1",
+    "original": "/images/products/intel-core265-7kf-1/e8f81d29-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/intel-core265-7kf-1/e8f81d29-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-core265-7kf-1/e8f81d29-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-core265-7kf-1/e8f81d29-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/intel-core265-7kf-1/e8f81d29-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.342Z",
+    "fingerprint": "e8f81d29"
+  },
+  "palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9": {
+    "productId": "palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9",
+    "original": "/images/products/palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9/797c8ab0-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9/797c8ab0-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9/797c8ab0-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9/797c8ab0-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9/797c8ab0-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.346Z",
+    "fingerprint": "797c8ab0"
+  },
+  "prod-0001": {
+    "productId": "prod-0001",
+    "original": "/images/products/prod-0001/1ed6bb69-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/prod-0001/1ed6bb69-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/prod-0001/1ed6bb69-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/prod-0001/1ed6bb69-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/prod-0001/1ed6bb69-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.349Z",
+    "fingerprint": "1ed6bb69"
+  },
+  "r9060xtgaming-oc-16gd-candb-gigabyte": {
+    "productId": "r9060xtgaming-oc-16gd-candb-gigabyte",
+    "original": "/images/products/r9060xtgaming-oc-16gd-candb-gigabyte/3a7e70c5-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/r9060xtgaming-oc-16gd-candb-gigabyte/3a7e70c5-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/r9060xtgaming-oc-16gd-candb-gigabyte/3a7e70c5-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/r9060xtgaming-oc-16gd-candb-gigabyte/3a7e70c5-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/r9060xtgaming-oc-16gd-candb-gigabyte/3a7e70c5-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.352Z",
+    "fingerprint": "3a7e70c5"
+  },
+  "rtx3050-stormx-6gb-7-palit": {
+    "productId": "rtx3050-stormx-6gb-7-palit",
+    "original": "/images/products/rtx3050-stormx-6gb-7-palit/58e4335d-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/rtx3050-stormx-6gb-7-palit/58e4335d-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rtx3050-stormx-6gb-7-palit/58e4335d-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rtx3050-stormx-6gb-7-palit/58e4335d-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rtx3050-stormx-6gb-7-palit/58e4335d-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.355Z",
+    "fingerprint": "58e4335d"
+  },
+  "rx-97tmargb9-4-xfx": {
+    "productId": "rx-97tmargb9-4-xfx",
+    "original": "/images/products/rx-97tmargb9-4-xfx/595038a3-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/rx-97tmargb9-4-xfx/595038a3-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rx-97tmargb9-4-xfx/595038a3-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rx-97tmargb9-4-xfx/595038a3-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/rx-97tmargb9-4-xfx/595038a3-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.359Z",
+    "fingerprint": "595038a3"
+  },
+  "xfx-7600-swft210-card-box": {
+    "productId": "xfx-7600-swft210-card-box",
+    "original": "/images/products/xfx-7600-swft210-card-box/1f7827bc-orig.jpg",
+    "images": [
+      {
+        "url": "/images/products/xfx-7600-swft210-card-box/1f7827bc-thumb.webp",
+        "variant": "thumb",
+        "width": 220,
+        "height": 140,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/xfx-7600-swft210-card-box/1f7827bc-1200w.webp",
+        "variant": "1200w",
+        "width": 1200,
+        "height": 1200,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/xfx-7600-swft210-card-box/1f7827bc-400w.webp",
+        "variant": "400w",
+        "width": 400,
+        "height": 400,
+        "mime": "image/webp"
+      },
+      {
+        "url": "/images/products/xfx-7600-swft210-card-box/1f7827bc-800w.webp",
+        "variant": "800w",
+        "width": 800,
+        "height": 800,
+        "mime": "image/webp"
+      }
+    ],
+    "generatedAt": "2025-12-29T13:59:08.363Z",
+    "fingerprint": "1f7827bc"
+  }
+}

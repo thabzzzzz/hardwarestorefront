@@ -31,6 +31,14 @@ class ReplaceCpusSeeder extends Seeder
             DB::table('products')->where('category_id', $catId)->delete();
 
             $unsortedDir = base_path('frontend/public/images/unsortedProducts/cpus');
+
+            // load generated manifest if available to resolve thumbnails
+            $manifest = [];
+            $manifestPath = base_path('frontend/public/images/products/manifest.json');
+            if (file_exists($manifestPath)) {
+                $j = @file_get_contents($manifestPath);
+                $manifest = $j ? json_decode($j, true) : [];
+            }
             if (! is_dir($unsortedDir)) {
                 $this->command->error('Unsorted CPU folder not found: ' . $unsortedDir);
                 DB::rollBack();
@@ -105,15 +113,32 @@ class ReplaceCpusSeeder extends Seeder
                     'updated_at' => Carbon::now(),
                 ]);
 
-                // link image record pointing to unsorted path (frontend will reference it)
+                // resolve thumbnail from manifest when present
                 $imagePath = '/images/unsortedProducts/cpus/' . $file;
+                $width = null; $height = null;
+                if (!empty($manifest[$slug]) && is_array($manifest[$slug])) {
+                    $entry = $manifest[$slug];
+                    $thumb = null;
+                    if (!empty($entry['images']) && is_array($entry['images'])) {
+                        foreach ($entry['images'] as $img) {
+                            if (!empty($img['variant']) && $img['variant'] === 'thumb') { $thumb = $img; break; }
+                        }
+                        if (!$thumb) { $thumb = $entry['images'][0]; }
+                    }
+                    if (!empty($thumb['url'])) {
+                        $imagePath = $thumb['url'];
+                        $width = $thumb['width'] ?? $width;
+                        $height = $thumb['height'] ?? $height;
+                    }
+                }
+
                 DB::table('images')->insert([
                     'product_id' => $productId,
                     'variant_id' => $variantId,
                     'role' => 'thumbnail',
                     'path' => $imagePath,
-                    'width' => null,
-                    'height' => null,
+                    'width' => $width,
+                    'height' => $height,
                     'alt' => $title,
                     'sort_order' => 0,
                     'created_at' => Carbon::now(),

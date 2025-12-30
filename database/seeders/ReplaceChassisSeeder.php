@@ -66,16 +66,39 @@ class ReplaceChassisSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]);
 
-            // point to generated thumbnail in public folder
+            // resolve thumbnail from manifest (prod-0001) when available
+            $manifestPath = base_path('frontend/public/images/products/manifest.json');
             $imagePath = '/images/products/prod-0001/1ed6bb69-thumb.webp';
+            $width = 220; $height = 140; $alt = 'NZXT H5 thumb';
+            if (file_exists($manifestPath)) {
+                $j = @file_get_contents($manifestPath);
+                $manifest = $j ? json_decode($j, true) : [];
+                if (!empty($manifest['prod-0001'])) {
+                    $entry = $manifest['prod-0001'];
+                    $thumb = null;
+                    if (!empty($entry['images']) && is_array($entry['images'])) {
+                        foreach ($entry['images'] as $img) {
+                            if (!empty($img['variant']) && $img['variant'] === 'thumb') { $thumb = $img; break; }
+                        }
+                        if (!$thumb) { $thumb = $entry['images'][0]; }
+                    }
+                    if (!empty($thumb['url'])) {
+                        $imagePath = $thumb['url'];
+                        $width = $thumb['width'] ?? $width;
+                        $height = $thumb['height'] ?? $height;
+                        $alt = $thumb['alt'] ?? $alt;
+                    }
+                }
+            }
+
             DB::table('images')->insert([
                 'product_id' => $productId,
                 'variant_id' => $variantId,
                 'role' => 'thumbnail',
                 'path' => $imagePath,
-                'width' => 220,
-                'height' => 140,
-                'alt' => 'NZXT H5 thumb',
+                'width' => $width,
+                'height' => $height,
+                'alt' => $alt,
                 'sort_order' => 0,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),

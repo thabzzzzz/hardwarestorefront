@@ -13,7 +13,16 @@ type Props = {
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
 export default function ProductCard({ title, vendor, sku, thumbnail, price, slug }: Props) {
-  const src = thumbnail ? (thumbnail.startsWith('http') ? thumbnail : `${API_BASE}${thumbnail}`) : '/images/products/placeholder.png'
+  // normalize legacy `/products/...` paths to `/images/products/...` so thumbnails resolve
+  let t = thumbnail || null
+  if (t && typeof t === 'string' && t.startsWith('/products/')) {
+    t = t.replace(/^\/products\//, '/images/products/')
+  }
+  // If `t` is an absolute path (starts with '/'), use it directly so the browser
+  // requests the asset from the same origin (avoids cross-origin opaque blocking).
+  const src = t
+    ? (t.startsWith('http') ? t : (t.startsWith('/') ? t : `${API_BASE}${t}`))
+    : '/images/products/placeholder.png'
 
   function escapeRegExp(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
