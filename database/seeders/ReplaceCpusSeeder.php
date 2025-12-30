@@ -45,7 +45,9 @@ class ReplaceCpusSeeder extends Seeder
                 return;
             }
 
-            $files = array_values(array_filter(scandir($unsortedDir), function($f){ return ! in_array($f, ['.','..']); }));
+            $files = array_values(array_filter(scandir($unsortedDir), function ($f) {
+                return ! in_array($f, ['.', '..']);
+            }));
 
             foreach ($files as $file) {
                 $ext = pathinfo($file, PATHINFO_EXTENSION);
@@ -79,7 +81,7 @@ class ReplaceCpusSeeder extends Seeder
                 ]);
 
                 $variantId = (string) Str::uuid();
-                $sku = strtoupper(substr(preg_replace('/[^A-Z0-9]+/','', $slug),0,8)) . '-' . strtoupper(substr($variantId,0,6));
+                $sku = strtoupper(substr(preg_replace('/[^A-Z0-9]+/', '', $slug), 0, 8)) . '-' . strtoupper(substr($variantId, 0, 6));
                 DB::table('product_variants')->insert([
                     'id' => $variantId,
                     'product_id' => $productId,
@@ -106,7 +108,7 @@ class ReplaceCpusSeeder extends Seeder
 
                 DB::table('stock_levels')->insert([
                     'variant_id' => $variantId,
-                    'qty_available' => rand(5,40),
+                    'qty_available' => rand(5, 40),
                     'qty_reserved' => 0,
                     'warehouse' => 'default',
                     'status' => 'in_stock',
@@ -115,15 +117,21 @@ class ReplaceCpusSeeder extends Seeder
 
                 // resolve thumbnail from manifest when present
                 $imagePath = '/images/unsortedProducts/cpus/' . $file;
-                $width = null; $height = null;
+                $width = null;
+                $height = null;
                 if (!empty($manifest[$slug]) && is_array($manifest[$slug])) {
                     $entry = $manifest[$slug];
                     $thumb = null;
                     if (!empty($entry['images']) && is_array($entry['images'])) {
                         foreach ($entry['images'] as $img) {
-                            if (!empty($img['variant']) && $img['variant'] === 'thumb') { $thumb = $img; break; }
+                            if (!empty($img['variant']) && $img['variant'] === 'thumb') {
+                                $thumb = $img;
+                                break;
+                            }
                         }
-                        if (!$thumb) { $thumb = $entry['images'][0]; }
+                        if (!$thumb) {
+                            $thumb = $entry['images'][0];
+                        }
                     }
                     if (!empty($thumb['url'])) {
                         $imagePath = $thumb['url'];

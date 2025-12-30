@@ -13,8 +13,19 @@ class Product extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'slug', 'name', 'brand', 'manufacturer', 'vendor_id', 'category_id', 'model_number', 'release_date',
-        'product_type', 'is_featured', 'is_popular', 'is_new',
+        'id',
+        'slug',
+        'name',
+        'brand',
+        'manufacturer',
+        'vendor_id',
+        'category_id',
+        'model_number',
+        'release_date',
+        'product_type',
+        'is_featured',
+        'is_popular',
+        'is_new',
     ];
 
     public function variants()

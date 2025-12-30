@@ -10,7 +10,8 @@ Get-ChildItem -Directory $productsPath | ForEach-Object {
         Write-Host "Updating DB for slug:" $slug "->" $thumb.Name
         $sql = "UPDATE images SET path = '/products/$slug/$($thumb.Name)' WHERE product_id = (SELECT id FROM products WHERE slug = '$slug') AND path LIKE '/images/unsortedProducts/cpus/%';"
         & docker compose exec -T db psql -U homestead -d homestead -c $sql
-    } else {
+    }
+    else {
         Write-Host "No thumb found for $slug - skipping"
     }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['product_type','is_featured','is_popular','is_new']);
+            $table->dropColumn(['product_type', 'is_featured', 'is_popular', 'is_new']);
         });
     }
 };

@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import styles from './ProductCard.module.css'
 
 type Props = {
   title: string
@@ -41,20 +42,20 @@ export default function ProductCard({ title, vendor, sku, thumbnail, price, slug
   }
 
   const content = (
-    <article style={{ border: '1px solid #eee', padding: 12, borderRadius: 6, minHeight: 260 }}>
-      <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8 }}>
-        <img src={src} alt={title} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }} />
+    <article className={styles.container}>
+      <div className={styles.imageWrapper}>
+        <img src={src} alt={title} className={styles.img} />
       </div>
-      <div style={{ fontSize: 12, color: '#666', fontWeight: 700, marginBottom: 4 }}>
-        <span style={{ display: 'inline-block', minWidth: 80 }}>{vendorLabel || ''}</span>
+      <div className={styles.vendor}>
+        <span className={styles.vendorSpan}>{vendorLabel || ''}</span>
       </div>
-      <div style={{ fontSize: 14, fontWeight: 600 }}>{displayTitle}</div>
-      <div style={{ color: '#666', fontSize: 13 }}>{sku}</div>
-      <div style={{ marginTop: 8 }}>
+      <div className={styles.title}>{displayTitle}</div>
+      <div className={styles.sku}>{sku}</div>
+      <div className={styles.priceWrap}>
         {price ? (
-          <div style={{ color: '#ff8c00', fontWeight: 700 }}>{(price.amount_cents / 100).toLocaleString()} {price.currency}</div>
+          <div className={styles.price}>{(price.amount_cents / 100).toLocaleString()} {price.currency}</div>
         ) : (
-          <div style={{ color: '#999' }}>Price not available</div>
+          <div className={styles.priceEmpty}>Price not available</div>
         )}
       </div>
     </article>
@@ -62,7 +63,7 @@ export default function ProductCard({ title, vendor, sku, thumbnail, price, slug
 
   if (slug) {
     return (
-      <Link href={`/product/${slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{content}</Link>
+      <Link href={`/product/${slug}`} className={styles.link}>{content}</Link>
     )
   }
 

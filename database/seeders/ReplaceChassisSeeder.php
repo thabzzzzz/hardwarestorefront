@@ -34,7 +34,7 @@ class ReplaceChassisSeeder extends Seeder
             ]);
 
             $variantId = (string) Str::uuid();
-            $sku = 'NZXT-' . strtoupper(substr($variantId,0,6));
+            $sku = 'NZXT-' . strtoupper(substr($variantId, 0, 6));
             DB::table('product_variants')->insert([
                 'id' => $variantId,
                 'product_id' => $productId,
@@ -69,7 +69,9 @@ class ReplaceChassisSeeder extends Seeder
             // resolve thumbnail from manifest (prod-0001) when available
             $manifestPath = base_path('frontend/public/images/products/manifest.json');
             $imagePath = '/images/products/prod-0001/1ed6bb69-thumb.webp';
-            $width = 220; $height = 140; $alt = 'NZXT H5 thumb';
+            $width = 220;
+            $height = 140;
+            $alt = 'NZXT H5 thumb';
             if (file_exists($manifestPath)) {
                 $j = @file_get_contents($manifestPath);
                 $manifest = $j ? json_decode($j, true) : [];
@@ -78,9 +80,14 @@ class ReplaceChassisSeeder extends Seeder
                     $thumb = null;
                     if (!empty($entry['images']) && is_array($entry['images'])) {
                         foreach ($entry['images'] as $img) {
-                            if (!empty($img['variant']) && $img['variant'] === 'thumb') { $thumb = $img; break; }
+                            if (!empty($img['variant']) && $img['variant'] === 'thumb') {
+                                $thumb = $img;
+                                break;
+                            }
                         }
-                        if (!$thumb) { $thumb = $entry['images'][0]; }
+                        if (!$thumb) {
+                            $thumb = $entry['images'][0];
+                        }
                     }
                     if (!empty($thumb['url'])) {
                         $imagePath = $thumb['url'];

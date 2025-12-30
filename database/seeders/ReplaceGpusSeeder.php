@@ -22,11 +22,11 @@ class ReplaceGpusSeeder extends Seeder
 
             // Mapping derived from frontend images (titles/brands kept here; thumbs resolved from manifest)
             $mappings = [
-                [ 'slug' => 'palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9', 'title' => 'Palit GeForce RTX 5070 Ti GamingPro S', 'brand' => 'Palit' ],
-                [ 'slug' => 'r9060xtgaming-oc-16gd-candb-gigabyte', 'title' => 'R9060XT Gaming OC 16GD', 'brand' => 'Gigabyte' ],
-                [ 'slug' => 'rtx3050-stormx-6gb-7-palit', 'title' => 'RTX3050 StormX 6GB', 'brand' => 'Palit' ],
-                [ 'slug' => 'rx-97tmargb9-4-xfx', 'title' => 'RX-97T MARGB 9-4', 'brand' => 'XFX' ],
-                [ 'slug' => 'xfx-7600-swft210-card-box', 'title' => 'XFX 7600 SWFT210', 'brand' => 'XFX' ],
+                ['slug' => 'palit-geforce-rtx-5070-ti-gamingpro-s-ne7507t019t2-gb2031u-9', 'title' => 'Palit GeForce RTX 5070 Ti GamingPro S', 'brand' => 'Palit'],
+                ['slug' => 'r9060xtgaming-oc-16gd-candb-gigabyte', 'title' => 'R9060XT Gaming OC 16GD', 'brand' => 'Gigabyte'],
+                ['slug' => 'rtx3050-stormx-6gb-7-palit', 'title' => 'RTX3050 StormX 6GB', 'brand' => 'Palit'],
+                ['slug' => 'rx-97tmargb9-4-xfx', 'title' => 'RX-97T MARGB 9-4', 'brand' => 'XFX'],
+                ['slug' => 'xfx-7600-swft210-card-box', 'title' => 'XFX 7600 SWFT210', 'brand' => 'XFX'],
             ];
 
             // load generated manifest (if present) to resolve image filenames and dimensions
@@ -53,7 +53,7 @@ class ReplaceGpusSeeder extends Seeder
                 ]);
 
                 $variantId = (string) Str::uuid();
-                $sku = strtoupper(substr(preg_replace('/[^A-Z0-9]+/','', $map['slug']),0,8)) . '-' . strtoupper(substr($variantId,0,6));
+                $sku = strtoupper(substr(preg_replace('/[^A-Z0-9]+/', '', $map['slug']), 0, 8)) . '-' . strtoupper(substr($variantId, 0, 6));
                 DB::table('product_variants')->insert([
                     'id' => $variantId,
                     'product_id' => $productId,
@@ -80,7 +80,7 @@ class ReplaceGpusSeeder extends Seeder
 
                 DB::table('stock_levels')->insert([
                     'variant_id' => $variantId,
-                    'qty_available' => rand(5,40),
+                    'qty_available' => rand(5, 40),
                     'qty_reserved' => 0,
                     'warehouse' => 'default',
                     'status' => 'in_stock',
@@ -98,9 +98,10 @@ class ReplaceGpusSeeder extends Seeder
                     if (!empty($entry['images']) && is_array($entry['images'])) {
                         foreach ($entry['images'] as $img) {
                             if (!empty($img['variant']) && $img['variant'] === 'thumb') {
-                                $thumbImg = $img; break;
+                                $thumbImg = $img;
+                                break;
                             }
-            }
+                        }
                         if (!$thumbImg) {
                             // fallback to first image
                             $thumbImg = $entry['images'][0];
@@ -128,7 +129,6 @@ class ReplaceGpusSeeder extends Seeder
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]);
-
             }
 
             DB::commit();

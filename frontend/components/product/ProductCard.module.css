@@ -1,0 +1,61 @@
+.container {
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 0px !important;
+  overflow: hidden;
+  min-height: 260px;
+}
+
+.imageWrapper {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.vendor {
+  font-size: 12px;
+  color: #666;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.vendorSpan {
+  display: inline-block;
+  min-width: 80px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sku {
+  color: #666;
+  font-size: 13px;
+}
+
+.priceWrap {
+  margin-top: 8px;
+}
+
+.price {
+  color: #ff8c00;
+  font-weight: 700;
+}
+
+.priceEmpty {
+  color: #999;
+}
+
+.link {
+  text-decoration: none;
+  color: inherit;
+}
