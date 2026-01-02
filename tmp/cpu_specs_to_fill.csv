@@ -1,0 +1,10 @@
+product_id,variant_id,slug,name,manufacturer,cores,boost_clock,microarchitecture,socket,confidence
+39b36cad-bf85-4955-9d77-cb5fa78c92f1,b7aabefb-104a-4d98-9033-445bc4827701,intel-core-i5-14400,Intel Core i5-14400,Intel,6,4.6 GHz,Raptor Lake,LGA1700,low
+a7ded56c-435b-412e-bfe9-91069da3b271,d005dd49-9940-438c-a04d-2ecd32bc5660,intel-core-i5-14400f,Intel Core i5-14400F,Intel,6,4.6 GHz,Raptor Lake,LGA1700,low
+28502e0a-58e6-46c8-8bfb-71b771bd63e2,46b29dc7-3e2c-4c31-9fd2-744e747dd823,amd-ryzen-5-7600-65w,AMD Ryzen 5 7600 65W,AMD,6,5.1 GHz,Zen 4,AM5,medium
+75ad4249-46c1-45d6-9a36-07f32aa9cdda,9f040abe-0b72-4d87-b23f-05c8f42c0723,amd-ryzen-9-7900x3d,AMD Ryzen 9 7900X3D,AMD,12,5.6 GHz,Zen 4 (3D V-Cache),AM5,high
+bc110c24-b245-4094-826e-d8811a927b7d,5925df55-1f7d-4f18-b53e-ad55611b21e1,amd-ryzen-5-4500,AMD Ryzen 5 4500,AMD,6,4.1 GHz,Zen 2?,AM4,low
+97b76d42-43c6-415d-8d81-e672ebaaeb2d,72a347cb-191f-4ad8-8297-b9889401b14c,amd-ryzen-5-5600g,AMD Ryzen 5 5600G,AMD,6,4.4 GHz,Zen 3,AM4,high
+09cfe021-e4b7-4e61-9bd0-b462ceeabd7d,474ff9bb-c027-4549-bc58-d40ca34b6f00,amd-ryzen-7-5700x-wof,AMD Ryzen 7 5700X (WOF),AMD,8,4.6 GHz,Zen 3,AM4,medium
+68154d8e-933c-48b8-9c50-851cafaeb65f,656fe7dd-58b6-4b62-9060-32d4be3e170b,intel-core-i3-12100,Intel Core i3-12100,Intel,4,4.3 GHz,Alder Lake (Golden Cove),LGA1700,high
+3afd5e0a-40b2-4e94-8e10-fb8308405c71,21f678d3-8521-4db9-803c-2cf635fd186b,intel-core-i5-12600kf,Intel Core i5-12600KF,Intel,10,4.9 GHz,Alder Lake,LGA1700,high

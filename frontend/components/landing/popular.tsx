@@ -9,6 +9,12 @@ type Item = {
   thumbnail?: string | null
   current_price?: { amount_cents: number; currency: string } | null
   slug?: string
+  manufacturer?: string | null
+  product_type?: string | null
+  cores?: number | string | null
+  boost_clock?: string | null
+  microarchitecture?: string | null
+  socket?: string | null
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
@@ -41,7 +47,22 @@ export default function Popular(): JSX.Element {
       <h2>Popular</h2>
       <div className={styles.grid}>
         {items.map(it => (
-          <ProductCard key={it.variant_id} title={it.title} vendor={(it as any).brand} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={it.slug} />
+          <ProductCard
+            key={it.variant_id}
+            name={(it as any).name}
+            title={it.title}
+            vendor={(it as any).brand}
+            sku={it.sku}
+            thumbnail={it.thumbnail}
+            price={it.current_price || null}
+            slug={it.slug}
+            manufacturer={(it as any).manufacturer}
+            productType={(it as any).product_type || (it as any).productType}
+            cores={(it as any).cores}
+            boostClock={(it as any).boost_clock}
+            microarchitecture={(it as any).microarchitecture}
+            socket={(it as any).socket}
+          />
         ))}
       </div>
     </section>

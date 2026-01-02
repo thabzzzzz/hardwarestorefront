@@ -88,6 +88,11 @@ class ProductsController extends Controller
                 'slug' => $variant->product->slug,
                 'sku' => $variant->sku,
                 'title' => $variant->title,
+                // CPU spec fields (nullable)
+                'cores' => $variant->product->cores,
+                'boost_clock' => $variant->product->boost_clock,
+                'microarchitecture' => $variant->product->microarchitecture,
+                'socket' => $variant->product->socket,
                 'current_price' => $price ? ['amount_cents' => $price->amount_cents, 'currency' => $price->currency] : null,
                 'thumbnail' => $thumbnail ? $thumbnail->path : null,
                 'short_specs' => array_slice((array)($variant->specs ?? []), 0, 6),

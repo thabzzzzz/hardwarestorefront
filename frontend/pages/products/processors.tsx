@@ -10,6 +10,12 @@ type ProcessorItem = {
   current_price?: { amount_cents: number; currency: string } | null
   thumbnail?: string | null
   stock?: { qty_available: number; status: string } | null
+  manufacturer?: string | null
+  product_type?: string | null
+  cores?: number | string | null
+  boost_clock?: string | null
+  microarchitecture?: string | null
+  socket?: string | null
 }
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
@@ -95,7 +101,22 @@ export default function ProcessorListing(): JSX.Element {
             {loading && <div>Loading…</div>}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
               {items.map(it => (
-                <ProductCard key={it.variant_id} title={it.title} vendor={(it as any).brand} sku={it.sku} thumbnail={it.thumbnail} price={it.current_price || null} slug={(it as any).slug} />
+                <ProductCard
+                  key={it.variant_id}
+                  name={(it as any).name}
+                  title={it.title}
+                  vendor={(it as any).brand}
+                  sku={it.sku}
+                  thumbnail={it.thumbnail}
+                  price={it.current_price || null}
+                  slug={(it as any).slug}
+                  manufacturer={(it as any).manufacturer}
+                  productType={(it as any).product_type || (it as any).productType}
+                  cores={(it as any).cores}
+                  boostClock={(it as any).boost_clock}
+                  microarchitecture={(it as any).microarchitecture}
+                  socket={(it as any).socket}
+                />
               ))}
             </div>
 
