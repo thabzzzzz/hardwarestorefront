@@ -110,11 +110,7 @@ export default function ProductPage(): JSX.Element {
             <div style={{ flex: 1 }}>
               <ProductSummary title={product.title} brand={product.brand} productId={product.product_id} stock={product.stock} />
               <ProductActions price={product.price || null} />
-              <ProductSpecs specs={product.specs || {
-                'Boost Clock': 'TBD',
-                'Stream Processors': 'TBD',
-                'Architecture': 'TBD'
-              }} />
+              <ProductSpecs specs={product.specs || null} />
             </div>
           </div>
         )}
