@@ -15,7 +15,18 @@ export default function ProductSummary({ title, brand, productId, stock }: Props
         <div style={{ fontSize: 13, color: '#666', marginBottom: 8 }}>Product ID: <strong>{productId}</strong></div>
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontWeight: 600 }}>Availability</div>
-          <div style={{ color: stock?.status === 'in_stock' ? 'green' : '#c00' }}>{stock?.status === 'in_stock' ? `In stock (${stock?.qty_available})` : 'Out of stock'}</div>
+          <div>
+            {stock?.status === 'in_stock' && (
+              <div style={{ color: 'green' }}>In stock — {stock.qty_available ?? '—'}</div>
+            )}
+            {stock?.status === 'out_of_stock' && (
+              <div style={{ color: '#c00' }}>Out of stock</div>
+            )}
+            {stock?.status === 'reserved' && (
+              <div style={{ color: '#7b1fa2' }}>Reserved — {stock.qty_reserved ?? '—'}</div>
+            )}
+            {!stock && <div style={{ color: '#666' }}>No stock info</div>}
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
