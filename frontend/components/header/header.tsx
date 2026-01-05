@@ -31,7 +31,7 @@ export default function Header(): JSX.Element {
     <>
       <header className={styles.header}>
         <div ref={topbarRef} className={styles.topbar}>
-          <div className={styles.toplinks}>My Account &nbsp;|&nbsp; My Wishlist &nbsp;|&nbsp; My Basket</div>
+          <div className={styles.toplinks}>My Account &nbsp;|&nbsp; My Basket</div>
         </div>
         <div
           ref={brandRef}

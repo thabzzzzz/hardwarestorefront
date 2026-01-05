@@ -101,13 +101,13 @@ export default function ProcessorListing(): JSX.Element {
             {loading && <div>Loading…</div>}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
               {items.map(it => (
-                <ProductCard
+                  <ProductCard
                   key={it.variant_id}
                   name={(it as any).name}
                   title={it.title}
                   vendor={(it as any).brand}
                   sku={it.sku}
-                  thumbnail={it.thumbnail}
+                    stock={(it as any).stock || null} thumbnail={it.thumbnail}
                   price={it.current_price || null}
                   slug={(it as any).slug}
                   manufacturer={(it as any).manufacturer}

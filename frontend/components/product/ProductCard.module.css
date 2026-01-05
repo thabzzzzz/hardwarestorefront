@@ -35,9 +35,10 @@
 .title {
   font-size: 13px;
   font-weight: 600;
-  color: #1a73e8;
-  margin-bottom: 8px;
+  color: #023761;
+  margin: 0 0 8px 0;
   line-height: 1.2;
+  text-align: center;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -45,18 +46,40 @@
   text-overflow: ellipsis;
 }
 
+.container:hover .title,
+.title:hover {
+  color: #ff8c00;
+}
+
 .sku {
   color: #666;
   font-size: 13px;
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: calc(13px * 1.1);
 }
 
 .priceWrap {
   margin-top: 8px;
+  text-align: center;
 }
 
 .price {
-  color: #ff8c00;
+  color: #000;
   font-weight: 700;
+}
+
+.stockIn {
+  color: green;
+}
+
+.stockOut {
+  color: #c00;
+}
+
+.stockReserved {
+  color: #7b1fa2;
 }
 
 .priceEmpty {

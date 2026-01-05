@@ -7,6 +7,7 @@ type Props = {
   vendor?: string | null
   name?: string
   sku?: string
+  stock?: { qty_available?: number; qty_reserved?: number; status?: string } | null
   thumbnail?: string | null
   price?: { amount_cents: number; currency: string } | null
   slug?: string
@@ -20,7 +21,7 @@ type Props = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
-export default function ProductCard({ name, title, vendor, sku, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket }: Props) {
+export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket }: Props) {
   // normalize legacy `/products/...` paths to `/images/products/...` so thumbnails resolve
   let t = thumbnail || null
   if (t && typeof t === 'string' && t.startsWith('/products/')) {
@@ -52,14 +53,18 @@ export default function ProductCard({ name, title, vendor, sku, thumbnail, price
 
   const content = (
     <article className={styles.container}>
+      <div className={styles.title}>{displayTitle}</div>
       <div className={styles.imageWrapper}>
         <img src={src} alt={title} className={styles.img} />
       </div>
-      <div className={styles.vendor}>
-        <span className={styles.vendorSpan}>{vendorLabel || ''}</span>
+      {/* removed brand/vendor display */}
+      <div className={`${styles.sku} ${stock ? (stock.status === 'out_of_stock' ? styles.stockOut : (stock.status === 'reserved' ? styles.stockReserved : styles.stockIn)) : ''}`}>
+        {stock ? (
+          stock.status === 'out_of_stock' ? 'Out of stock' : (stock.status === 'reserved' ? `Reserved (${stock.qty_reserved ?? 0})` : `In stock (${stock.qty_available ?? 0})`)
+        ) : (
+          'Availability unknown'
+        )}
       </div>
-      <div className={styles.title}>{displayTitle}</div>
-      <div className={styles.sku}>{sku}</div>
       <div className={styles.priceWrap}>
         {price ? (
           <div className={styles.price}>{(price.amount_cents / 100).toLocaleString()} {price.currency}</div>
@@ -67,6 +72,7 @@ export default function ProductCard({ name, title, vendor, sku, thumbnail, price
           <div className={styles.priceEmpty}>Price not available</div>
         )}
       </div>
+      {/* Wishlist removed - feature deleted. */}
     </article>
   )
 

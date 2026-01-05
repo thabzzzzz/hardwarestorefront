@@ -97,13 +97,14 @@ export default function GpuListing(): JSX.Element {
           <section style={{ flex: 1 }}>
             {loading && <div>Loading…</div>}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
-              {items.map(it => (
+                {items.map(it => (
                 <ProductCard
                   key={it.variant_id}
                   name={(it as any).name}
                   title={it.title}
                   vendor={(it as any).brand}
                   sku={it.sku}
+                  stock={(it as any).stock || null}
                   thumbnail={it.thumbnail}
                   price={it.current_price || null}
                   slug={it.slug}

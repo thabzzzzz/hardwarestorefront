@@ -53,6 +53,7 @@ export default function NewArrivals(): JSX.Element {
             title={it.title}
             vendor={(it as any).brand}
             sku={it.sku}
+            stock={(it as any).stock || null}
             thumbnail={it.thumbnail}
             price={it.current_price || null}
             slug={it.slug}

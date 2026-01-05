@@ -46,25 +46,26 @@ export default function Popular(): JSX.Element {
     <section className={styles.hotDeals}>
       <h2>Popular</h2>
       <div className={styles.grid}>
-        {items.map(it => (
-          <ProductCard
-            key={it.variant_id}
-            name={(it as any).name}
-            title={it.title}
-            vendor={(it as any).brand}
-            sku={it.sku}
-            thumbnail={it.thumbnail}
-            price={it.current_price || null}
-            slug={it.slug}
-            manufacturer={(it as any).manufacturer}
-            productType={(it as any).product_type || (it as any).productType}
-            cores={(it as any).cores}
-            boostClock={(it as any).boost_clock}
-            microarchitecture={(it as any).microarchitecture}
-            socket={(it as any).socket}
-          />
-        ))}
-      </div>
+          {items.map(it => (
+            <ProductCard
+              key={it.variant_id}
+              name={(it as any).name}
+              title={it.title}
+              vendor={(it as any).brand}
+              sku={it.sku}
+              stock={(it as any).stock || null}
+              thumbnail={it.thumbnail}
+              price={it.current_price || null}
+              slug={it.slug}
+              manufacturer={(it as any).manufacturer}
+              productType={(it as any).product_type || (it as any).productType}
+              cores={(it as any).cores}
+              boostClock={(it as any).boost_clock}
+              microarchitecture={(it as any).microarchitecture}
+              socket={(it as any).socket}
+            />
+              ))}
+          </div>
     </section>
   )
 }
