@@ -2,6 +2,7 @@ import styles from './hero.module.css'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import formatPriceFromCents from '../../lib/formatPrice'
+import getDisplayTitle from '../../lib/getDisplayTitle'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
@@ -44,7 +45,7 @@ export default function Hero(): JSX.Element {
                 ) : (
                   <img src="/products/prod-0001/1ed6bb69-400w.webp" alt="featured" />
                 )}
-                <div style={{ marginTop: 8, fontWeight: 700 }}>{featured.title}</div>
+                <div style={{ marginTop: 8, fontWeight: 600 }}>{getDisplayTitle({ title: featured.title, name: (featured as any).name, manufacturer: (featured as any).manufacturer, productType: (featured as any).product_type || (featured as any).productType })}</div>
                 <div style={{ marginTop: 4, color: '#666' }}>{featured.current_price ? formatPriceFromCents(featured.current_price.amount_cents) : ''}</div>
                 <div className={styles.featureTag}>FEATURED DEAL →</div>
               </div>
