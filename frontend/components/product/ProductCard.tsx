@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import styles from './ProductCard.module.css'
+import formatPriceFromCents from '../../lib/formatPrice'
 
 type Props = {
   title: string
@@ -67,7 +68,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
       </div>
       <div className={styles.priceWrap}>
         {price ? (
-          <div className={styles.price}>{(price.amount_cents / 100).toLocaleString()} {price.currency}</div>
+          <div className={styles.price}>{formatPriceFromCents(price.amount_cents)}</div>
         ) : (
           <div className={styles.priceEmpty}>Price not available</div>
         )}
