@@ -3,6 +3,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import { ToastContainer } from 'react-toastify'
+import Footer from '../components/footer/Footer'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -19,6 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <Component {...pageProps} />
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover />
+      <Footer />
     </>
   )
 }
