@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import styles from './header.module.css'
 import useWishlist from '../../hooks/useWishlist'
+import getDisplayTitle from '../../lib/getDisplayTitle'
+import { useRouter } from 'next/router'
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
 export default function Header(): JSX.Element {
   const topbarRef = useRef<HTMLDivElement | null>(null)
@@ -29,6 +33,51 @@ export default function Header(): JSX.Element {
   }, [])
 
   const wishlist = useWishlist()
+  const router = useRouter()
+
+  // search state
+  const [query, setQuery] = useState('')
+  const [suggestions, setSuggestions] = useState<Array<any>>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const debounceRef = useRef<number | null>(null)
+
+  function doSearchNavigate(q: string) {
+    if (!q || String(q).trim().length === 0) return
+    router.push(`/search?q=${encodeURIComponent(q)}`)
+    setShowSuggestions(false)
+  }
+
+  async function fetchSuggestions(q: string) {
+    if (!q || q.trim().length < 2) {
+      setSuggestions([])
+      return
+    }
+    try {
+      // fetch a modest page and filter client-side
+      const res = await fetch(`${API_BASE}/api/products?per_page=100`)
+      if (!res.ok) return
+      const js = await res.json()
+      const list = js.data || []
+      const needle = q.trim().toLowerCase()
+      const matches = list.filter((it: any) => {
+        const title = String(it.title || '').toLowerCase()
+        const name = String((it as any).name || '').toLowerCase()
+        const sku = String(it.sku || '').toLowerCase()
+        const manufacturer = String((it as any).manufacturer || '').toLowerCase()
+        return title.includes(needle) || name.includes(needle) || sku.includes(needle) || manufacturer.includes(needle)
+      }).slice(0, 3)
+      setSuggestions(matches)
+      setShowSuggestions(true)
+    } catch (e) {
+      console.error('suggestions failed', e)
+    }
+  }
+
+  function onQueryChange(v: string) {
+    setQuery(v)
+    if (debounceRef.current) window.clearTimeout(debounceRef.current)
+    debounceRef.current = window.setTimeout(() => fetchSuggestions(v), 250)
+  }
 
   return (
     <>
@@ -132,8 +181,21 @@ export default function Header(): JSX.Element {
           <div className={styles.brandDivider} aria-hidden="true" />
           <div className={styles.brandActions}>
             <div className={styles.searchBox}>
-              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} />
-              <input placeholder="search" />
+              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
+              <input placeholder="search" value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
+              {showSuggestions && suggestions.length > 0 && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, background: '#fff', border: '1px solid #ddd', width: '100%', boxSizing: 'border-box', zIndex: 60, boxShadow: '0 6px 18px rgba(0,0,0,0.06)' }}>
+                  {suggestions.map((s: any) => (
+                    <div key={s.variant_id || s.id || s.slug} style={{ display: 'flex', gap: 8, padding: 8, alignItems: 'center', cursor: 'pointer' }} onMouseDown={() => { /* mousedown to avoid blur */ router.push(s.slug ? `/product/${s.slug}` : `/product/${encodeURIComponent(s.title)}`) }}>
+                      <img src={s.thumbnail || '/images/products/placeholder.png'} style={{ width: 48, height: 36, objectFit: 'cover' }} />
+                      <div style={{ fontSize: 13 }}>
+                        <div style={{ fontWeight: 600 }}>{getDisplayTitle({ title: s.title, name: (s as any).name, manufacturer: (s as any).manufacturer, productType: (s as any).product_type || (s as any).productType })}</div>
+                        <div style={{ fontSize: 12, color: '#666' }}>{s.current_price ? (new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format((s.current_price.amount_cents || 0) / 100)) : ''}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <a href="/cart" className={styles.cartButton} aria-label="View cart">
               <img src="/icons/cart.svg" alt="Cart" />

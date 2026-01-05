@@ -3,6 +3,7 @@ import Link from 'next/link'
 import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
+import getDisplayTitle from '../../lib/getDisplayTitle'
 import { toast } from 'react-toastify'
 
 type Props = {
@@ -40,19 +41,8 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   }
 
-  let displayTitle = (name && String(name).trim().length) ? String(name) : title
+  const displayTitle = getDisplayTitle({ title, name, manufacturer, productType })
   let vendorLabel: string | null = vendor ? String(vendor).trim() : null
-
-  // Keep the full product title by default. For CPUs, append structured specs when available.
-  const isCpu = (productType && String(productType).toLowerCase().includes('cpu')) || /\b(ryzen|core|athlon|epyc|xeon)\b/i.test(title)
-  if (isCpu) {
-    // Prefix manufacturer if provided and not already present in title
-    if (manufacturer && !new RegExp('^\\s*' + manufacturer.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i').test(displayTitle)) {
-      displayTitle = `${manufacturer} ${displayTitle}`
-    }
-    // Keep CPU card titles concise and consistent with the product detail page.
-    // Only ensure the manufacturer is present; do not append technical spec suffixes here.
-  }
 
   // wishlist hook (frontend-only localStorage)
   const wishlist = useWishlist()
