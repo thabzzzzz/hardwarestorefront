@@ -98,6 +98,11 @@
   border: 1px solid #ff8c00;
   transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
+.actionsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
 .wishlistButton[disabled] {
   opacity: 0.6;

@@ -244,3 +244,23 @@
 	box-shadow: 0 0 0 4px rgba(255,140,0,0.10), 0 6px 18px rgba(255,140,0,0.12);
 	transition: box-shadow .12s ease, border-color .12s ease;
 }
+
+.cartDropdown {
+	position: absolute;
+	right: 0;
+	top: 120%;
+	width: 320px;
+	background: #fff;
+	border: 1px solid #eee;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+	z-index: 1400;
+}
+
+.viewCart {
+	display: inline-block;
+	background: #ff8c00;
+	color: #fff;
+	padding: 8px 12px;
+	text-decoration: none;
+	border-radius: 4px;
+}

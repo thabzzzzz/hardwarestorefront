@@ -3,6 +3,7 @@ import Link from 'next/link'
 import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
+import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { toast } from 'react-toastify'
 
@@ -46,13 +47,16 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
 
   // wishlist hook (frontend-only localStorage)
   const wishlist = useWishlist()
+  const cart = useCart()
   const id = String(slug || sku || name || title)
 
   // Click handler for the new Wishlist button. Locks the button until the operation
   // completes, shows appropriate toasts for success / already-in-wishlist / errors.
   const [busyAdd, setBusyAdd] = useState(false)
+  const [busy, setBusy] = useState(false)
   async function handleWishlistClick(e: React.MouseEvent) {
     e.preventDefault()
+    e.stopPropagation()
     if (busyAdd) return
     setBusyAdd(true)
     try {
@@ -97,15 +101,49 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         ) : (
           <div className={styles.priceEmpty}>Price not available</div>
         )}
-        <div style={{ marginTop: 8 }}>
-          <button
-            onClick={handleWishlistClick}
-            disabled={busyAdd}
-            aria-busy={busyAdd}
-            className={`${styles.wishlistButton} ${wishlist.isWished(id) ? styles.inWishlist : ''}`}
-          >
-            {busyAdd ? 'Adding...' : (wishlist.isWished(id) ? 'In wishlist' : 'Wishlist')}
-          </button>
+        <div className={styles.actionsRow} style={{ marginTop: 8 }}>
+          <div>
+            <button
+              className={styles.wishlistButton}
+              onClick={async (e: React.MouseEvent) => {
+                e.preventDefault()
+                e.stopPropagation()
+                if (busy) return
+                setBusy(true)
+                try {
+                  const entry = {
+                    id: sku ?? id,
+                    title: displayTitle,
+                    thumbnail: t,
+                    price: price ? { amount_cents: price.amount_cents } : null,
+                    stock: stock || null
+                  }
+                  const res = cart.addOrUpdate(entry, 1)
+                  if (!res.added) {
+                    toast.info('Product already in cart')
+                  } else {
+                    toast.success('Added to cart')
+                  }
+                } catch (e) {
+                  toast.error('Failed to add to cart')
+                } finally { setBusy(false) }
+              }}
+              disabled={busy}
+              aria-busy={busy}
+            >
+              {busy ? 'Adding...' : 'Add to cart'}
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={handleWishlistClick}
+              disabled={busyAdd}
+              aria-busy={busyAdd}
+              className={`${styles.wishlistButton} ${wishlist.isWished(id) ? styles.inWishlist : ''}`}
+            >
+              {busyAdd ? 'Adding...' : (wishlist.isWished(id) ? 'In wishlist' : 'Wishlist')}
+            </button>
+          </div>
         </div>
       </div>
       {/* wishlist button present */}

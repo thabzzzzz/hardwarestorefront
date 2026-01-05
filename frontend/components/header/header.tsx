@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import styles from './header.module.css'
 import useWishlist from '../../hooks/useWishlist'
+import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { useRouter } from 'next/router'
 
@@ -33,7 +34,9 @@ export default function Header(): JSX.Element {
   }, [])
 
   const wishlist = useWishlist()
+  const cart = useCart()
   const router = useRouter()
+
 
   // search state
   const [query, setQuery] = useState('')
@@ -193,9 +196,10 @@ export default function Header(): JSX.Element {
                 </div>
               )}
             </div>
-            <a href="/cart" className={styles.cartButton} aria-label="View cart">
+            <Link href="/cart" className={styles.cartButton} aria-label="View cart">
               <img src="/icons/cart.svg" alt="Cart" />
-            </a>
+              <span style={{ marginLeft: 6 }}>({cart.count})</span>
+            </Link>
           </div>
         </div>
       </header>
