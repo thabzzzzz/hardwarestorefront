@@ -27,7 +27,12 @@ export default function WishlistPage(): JSX.Element {
       <Header />
       <h1 style={{ marginTop: 16 }}>My Wishlist</h1>
       {w.count === 0 ? (
-        <div>No items in wishlist — <Link href="/">browse products</Link>.</div>
+        <div style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center', fontWeight: 700 }}>
+            <div>{'No items in wishlist¯\\_(ツ)_/¯'}</div>
+            <div style={{ marginTop: 8, fontWeight: 700 }}>Browse the cataloge and add some</div>
+          </div>
+        </div>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 12 }}>
           <thead>
