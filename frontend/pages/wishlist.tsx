@@ -39,6 +39,8 @@ export default function WishlistPage(): JSX.Element {
             <tr style={{ textAlign: 'left', borderBottom: '1px solid #ddd' }}>
               <th style={{ padding: '8px 6px' }}>Product</th>
               <th style={{ padding: '8px 6px', width: 160 }}>Date added</th>
+              <th style={{ padding: '8px 6px', width: 120 }}>Tag</th>
+              <th style={{ padding: '8px 6px', width: 140 }}>Priority</th>
               <th style={{ padding: '8px 6px', width: 140 }}>Qty</th>
               <th style={{ padding: '8px 6px', width: 160 }}>Subtotal</th>
               <th style={{ padding: '8px 6px', width: 120 }}></th>
@@ -57,6 +59,20 @@ export default function WishlistPage(): JSX.Element {
                   </div>
                 </td>
                 <td style={{ padding: '12px 6px', fontSize: 13, color: '#444' }}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
+                <td style={{ padding: '12px 6px' }}>
+                  <select value={item.tag ?? 'none'} onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })} style={{ padding: 6 }}>
+                    <option value="none">None</option>
+                    <option value="gift">Gift</option>
+                    <option value="research">Research</option>
+                  </select>
+                </td>
+                <td style={{ padding: '12px 6px' }}>
+                  <select value={item.priority ?? 'low'} onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })} style={{ padding: 6 }}>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </td>
                 <td style={{ padding: '12px 6px' }}>
                   <input type="number" min={1} value={item.qty} onChange={(e) => onQtyChange(item.id, e.target.value)} style={{ width: 80, padding: 6 }} max={item.stock?.qty_available ?? undefined} />
                   {errors[item.id] && <div style={{ color: '#c00', fontSize: 12 }}>{errors[item.id]}</div>}

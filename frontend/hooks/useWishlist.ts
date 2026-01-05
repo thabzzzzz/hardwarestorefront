@@ -12,6 +12,8 @@ export type WishlistEntry = {
   stock?: Stock | null
   qty: number
   added_at?: string
+  tag?: 'gift' | 'research' | 'none'
+  priority?: 'low' | 'medium' | 'high'
 }
 
 const STORAGE_KEY = 'wishlist_v1'
@@ -101,7 +103,7 @@ export default function useWishlist() {
       persistAndNotify(next)
       return
     }
-    const nextEntry: WishlistEntry = { ...entry, qty: Math.max(1, qty), added_at: new Date().toISOString() }
+    const nextEntry: WishlistEntry = { ...entry, qty: Math.max(1, qty), added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }
     persistAndNotify([nextEntry, ...storeItems])
   }
 
@@ -117,7 +119,7 @@ export default function useWishlist() {
       persistAndNotify(storeItems.filter(i => i.id !== id))
       return
     }
-    persistAndNotify([{ ...entry, qty: 1, added_at: new Date().toISOString() }, ...storeItems])
+    persistAndNotify([{ ...entry, qty: 1, added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }, ...storeItems])
   }
 
   function isWished(id: string) {
@@ -140,6 +142,11 @@ export default function useWishlist() {
     return { ok: true }
   }
 
+  function updateMeta(id: string, fields: Partial<Pick<WishlistEntry, 'tag' | 'priority'>>) {
+    const next = storeItems.map(i => i.id === id ? { ...i, ...fields } : i)
+    persistAndNotify(next)
+  }
+
   const totalCents = storeItems.reduce((s, it) => s + computeSubtotal(it), 0)
 
   return {
@@ -151,6 +158,7 @@ export default function useWishlist() {
     toggle,
     isWished,
     updateQty,
+    updateMeta,
     formatPrice: (cents?: number | null) => cents != null ? formatPriceFromCents(cents) : 'Call for price'
   }
 }
