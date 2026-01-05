@@ -83,11 +83,7 @@ export default function Header(): JSX.Element {
     <>
       <header className={styles.header}>
         <div ref={topbarRef} className={styles.topbar}>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <div>My Account</div>
-            <div>|</div>
-            <div>My Basket</div>
-          </div>
+          <div />
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
             <Link href="/wishlist">Wishlist ({wishlist.count})</Link>
           </div>
