@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
+import useWishlist from '../../hooks/useWishlist'
+import { toast } from 'react-toastify'
 
 type Props = {
   title: string
@@ -52,8 +54,41 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     // Only ensure the manufacturer is present; do not append technical spec suffixes here.
   }
 
+  // wishlist hook (frontend-only localStorage)
+  const wishlist = useWishlist()
+  const id = String(slug || sku || name || title)
+
+  // Click handler for the new Wishlist button. Locks the button until the operation
+  // completes, shows appropriate toasts for success / already-in-wishlist / errors.
+  const [busyAdd, setBusyAdd] = useState(false)
+  async function handleWishlistClick(e: React.MouseEvent) {
+    e.preventDefault()
+    if (busyAdd) return
+    setBusyAdd(true)
+    try {
+      const already = wishlist.isWished(id)
+      if (already) {
+        // remove (toggle) is allowed; but user requested to surface 'already in wishlist' as message
+        toast.info('Item already in wishlist')
+        return
+      }
+
+      try {
+        // add synchronously; keep the async wrapper so we can lock UI while it completes
+        wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: t, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+        toast.success('Added to wishlist')
+      } catch (err) {
+        console.error('Failed to add to wishlist', err)
+        toast.error('Could not add to wishlist')
+      }
+    } finally {
+      setBusyAdd(false)
+    }
+  }
+
   const content = (
     <article className={styles.container}>
+      {/* Wishlist button placed beneath the price (no heart icon) */}
       <div className={styles.title}>{displayTitle}</div>
       <div className={styles.imageWrapper}>
         <img src={src} alt={title} className={styles.img} />
@@ -72,8 +107,18 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         ) : (
           <div className={styles.priceEmpty}>Price not available</div>
         )}
+        <div style={{ marginTop: 8 }}>
+          <button
+            onClick={handleWishlistClick}
+            disabled={busyAdd}
+            aria-busy={busyAdd}
+            className={`${styles.wishlistButton} ${wishlist.isWished(id) ? styles.inWishlist : ''}`}
+          >
+            {busyAdd ? 'Adding...' : (wishlist.isWished(id) ? 'In wishlist' : 'Wishlist')}
+          </button>
+        </div>
       </div>
-      {/* Wishlist removed - feature deleted. */}
+      {/* wishlist button present */}
     </article>
   )
 

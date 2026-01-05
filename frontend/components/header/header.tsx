@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import styles from './header.module.css'
+import useWishlist from '../../hooks/useWishlist'
 
 export default function Header(): JSX.Element {
   const topbarRef = useRef<HTMLDivElement | null>(null)
@@ -27,11 +28,20 @@ export default function Header(): JSX.Element {
     }
   }, [])
 
+  const wishlist = useWishlist()
+
   return (
     <>
       <header className={styles.header}>
         <div ref={topbarRef} className={styles.topbar}>
-          <div className={styles.toplinks}>My Account &nbsp;|&nbsp; My Basket</div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <div>My Account</div>
+            <div>|</div>
+            <div>My Basket</div>
+          </div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <Link href="/wishlist">Wishlist ({wishlist.count})</Link>
+          </div>
         </div>
         <div
           ref={brandRef}

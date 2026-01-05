@@ -4,6 +4,7 @@
   border-radius: 0px !important;
   overflow: hidden;
   min-height: 260px;
+  position: relative;
 }
 
 .imageWrapper {
@@ -84,6 +85,30 @@
 
 .priceEmpty {
   color: #999;
+}
+
+.wishlistButton {
+  background: #ff8c00;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 0;
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid #ff8c00;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.wishlistButton[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* When item is already in wishlist: white fill, orange text and orange border */
+.inWishlist {
+  background: #ffffff;
+  color: #ff8c00;
+  border-color: #ff8c00;
 }
 
 .link {
