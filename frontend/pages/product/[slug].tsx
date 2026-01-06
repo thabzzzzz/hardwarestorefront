@@ -17,7 +17,7 @@ type ProductPayload = {
   brand?: string
   product_id?: string
   thumbnail?: string | null
-  stock?: { qty_available?: number; status?: string }
+  stock?: { qty_available?: number; qty_reserved?: number; status?: string }
   price?: { amount_cents: number; currency: string } | null
   specs?: Record<string, string>
 }

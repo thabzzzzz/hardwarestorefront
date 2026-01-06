@@ -5,7 +5,7 @@ type Props = {
   title: string
   brand?: string
   productId?: string
-  stock?: { qty_available?: number; status?: string }
+  stock?: { qty_available?: number; qty_reserved?: number; status?: string }
 }
 
 export default function ProductSummary({ title, brand, productId, stock }: Props) {
