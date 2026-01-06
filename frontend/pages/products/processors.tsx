@@ -3,7 +3,7 @@ import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
 import pageStyles from './processors.module.css'
-import PriceRange from '../../components/filters/PriceRange'
+
 import formatPriceFromCents from '../../lib/formatPrice'
 
 type ProcessorItem = {
@@ -47,6 +47,7 @@ export default function ProcessorListing(): JSX.Element {
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
+  const [sortBy, setSortBy] = useState<string>('')
 
   const filtered = useMemo(() => {
     return items.filter(it => {
@@ -66,11 +67,31 @@ export default function ProcessorListing(): JSX.Element {
     })
   }, [items, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock])
 
+  // apply client-side sorting for price options (server handles date sorting)
+  const sortedProducts = useMemo(() => {
+    const arr = filtered.slice()
+    if (sortBy === 'price_asc') {
+      arr.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
+    } else if (sortBy === 'price_desc') {
+      arr.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
+    }
+    return arr
+  }, [filtered, sortBy])
+
   useEffect(() => {
     async function load() {
       setLoading(true)
       try {
-        const res = await fetch(`${API_BASE}/api/cpus?per_page=${perPage}&page=${page}`)
+        let url = `${API_BASE}/api/cpus?per_page=${perPage}&page=${page}`
+        // only send price filters when we have a meaningful max (> 0)
+        if (priceMin !== undefined && priceMax !== undefined && priceMax > 0) {
+          url += `&price_min=${priceMin}&price_max=${priceMax}`
+        }
+        if (sortBy.startsWith('date')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=date&order=${order}`
+        }
+        const res = await fetch(url)
 
         // guard against non-JSON responses (404 HTML, etc.) which cause JSON.parse errors
         const contentType = res.headers.get('content-type') || ''
@@ -95,7 +116,15 @@ export default function ProcessorListing(): JSX.Element {
       }
     }
     load()
-  }, [page, perPage])
+  }, [page, perPage, sortBy, priceMin, priceMax])
+
+  // Reset to first page when sort changes
+  useEffect(() => {
+    setPage(1)
+  }, [sortBy])
+
+  // Reset to first page when price filters change
+  useEffect(() => { setPage(1) }, [priceMin, priceMax])
 
   return (
     <div className={styles.page}>
@@ -107,10 +136,11 @@ export default function ProcessorListing(): JSX.Element {
         <div className={pageStyles.controlsRow}>
           <div className={pageStyles.controlsLeft}>
             <label className={pageStyles.smallSelectLabel}>Sort By
-              <select disabled className={pageStyles.smallSelectLabel}>
-                <option>Popularity</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={pageStyles.smallSelectLabel}>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="date_desc">Date: Newest</option>
+                <option value="date_asc">Date: Oldest</option>
               </select>
             </label>
 
@@ -134,7 +164,7 @@ export default function ProcessorListing(): JSX.Element {
         <div className={pageStyles.container}>
           <aside className={pageStyles.sidebar}>
             <h3 className={pageStyles.filterHeading}>Sort & Filter</h3>
-            <PriceRange maxCents={maxCents} valueMin={priceMin} valueMax={priceMax} onChange={(min, max) => { setPriceMin(min); setPriceMax(max) }} />
+            <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
             <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
             <div className={pageStyles.stockBlock}>
               <div className={pageStyles.stockLabel}>Stock</div>
@@ -152,7 +182,7 @@ export default function ProcessorListing(): JSX.Element {
           <section className={pageStyles.resultsSection}>
             {loading && <div>Loading…</div>}
             <div className={pageStyles.grid}>
-              {filtered.map(it => (
+              {sortedProducts.map(it => (
                 <ProductCard
                   key={it.variant_id}
                   name={(it as any).name}

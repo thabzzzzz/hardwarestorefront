@@ -33,6 +33,12 @@
   gap: 8px;
   font-size: 13px;
 }
+.smallSelectLabel {
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 .resultsSection {
   flex: 1;
 }

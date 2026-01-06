@@ -73,6 +73,33 @@ class ProductsController extends Controller
             });
         }
 
+        // Sorting: support `sort=date` with `order=asc|desc` to order by product.release_date
+        $sort = $request->query('sort');
+        $order = strtolower($request->query('order', 'desc')) === 'asc' ? 'asc' : 'desc';
+        if ($sort === 'date') {
+            // join products so we can order by the product's release_date safely while still
+            // selecting product_variants for pagination/hydration.
+            $query->leftJoin('products', 'product_variants.product_id', '=', 'products.id')
+                  ->select('product_variants.*')
+                  // put null release_date values last, then order by the date
+                  ->orderByRaw("products.release_date IS NULL, products.release_date {$order}");
+        }
+
+        // Price range filtering (expects cents): price_min, price_max
+        $priceMin = $request->query('price_min');
+        $priceMax = $request->query('price_max');
+        if ($priceMin !== null || $priceMax !== null) {
+            $min = is_numeric($priceMin) ? (int)$priceMin : 0;
+            $max = is_numeric($priceMax) ? (int)$priceMax : PHP_INT_MAX;
+
+            // Filter by the latest price entry per variant. Use EXISTS with a correlated subquery
+            // that selects the latest `prices.valid_from` row for the variant and checks amount_cents.
+            $query->whereRaw(
+                "exists (select 1 from prices p where p.variant_id = product_variants.id and p.valid_from = (select max(p2.valid_from) from prices p2 where p2.variant_id = p.variant_id) and p.amount_cents >= ? and p.amount_cents <= ?)",
+                [$min, $max]
+            );
+        }
+
         $page = $query->paginate($perPage);
 
         $data = $page->through(function ($variant) {
@@ -97,6 +124,7 @@ class ProductsController extends Controller
                 'thumbnail' => $thumbnail ? $thumbnail->path : null,
                 'short_specs' => array_slice((array)($variant->specs ?? []), 0, 6),
                 'stock' => $variant->stock ? ['qty_available' => $variant->stock->qty_available, 'status' => $variant->stock->status] : null,
+                'release_date' => $variant->product->release_date ?? null,
             ];
         });
 
