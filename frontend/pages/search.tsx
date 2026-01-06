@@ -40,6 +40,20 @@ export default function SearchPage({ results, q, sort }: { results: any[]; q: st
   const router = useRouter()
   const [sortBy, setSortBy] = useState<string>(sort || '')
 
+  const manufacturers = useMemo(() => {
+    const s = new Set<string>()
+    for (const it of results) {
+      const m = String(it.manufacturer || '').trim()
+      if (m) s.add(m)
+    }
+    return Array.from(s).sort()
+  }, [results])
+  const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
+
+  function toggleManufacturer(m: string) {
+    setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
+  }
+
   function onSortChange(v: string) {
     setSortBy(v)
     const query: any = { q }
@@ -49,6 +63,11 @@ export default function SearchPage({ results, q, sort }: { results: any[]; q: st
   }
 
   const filtered = results.filter(it => {
+    // manufacturer filter
+    if (selectedManufacturers.length > 0) {
+      const man = String(it.manufacturer || '').trim()
+      if (!selectedManufacturers.includes(man)) return false
+    }
     const cents = Number(it.current_price?.amount_cents || 0)
     if (cents < priceMin || cents > priceMax) return false
 
@@ -86,6 +105,21 @@ export default function SearchPage({ results, q, sort }: { results: any[]; q: st
             </div>
             <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
             <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
+            <div className={pageStyles.stockBlock}>
+              <div className={pageStyles.stockLabel}>Manufacturer</div>
+              {manufacturers.length === 0 ? (
+                <div className={pageStyles.checkboxLabel}>No manufacturers</div>
+              ) : (
+                <>
+                  {manufacturers.map(m => (
+                    <label key={m} className={pageStyles.checkboxLabel}>
+                      <input type="checkbox" checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} /> {m}
+                    </label>
+                  ))}
+                  <button type="button" onClick={() => setSelectedManufacturers([])} className={pageStyles.clearButton}>Clear</button>
+                </>
+              )}
+            </div>
             <div className={pageStyles.stockBlock}>
               <div className={pageStyles.stockLabel}>Stock</div>
               <label className={pageStyles.checkboxLabel}>
