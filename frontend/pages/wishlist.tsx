@@ -42,7 +42,7 @@ export default function WishlistPage(): JSX.Element {
               <th className={`${styles.cell} ${styles.colDate}`}>Date added</th>
               <th className={`${styles.cell} ${styles.colTag}`}>Tag</th>
               <th className={`${styles.cell} ${styles.colPriority}`}>Priority</th>
-              <th className={`${styles.cell} ${styles.colQty}`}>Qty</th>
+              <th className={`${styles.cell} ${styles.colQty}`}>Qty <span className={styles.smallNote}>(limited by stock)</span></th>
               <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
               <th className={`${styles.cell} ${styles.colActions}`}></th>
             </tr>

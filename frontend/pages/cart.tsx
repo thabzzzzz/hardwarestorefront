@@ -40,7 +40,7 @@ export default function CartPage(): JSX.Element {
             <tr className={styles.theadRow}>
               <th className={styles.th}>Product</th>
               <th className={`${styles.th} ${styles.colDate}`}>Date added</th>
-              <th className={`${styles.th} ${styles.colQty}`}>Qty</th>
+              <th className={`${styles.th} ${styles.colQty}`}>Qty <span className={styles.smallNote}>(limited by stock)</span></th>
               <th className={`${styles.th} ${styles.colSubtotal}`}>Subtotal</th>
               <th className={`${styles.th} ${styles.colActions}`}></th>
             </tr>
