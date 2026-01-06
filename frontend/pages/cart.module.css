@@ -59,5 +59,7 @@
 .errorText { color: #c00; font-size: 12px; margin-top: 6px; }
 .removeButton { background: transparent; border: 1px solid #ddd; padding: 6px 10px; cursor: pointer; }
 
+.clearAllButton { background: #fff; border: 1px solid #c00; color: #c00; padding: 6px 8px; cursor: pointer; }
+
 .tdSummaryLabel { padding: 12px 6px; font-weight: 700; }
 .tdSummaryValue { padding: 12px 6px; font-weight: 700; }

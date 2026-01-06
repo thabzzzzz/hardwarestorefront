@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
 import Head from 'next/head'
 import Link from 'next/link'
 import useCart from '../hooks/useCart'
@@ -74,6 +75,22 @@ export default function CartPage(): JSX.Element {
               <td />
               <td className={styles.tdSummaryLabel}>Total</td>
               <td className={styles.tdSummaryValue}>{cart.formatPrice(cart.totalCents)}</td>
+              <td className={styles.td}>
+                <button onClick={() => {
+                  let id: React.ReactText | null = null
+                  const handleConfirm = () => { cart.clear(); if (id) toast.dismiss(id) }
+                  const content = (
+                    <div>
+                      <div>Clear all items from your cart?</div>
+                      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                        <button onClick={handleConfirm} className={styles.clearAllButton}>Confirm</button>
+                        <button onClick={() => id && toast.dismiss(id)} className={styles.removeButton}>Cancel</button>
+                      </div>
+                    </div>
+                  )
+                  id = toast.info(content, { autoClose: 8000 })
+                }} className={styles.clearAllButton}>Clear cart</button>
+              </td>
               <td />
             </tr>
           </tfoot>

@@ -147,6 +147,8 @@ export default function useWishlist() {
     persistAndNotify(next)
   }
 
+  function clear() { persistAndNotify([]) }
+
   const totalCents = storeItems.reduce((s, it) => s + computeSubtotal(it), 0)
 
   return {
@@ -159,6 +161,7 @@ export default function useWishlist() {
     isWished,
     updateQty,
     updateMeta,
+    clear,
     formatPrice: (cents?: number | null) => cents != null ? formatPriceFromCents(cents) : 'Call for price'
   }
 }
