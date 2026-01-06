@@ -109,6 +109,26 @@
   cursor: not-allowed;
 }
 
+.wishlistHeart {
+  background: transparent;
+  border: none;
+  color: #E91E63; /* pink */
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishlistHeart svg { display: block }
+
+.inWishlistHeart {
+  background: #E91E63;
+  color: #fff;
+  border-radius: 4px;
+  padding: 6px;
+}
+
 /* When item is already in wishlist: white fill, orange text and orange border */
 .inWishlist {
   background: #ffffff;
