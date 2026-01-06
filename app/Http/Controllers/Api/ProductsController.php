@@ -80,9 +80,9 @@ class ProductsController extends Controller
             // join products so we can order by the product's release_date safely while still
             // selecting product_variants for pagination/hydration.
             $query->leftJoin('products', 'product_variants.product_id', '=', 'products.id')
-                  ->select('product_variants.*')
-                  // put null release_date values last, then order by the date
-                  ->orderByRaw("products.release_date IS NULL, products.release_date {$order}");
+                ->select('product_variants.*')
+                // put null release_date values last, then order by the date
+                ->orderByRaw("products.release_date IS NULL, products.release_date {$order}");
         }
 
         // Price range filtering (expects cents): price_min, price_max
