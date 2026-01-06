@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Header from '../../components/header/header'
-import React, { useEffect, useState } from 'react'
-import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
 import pageStyles from './gpus.module.css'
+import PriceRange from '../../components/filters/PriceRange'
+import formatPriceFromCents from '../../lib/formatPrice'
 
 type GpuItem = {
   variant_id: string
@@ -29,6 +29,42 @@ export default function GpuListing(): JSX.Element {
   const [page, setPage] = useState(1)
   const [perPage, setPerPage] = useState(12)
   const [totalPages, setTotalPages] = useState(1)
+
+  const [priceMin, setPriceMin] = useState<number>(0)
+  const maxCents = useMemo(() => {
+    let m = 0
+    for (const it of items) {
+      const c = Number(it.current_price?.amount_cents || 0)
+      if (c > m) m = c
+    }
+    return m
+  }, [items])
+  const [priceMax, setPriceMax] = useState<number>(maxCents)
+
+  // resync max when items change
+  useEffect(() => { setPriceMax(maxCents) }, [maxCents])
+
+  const [filterInStock, setFilterInStock] = useState(false)
+  const [filterReserved, setFilterReserved] = useState(false)
+  const [filterOutOfStock, setFilterOutOfStock] = useState(false)
+
+  const filtered = useMemo(() => {
+    return items.filter(it => {
+      const cents = Number(it.current_price?.amount_cents || 0)
+      if (cents < priceMin || cents > priceMax) return false
+
+      const raw = String(it.stock?.status || '').toLowerCase()
+      const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
+
+      const anyStockFilter = filterInStock || filterReserved || filterOutOfStock
+      if (!anyStockFilter) return true
+
+      if (status === 'in_stock' && filterInStock) return true
+      if (status === 'reserved' && filterReserved) return true
+      if (status === 'out_of_stock' && filterOutOfStock) return true
+      return false
+    })
+  }, [items, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock])
 
   useEffect(() => {
     async function load() {
@@ -93,54 +129,26 @@ export default function GpuListing(): JSX.Element {
 
         <div className={pageStyles.container}>
           <aside className={pageStyles.sidebar}>
-            <h3 className={pageStyles.sidebarHeading}>Sort & Filter</h3>
-            <div className={pageStyles.sidebarBlock}>
-              <div className={pageStyles.headingTitle}>Price</div>
-              <div>Price filters coming soon</div>
-            </div>
-            <div className={pageStyles.sidebarBlock}>
-              <div className={pageStyles.headingTitle}>Stock</div>
-              <div>Stock filters coming soon</div>
+            <h3 className={pageStyles.filterHeading}>Sort & Filter</h3>
+            <PriceRange maxCents={maxCents} valueMin={priceMin} valueMax={priceMax} onChange={(min, max) => { setPriceMin(min); setPriceMax(max) }} />
+            <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
+            <div className={pageStyles.stockBlock}>
+              <div className={pageStyles.stockLabel}>Stock</div>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} /> In stock
+              </label>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} /> Reserved
+              </label>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} /> Out of stock
+              </label>
             </div>
           </aside>
           <section className={pageStyles.resultsSection}>
             {loading && <div>Loading…</div>}
             <div className={pageStyles.grid}>
-              {items.map(it => (
-                <ProductCard
-                  key={it.variant_id}
-                  name={(it as any).name}
-                  title={it.title}
-                  vendor={(it as any).brand}
-                  sku={it.sku}
-                  stock={(it as any).stock || null}
-                  thumbnail={it.thumbnail}
-                  price={it.current_price || null}
-                  slug={it.slug}
-                  manufacturer={(it as any).manufacturer}
-                  productType={(it as any).product_type || (it as any).productType}
-                  cores={(it as any).cores}
-                  boostClock={(it as any).boost_clock}
-                  microarchitecture={(it as any).microarchitecture}
-                  socket={(it as any).socket}
-                />
-              ))}
-            </div>
-
-            {/* pagination moved to the small nav row under the breadcrumb */}
-          </section>
-        </div>
-      </main>
-    </div>
-  )
-}
-                    if (!any) return true
-                    if (status === 'in_stock' && filterInStock) return true
-                    if (status === 'reserved' && filterReserved) return true
-                    if (status === 'out_of_stock' && filterOutOfStock) return true
-                    return false
-                  })
-                  .map(it => (
+              {filtered.map(it => (
                 <ProductCard
                   key={it.variant_id}
                   name={(it as any).name}

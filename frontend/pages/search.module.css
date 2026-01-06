@@ -25,6 +25,8 @@
 .stockBlock {
   margin-top: 20px;
 }
+.filterHeading { margin-top: 0 }
+.stockLabel { font-size: 13px; font-weight: 700; margin-bottom: 6px }
 .checkboxLabel {
   display: flex;
   align-items: center;

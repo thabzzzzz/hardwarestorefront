@@ -1,8 +1,9 @@
 import React from 'react'
+import styles from './Footer.module.css'
 
 export default function Footer(): JSX.Element {
   return (
-    <footer style={{ borderTop: '1px solid #eee', padding: '18px 24px', textAlign: 'center', color: '#666', fontSize: 13 }}>
+    <footer className={styles.footer}>
       <div>© 2026 Thabiso. This is a work in progress.</div>
     </footer>
   )

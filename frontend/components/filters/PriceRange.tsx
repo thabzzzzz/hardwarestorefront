@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import formatPriceFromCents from '../../lib/formatPrice'
+import styles from './PriceRange.module.css'
 
 type Props = {
   maxCents: number
@@ -32,20 +33,20 @@ export default function PriceRange({ maxCents, valueMin = 0, valueMax, onChange 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <label style={{ fontSize: 13, fontWeight: 700 }}>Price</label>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, marginBottom: 6, textAlign: 'left' }}>Min</div>
-          <input type="range" min={0} max={maxInit} value={min} onChange={(e) => onMinChange(Number(e.target.value))} style={{ width: '100%' }} />
+    <div className={styles.wrapper}>
+      <label className={styles.label}>Price</label>
+      <div className={styles.rangesRow}>
+        <div className={styles.rangeCol}>
+          <div className={styles.rangeLabelLeft}>Min</div>
+          <input type="range" min={0} max={maxInit} value={min} onChange={(e) => onMinChange(Number(e.target.value))} className={styles.range} />
         </div>
-        <div style={{ width: 12 }} />
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, marginBottom: 6, textAlign: 'right' }}>Max</div>
-          <input type="range" min={0} max={maxInit} value={max} onChange={(e) => onMaxChange(Number(e.target.value))} style={{ width: '100%' }} />
+        <div className={styles.gutter} />
+        <div className={styles.rangeCol}>
+          <div className={styles.rangeLabelRight}>Max</div>
+          <input type="range" min={0} max={maxInit} value={max} onChange={(e) => onMaxChange(Number(e.target.value))} className={styles.range} />
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+      <div className={styles.totalsRow}>
         <div>{formatPriceFromCents(min)}</div>
         <div>{formatPriceFromCents(max)}</div>
       </div>

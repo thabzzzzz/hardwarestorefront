@@ -39,12 +39,12 @@ export default function WishlistPage(): JSX.Element {
           <thead>
             <tr className={styles.headerRow}>
               <th className={styles.cell}>Product</th>
-              <th className={styles.cell} style={{ width: 160 }}>Date added</th>
-              <th className={styles.cell} style={{ width: 120 }}>Tag</th>
-              <th className={styles.cell} style={{ width: 140 }}>Priority</th>
-              <th className={styles.cell} style={{ width: 140 }}>Qty</th>
-              <th className={styles.cell} style={{ width: 160 }}>Subtotal</th>
-              <th className={styles.cell} style={{ width: 120 }}></th>
+              <th className={`${styles.cell} ${styles.colDate}`}>Date added</th>
+              <th className={`${styles.cell} ${styles.colTag}`}>Tag</th>
+              <th className={`${styles.cell} ${styles.colPriority}`}>Priority</th>
+              <th className={`${styles.cell} ${styles.colQty}`}>Qty</th>
+              <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
+              <th className={`${styles.cell} ${styles.colActions}`}></th>
             </tr>
           </thead>
           <tbody>

@@ -62,11 +62,11 @@ export default function SearchPage({ results, q }: { results: any[]; q: string }
         <h1 className={pageStyles.title}>Search results for "{q}"</h1>
         <div className={pageStyles.container}>
           <aside className={pageStyles.sidebar}>
-            <h3 style={{ marginTop: 0 }}>Sort & Filter</h3>
+            <h3 className={pageStyles.filterHeading}>Sort & Filter</h3>
             <PriceRange maxCents={maxCents} valueMin={priceMin} valueMax={priceMax} onChange={(min, max) => { setPriceMin(min); setPriceMax(max) }} />
             <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
             <div className={pageStyles.stockBlock}>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Stock</div>
+              <div className={pageStyles.stockLabel}>Stock</div>
               <label className={pageStyles.checkboxLabel}>
                 <input type="checkbox" checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} /> In stock
               </label>

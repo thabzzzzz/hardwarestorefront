@@ -6,6 +6,12 @@
 .table{width:100%;border-collapse:collapse;margin-top:12px}
 .headerRow{text-align:left;border-bottom:1px solid #ddd}
 .cell{padding:8px 6px}
+.colDate{width:160px}
+.colTag{width:120px}
+.colPriority{width:140px}
+.colQty{width:140px}
+.colSubtotal{width:160px}
+.colActions{width:120px}
 .row{border-bottom:1px solid #f0f0f0}
 .productCell{display:flex;gap:12px;align-items:center}
 .thumb{width:64px;height:48px;object-fit:cover}
