@@ -49,6 +49,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
   const wishlist = useWishlist()
   const cart = useCart()
   const id = String(slug || sku || name || title)
+  const inCart = cart.items.some(i => i.id === (sku ?? id))
 
   // Click handler for the new Wishlist button. Locks the button until the operation
   // completes, shows appropriate toasts for success / already-in-wishlist / errors.
@@ -104,11 +105,11 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         <div className={styles.actionsRow} style={{ marginTop: 8 }}>
           <div>
             <button
-              className={styles.wishlistButton}
+              className={`${styles.wishlistButton} ${inCart ? styles.inCart : ''}`}
               onClick={async (e: React.MouseEvent) => {
                 e.preventDefault()
                 e.stopPropagation()
-                if (busy) return
+                if (busy || inCart) return
                 setBusy(true)
                 try {
                   const entry = {
@@ -128,10 +129,10 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
                   toast.error('Failed to add to cart')
                 } finally { setBusy(false) }
               }}
-              disabled={busy}
+              disabled={busy || inCart}
               aria-busy={busy}
             >
-              {busy ? 'Adding...' : 'Add to cart'}
+              {inCart ? 'In cart' : (busy ? 'Adding...' : 'Add to cart')}
             </button>
           </div>
           <div>

@@ -116,6 +116,12 @@
   border-color: #ff8c00;
 }
 
+.inCart {
+  background: #ffffff;
+  color: #ff8c00;
+  border-color: #ff8c00;
+}
+
 .link {
   text-decoration: none;
   color: inherit;
