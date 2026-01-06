@@ -6,6 +6,7 @@ type HotDealItem = {
   variant_id: string
   title: string
   sku?: string
+  slug?: string | null
   thumbnail?: string | null
   current_price?: { amount_cents: number; currency: string } | null
   manufacturer?: string | null
