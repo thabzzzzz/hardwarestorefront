@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import styles from './ProductGallery.module.css'
 
 type Props = {
   imageUrl?: string | null
@@ -53,11 +54,11 @@ export default function ProductGallery({ imageUrl, alt }: Props) {
   const src = candidates.length > 0 ? candidates[Math.min(idx, candidates.length - 1)] : null
 
   return (
-    <div style={{ maxWidth: 480 }}>
+    <div className={styles.wrapper}>
       {src ? (
-        <img src={src} alt={alt || ''} onError={handleError} style={{ width: '100%', height: 420, objectFit: 'contain', background: '#fff', border: '1px solid #eee' }} />
+        <img src={src} alt={alt || ''} onError={handleError} className={styles.image} />
       ) : (
-        <div style={{ width: '100%', height: 420, background: '#f6f6f6', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #eee' }}>No image</div>
+        <div className={styles.empty}>No image</div>
       )}
     </div>
   )

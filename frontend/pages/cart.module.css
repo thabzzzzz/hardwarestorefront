@@ -1,0 +1,61 @@
+.page {
+  padding: 24px;
+}
+
+.title {
+  margin-top: 16px;
+}
+
+.emptyWrap {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyText {
+  text-align: center;
+  font-weight: 700;
+}
+
+.emptySuggest {
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.theadRow {
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.th {
+  padding: 8px 6px;
+  text-align: left;
+}
+
+.colDate { width: 160px; }
+.colQty { width: 140px; }
+.colSubtotal { width: 160px; }
+.colActions { width: 120px; }
+
+.row { border-bottom: 1px solid #f0f0f0; }
+.td { padding: 12px 6px; vertical-align: middle; }
+
+.productCell { display: flex; gap: 12px; align-items: center; }
+.productImg { width: 64px; height: 48px; object-fit: cover; }
+.productTitle { font-weight: 600; }
+.productStock { font-size: 13px; color: #666; }
+
+.dateCell { font-size: 13px; color: #444; }
+.qtyInput { width: 80px; padding: 6px; box-sizing: border-box; }
+.errorText { color: #c00; font-size: 12px; margin-top: 6px; }
+.removeButton { background: transparent; border: 1px solid #ddd; padding: 6px 10px; cursor: pointer; }
+
+.tdSummaryLabel { padding: 12px 6px; font-weight: 700; }
+.tdSummaryValue { padding: 12px 6px; font-weight: 700; }

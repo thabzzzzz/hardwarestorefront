@@ -103,6 +103,7 @@
   justify-content: space-between;
   align-items: center;
 }
+.actionsRow { margin-top: 8px; }
 
 .wishlistButton[disabled] {
   opacity: 0.6;
@@ -120,14 +121,14 @@
   justify-content: center;
 }
 
-.wishlistHeart svg { display: block }
+.wishlistHeart svg { display: block; transition: fill .12s ease, stroke .12s ease }
 
-.inWishlistHeart {
-  background: #E91E63;
-  color: #fff;
-  border-radius: 4px;
-  padding: 6px;
-}
+/* Default: hollow heart (no fill, pink stroke) */
+.wishlistHeart svg { fill: none; stroke: currentColor }
+
+/* Active: only the SVG fills with pink; container remains transparent */
+.inWishlistHeart { background: transparent; color: #E91E63 }
+.inWishlistHeart svg { fill: currentColor; stroke: none }
 
 /* When item is already in wishlist: white fill, orange text and orange border */
 .inWishlist {

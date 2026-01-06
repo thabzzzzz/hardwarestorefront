@@ -45,8 +45,8 @@ export default function Hero(): JSX.Element {
                 ) : (
                   <img src="/products/prod-0001/1ed6bb69-400w.webp" alt="featured" />
                 )}
-                <div style={{ marginTop: 8, fontWeight: 600 }}>{getDisplayTitle({ title: featured.title, name: (featured as any).name, manufacturer: (featured as any).manufacturer, productType: (featured as any).product_type || (featured as any).productType })}</div>
-                <div style={{ marginTop: 4, color: '#666' }}>{featured.current_price ? formatPriceFromCents(featured.current_price.amount_cents) : ''}</div>
+                <div className={styles.featureTitle}>{getDisplayTitle({ title: featured.title, name: (featured as any).name, manufacturer: (featured as any).manufacturer, productType: (featured as any).product_type || (featured as any).productType })}</div>
+                <div className={styles.featurePrice}>{featured.current_price ? formatPriceFromCents(featured.current_price.amount_cents) : ''}</div>
                 <div className={styles.featureTag}>FEATURED DEAL →</div>
               </div>
             </Link>

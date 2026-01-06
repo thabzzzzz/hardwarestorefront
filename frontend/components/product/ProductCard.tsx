@@ -100,7 +100,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         ) : (
           <div className={styles.priceEmpty}>Price not available</div>
         )}
-        <div className={styles.actionsRow} style={{ marginTop: 8 }}>
+        <div className={styles.actionsRow}>
           <div>
             <button
               className={`${styles.wishlistButton} ${inCart ? styles.inCart : ''}`}

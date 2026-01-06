@@ -1,7 +1,10 @@
+import React, { useEffect, useMemo, useState } from 'react'
+import Header from '../../components/header/header'
 import React, { useEffect, useState } from 'react'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
+import pageStyles from './gpus.module.css'
 
 type GpuItem = {
   variant_id: string
@@ -42,7 +45,6 @@ export default function GpuListing(): JSX.Element {
         }
 
         const json = await res.json()
-        // server already filters by category; use returned data as-is
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
@@ -58,22 +60,22 @@ export default function GpuListing(): JSX.Element {
   return (
     <div className={styles.page}>
       <Header />
-      <main className={styles.main} style={{ padding: '24px' }}>
-        <nav style={{ fontSize: 13, marginBottom: 12 }}>Home / Hardware / Graphics Cards</nav>
-        <h1 style={{ marginTop: 0 }}>Graphics Cards</h1>
+      <main className={`${styles.main} ${pageStyles.main}`}>
+        <nav className={pageStyles.breadcrumb}>Home / Hardware / Graphics Cards</nav>
+        <h1 className={pageStyles.title}>Graphics Cards</h1>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <label style={{ fontSize: 13, display: 'flex', gap: 8, alignItems: 'center' }}>Sort By
-              <select disabled style={{ padding: '6px 8px', fontSize: 13 }}>
+        <div className={pageStyles.controlsRow}>
+          <div className={pageStyles.controlsLeft}>
+            <label className={pageStyles.smallSelectLabel}>Sort By
+              <select disabled className={pageStyles.smallSelectLabel}>
                 <option>Popularity</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
               </select>
             </label>
 
-            <label style={{ fontSize: 13, display: 'flex', gap: 8, alignItems: 'center' }}>Show
-              <select disabled value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} style={{ padding: '6px 8px', fontSize: 13 }}>
+            <label className={pageStyles.smallSelectLabel}>Show
+              <select disabled value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className={pageStyles.smallSelectLabel}>
                 <option value={12}>12</option>
                 <option value={24}>24</option>
                 <option value={48}>48</option>
@@ -82,22 +84,63 @@ export default function GpuListing(): JSX.Element {
             </label>
           </div>
 
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div className={pageStyles.pageNav}>
             <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>Previous</button>
-            <div style={{ fontSize: 13 }}>Page {page} / {totalPages}</div>
+            <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
             <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>Next</button>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 24 }}>
-          <aside style={{ width: 280, minHeight: 400, border: '1px solid #eee', padding: 12 }}>
-            <h3 style={{ marginTop: 0 }}>Sort & Filter</h3>
-            <div style={{ opacity: 0.6 }}>Placeholder controls (disabled)</div>
+        <div className={pageStyles.container}>
+          <aside className={pageStyles.sidebar}>
+            <h3 className={pageStyles.sidebarHeading}>Sort & Filter</h3>
+            <div className={pageStyles.sidebarBlock}>
+              <div className={pageStyles.headingTitle}>Price</div>
+              <div>Price filters coming soon</div>
+            </div>
+            <div className={pageStyles.sidebarBlock}>
+              <div className={pageStyles.headingTitle}>Stock</div>
+              <div>Stock filters coming soon</div>
+            </div>
           </aside>
-          <section style={{ flex: 1 }}>
+          <section className={pageStyles.resultsSection}>
             {loading && <div>Loading…</div>}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
-                {items.map(it => (
+            <div className={pageStyles.grid}>
+              {items.map(it => (
+                <ProductCard
+                  key={it.variant_id}
+                  name={(it as any).name}
+                  title={it.title}
+                  vendor={(it as any).brand}
+                  sku={it.sku}
+                  stock={(it as any).stock || null}
+                  thumbnail={it.thumbnail}
+                  price={it.current_price || null}
+                  slug={it.slug}
+                  manufacturer={(it as any).manufacturer}
+                  productType={(it as any).product_type || (it as any).productType}
+                  cores={(it as any).cores}
+                  boostClock={(it as any).boost_clock}
+                  microarchitecture={(it as any).microarchitecture}
+                  socket={(it as any).socket}
+                />
+              ))}
+            </div>
+
+            {/* pagination moved to the small nav row under the breadcrumb */}
+          </section>
+        </div>
+      </main>
+    </div>
+  )
+}
+                    if (!any) return true
+                    if (status === 'in_stock' && filterInStock) return true
+                    if (status === 'reserved' && filterReserved) return true
+                    if (status === 'out_of_stock' && filterOutOfStock) return true
+                    return false
+                  })
+                  .map(it => (
                 <ProductCard
                   key={it.variant_id}
                   name={(it as any).name}

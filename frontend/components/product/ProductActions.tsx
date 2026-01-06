@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import formatPriceFromCents from '../../lib/formatPrice'
+import styles from './ProductActions.module.css'
 
 type Props = {
   price?: { amount_cents: number; currency: string } | null
@@ -11,14 +12,14 @@ export default function ProductActions({ price }: Props) {
   const displayPrice = price ? formatPriceFromCents(price.amount_cents) : 'Call for price'
 
   return (
-    <div style={{ marginTop: 16, borderTop: '1px solid #eee', paddingTop: 12, display: 'flex', gap: 12, alignItems: 'center' }}>
-      <div style={{ fontSize: 18, fontWeight: 700 }}>{displayPrice}</div>
+    <div className={styles.container}>
+      <div className={styles.price}>{displayPrice}</div>
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <label style={{ fontSize: 13 }}>Qty
-          <input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value || 1))} style={{ width: 56, marginLeft: 6 }} />
+      <div className={styles.controls}>
+        <label className={styles.qtyLabel}>Qty
+          <input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value || 1))} className={styles.qtyInput} />
         </label>
-        <button style={{ background: '#ff8c00', color: '#fff', border: 'none', padding: '10px 14px' }}>Add to Basket</button>
+        <button className={styles.addButton}>Add to Basket</button>
       </div>
     </div>
   )

@@ -7,6 +7,8 @@
 .heroSidebar{width:280px;text-align:center}
 .heroSidebar img{width:100%;border-radius:6px}
 .featureTag{margin-top:8px;background:#fff;padding:8px;border-radius:4px;color:#ff8c00;font-weight:700}
+.featureTitle{margin-top:8px;font-weight:600}
+.featurePrice{margin-top:4px;color:#666}
 .bannerStrip{margin-top:12px;padding:18px;background:#111;color:#fff;display:flex;justify-content:space-between;align-items:center;border-radius:6px}
 .buildBtn{background:var(--accent);border:none;color:#fff;padding:8px 12px;border-radius:4px}
 

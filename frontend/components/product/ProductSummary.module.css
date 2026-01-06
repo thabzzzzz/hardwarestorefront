@@ -1,0 +1,16 @@
+.container{display:flex;gap:16px;align-items:flex-start}
+.left{flex:1}
+.title{margin:0 0 8px 0}
+.meta{font-size:13px;color:#666;margin-bottom:8px}
+.availabilityBlock{margin-bottom:12px}
+.availabilityLabel{font-weight:600}
+.statusInStock{color:green}
+.statusOutOfStock{color:#c00}
+.statusReserved{color:#7b1fa2}
+.statusUnknown{color:#666}
+.actionsRow{display:flex;gap:8px;margin-bottom:12px}
+.primary{background:#ff8c00;color:#fff;border:0;padding:8px 12px;cursor:pointer}
+.secondary{background:#eee;border:1px solid #ddd;padding:8px 12px;cursor:pointer}
+.brandCol{min-width:160px;text-align:right}
+.brandLabel{font-size:14px;color:#888}
+.brandPill{margin-top:6px;padding:6px 10px;background:#333;color:#fff;display:inline-block}

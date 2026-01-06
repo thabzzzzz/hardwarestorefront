@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import Header from '../components/header/header'
 import ProductCard from '../components/product/ProductCard'
 import styles from '../styles/home.module.css'
+import pageStyles from './search.module.css'
+import PriceRange from '../components/filters/PriceRange'
+import formatPriceFromCents from '../lib/formatPrice'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
@@ -16,23 +19,71 @@ function matches(item: any, q: string) {
 }
 
 export default function SearchPage({ results, q }: { results: any[]; q: string }) {
+  const [priceMin, setPriceMin] = useState<number>(0)
+  const maxCents = useMemo(() => {
+    let m = 0
+    for (const it of results) {
+      const c = Number(it.current_price?.amount_cents || 0)
+      if (c > m) m = c
+    }
+    return m
+  }, [results])
+  const [priceMax, setPriceMax] = useState<number>(maxCents)
+
+  // re-sync max when results change
+  React.useEffect(() => { setPriceMax(maxCents) }, [maxCents])
+
+  const [filterInStock, setFilterInStock] = useState(false)
+  const [filterReserved, setFilterReserved] = useState(false)
+  const [filterOutOfStock, setFilterOutOfStock] = useState(false)
+
+  const filtered = results.filter(it => {
+    const cents = Number(it.current_price?.amount_cents || 0)
+    if (cents < priceMin || cents > priceMax) return false
+
+    // stock status normalization
+    const raw = String(it.stock?.status || '').toLowerCase()
+    const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
+
+    const anyStockFilter = filterInStock || filterReserved || filterOutOfStock
+    if (!anyStockFilter) return true
+
+    if (status === 'in_stock' && filterInStock) return true
+    if (status === 'reserved' && filterReserved) return true
+    if (status === 'out_of_stock' && filterOutOfStock) return true
+    return false
+  })
+
   return (
     <div className={styles.page}>
       <Header />
-      <main className={styles.main} style={{ padding: 24 }}>
-        <nav style={{ fontSize: 13, marginBottom: 12 }}>Home / Search</nav>
-        <h1 style={{ marginTop: 0 }}>Search results for "{q}"</h1>
-        <div style={{ display: 'flex', gap: 24 }}>
-          <aside style={{ width: 280, minHeight: 400, border: '1px solid #eee', padding: 12 }}>
+      <main className={`${styles.main} ${pageStyles.main}`}>
+        <nav className={pageStyles.breadcrumb}>Home / Search</nav>
+        <h1 className={pageStyles.title}>Search results for "{q}"</h1>
+        <div className={pageStyles.container}>
+          <aside className={pageStyles.sidebar}>
             <h3 style={{ marginTop: 0 }}>Sort & Filter</h3>
-            <div style={{ opacity: 0.6 }}>Filters disabled for search</div>
+            <PriceRange maxCents={maxCents} valueMin={priceMin} valueMax={priceMax} onChange={(min, max) => { setPriceMin(min); setPriceMax(max) }} />
+            <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
+            <div className={pageStyles.stockBlock}>
+              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>Stock</div>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} /> In stock
+              </label>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} /> Reserved
+              </label>
+              <label className={pageStyles.checkboxLabel}>
+                <input type="checkbox" checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} /> Out of stock
+              </label>
+            </div>
           </aside>
-          <section style={{ flex: 1 }}>
-            {results.length === 0 ? (
+          <section className={pageStyles.resultsSection}>
+            {filtered.length === 0 ? (
               <div>No products found.</div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))', gap: 16 }}>
-                {results.map(it => (
+              <div className={pageStyles.grid}>
+                {filtered.map(it => (
                   <ProductCard
                     key={it.variant_id || it.id || it.slug}
                     name={it.name}

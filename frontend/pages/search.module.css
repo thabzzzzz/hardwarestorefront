@@ -1,0 +1,41 @@
+.main {
+  padding: 24px;
+}
+.breadcrumb {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.title {
+  margin-top: 0;
+}
+.container {
+  display: flex;
+  gap: 24px;
+}
+.sidebar {
+  width: 280px;
+  min-height: 400px;
+  border: 1px solid #eee;
+  padding: 12px;
+}
+.maxPrice {
+  margin-top: 12px;
+  font-size: 13px;
+}
+.stockBlock {
+  margin-top: 20px;
+}
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.resultsSection {
+  flex: 1;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}

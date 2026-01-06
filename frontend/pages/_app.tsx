@@ -4,10 +4,11 @@ import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import { ToastContainer } from 'react-toastify'
 import Footer from '../components/footer/Footer'
+import styles from './_app.module.css'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className={styles.root}>
       <Head>
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -18,7 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="theme-color" content="#ffffff" />
       </Head>
-      <main style={{ flex: 1 }}>
+      <main className={styles.main}>
         <Component {...pageProps} />
       </main>
       <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover />

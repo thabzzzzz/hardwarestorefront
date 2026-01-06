@@ -33,6 +33,16 @@ export default function Header(): JSX.Element {
     }
   }, [])
 
+  // export heights as CSS variables (avoid inline JSX styles)
+  useEffect(() => {
+    try {
+      document.documentElement.style.setProperty('--topbar-height', `${topbarHeight}px`)
+      document.documentElement.style.setProperty('--brand-height', `${brandHeight}px`)
+    } catch (e) {
+      // ignore
+    }
+  }, [topbarHeight, brandHeight])
+
   const wishlist = useWishlist()
   const cart = useCart()
   const router = useRouter()
@@ -87,15 +97,11 @@ export default function Header(): JSX.Element {
       <header className={styles.header}>
         <div ref={topbarRef} className={styles.topbar}>
           <div />
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <div className={styles.topbarRight}>
             <Link href="/wishlist">Wishlist ({wishlist.count})</Link>
           </div>
         </div>
-        <div
-          ref={brandRef}
-          className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}
-          style={{ ['--topbar-height' as any]: `${topbarHeight}px` }}
-        >
+        <div ref={brandRef} className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}>
           <div className={styles.logo}>
             <Link href="/">
               <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
@@ -183,13 +189,13 @@ export default function Header(): JSX.Element {
               <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
               <input placeholder="search" value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
               {showSuggestions && suggestions.length > 0 && (
-                <div style={{ position: 'absolute', top: '100%', left: 0, background: '#fff', border: '1px solid #ddd', width: '100%', boxSizing: 'border-box', zIndex: 60, boxShadow: '0 6px 18px rgba(0,0,0,0.06)' }}>
+                <div className={styles.suggestions}>
                   {suggestions.map((s: any) => (
-                    <div key={s.variant_id || s.id || s.slug} style={{ display: 'flex', gap: 8, padding: 8, alignItems: 'center', cursor: 'pointer' }} onMouseDown={() => { /* mousedown to avoid blur */ router.push(s.slug ? `/product/${s.slug}` : `/product/${encodeURIComponent(s.title)}`) }}>
-                      <img src={s.thumbnail || '/images/products/placeholder.png'} style={{ width: 48, height: 36, objectFit: 'cover' }} />
-                      <div style={{ fontSize: 13 }}>
-                        <div style={{ fontWeight: 600 }}>{getDisplayTitle({ title: s.title, name: (s as any).name, manufacturer: (s as any).manufacturer, productType: (s as any).product_type || (s as any).productType })}</div>
-                        <div style={{ fontSize: 12, color: '#666' }}>{s.current_price ? (new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format((s.current_price.amount_cents || 0) / 100)) : ''}</div>
+                    <div key={s.variant_id || s.id || s.slug} className={styles.suggestionItem} onMouseDown={() => { /* mousedown to avoid blur */ router.push(s.slug ? `/product/${s.slug}` : `/product/${encodeURIComponent(s.title)}`) }}>
+                      <img src={s.thumbnail || '/images/products/placeholder.png'} className={styles.suggestionThumb} />
+                      <div className={styles.suggestionMeta}>
+                        <div className={styles.suggestionTitle}>{getDisplayTitle({ title: s.title, name: (s as any).name, manufacturer: (s as any).manufacturer, productType: (s as any).product_type || (s as any).productType })}</div>
+                        <div className={styles.suggestionPrice}>{s.current_price ? (new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format((s.current_price.amount_cents || 0) / 100)) : ''}</div>
                       </div>
                     </div>
                   ))}
@@ -198,13 +204,13 @@ export default function Header(): JSX.Element {
             </div>
             <Link href="/cart" className={styles.cartButton} aria-label="View cart">
               <img src="/icons/cart.svg" alt="Cart" />
-              <span style={{ marginLeft: 6 }}>({cart.count})</span>
+              <span className={styles.cartCount}>({cart.count})</span>
             </Link>
           </div>
         </div>
       </header>
       {/* spacer to prevent layout jump because brandRow is fixed */}
-      <div style={{ height: brandHeight }} aria-hidden="true" />
+      <div className={styles.spacer} aria-hidden="true" />
     </>
   )
 }

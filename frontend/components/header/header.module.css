@@ -36,6 +36,12 @@
 	font-size: 12px;
 }
 
+.topbarRight {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 .brandRow {
 	display: flex;
 	align-items: center;
@@ -244,6 +250,41 @@
 	box-shadow: 0 0 0 4px rgba(255,140,0,0.10), 0 6px 18px rgba(255,140,0,0.12);
 	transition: box-shadow .12s ease, border-color .12s ease;
 }
+
+.suggestions {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	background: #fff;
+	border: 1px solid #ddd;
+	width: 100%;
+	box-sizing: border-box;
+	z-index: 60;
+	box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.suggestionItem {
+	display: flex;
+	gap: 8px;
+	padding: 8px;
+	align-items: center;
+	cursor: pointer;
+}
+
+.suggestionThumb {
+	width: 48px;
+	height: 36px;
+	object-fit: cover;
+	display: block;
+}
+
+.suggestionMeta { font-size: 13px; }
+.suggestionTitle { font-weight: 600; }
+.suggestionPrice { font-size: 12px; color: #666; }
+
+.cartCount { margin-left: 6px; }
+
+.spacer { height: var(--brand-height, 0px); }
 
 .cartDropdown {
 	position: absolute;

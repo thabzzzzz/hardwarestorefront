@@ -1,0 +1,67 @@
+.main {
+  padding: 24px;
+}
+.breadcrumb {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.title {
+  margin-top: 0;
+}
+.controlsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.controlsLeft {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.smallSelectLabel {
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pageNav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.container {
+  display: flex;
+  gap: 24px;
+}
+.sidebar {
+  width: 280px;
+  min-height: 400px;
+  border: 1px solid #eee;
+  padding: 12px;
+}
+.sidebarHeading {
+  margin-top: 0;
+}
+.sidebarBlock {
+  opacity: 0.6;
+  font-size: 13px;
+}
+.sidebarBlock + .sidebarBlock {
+  margin-top: 20px;
+}
+.headingTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.pageCount {
+  font-size: 13px;
+}
+.resultsSection {
+  flex: 1;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  gap: 16px;
+}

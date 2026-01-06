@@ -7,6 +7,7 @@ import ProductSummary from '../../components/product/ProductSummary'
 import ProductSpecs from '../../components/product/ProductSpecs'
 import ProductActions from '../../components/product/ProductActions'
 import styles from '../../styles/home.module.css'
+import pageStyles from './[slug].module.css'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
 
@@ -98,16 +99,16 @@ export default function ProductPage(): JSX.Element {
       </Head>
 
       <Header />
-      <main className={styles.main} style={{ padding: 24 }}>
-        <nav style={{ fontSize: 13, marginBottom: 12 }}>Home / Hardware / Video Cards / {slug}</nav>
+      <main className={`${styles.main} ${pageStyles.main}`}>
+        <nav className={pageStyles.breadcrumb}>Home / Hardware / Video Cards / {slug}</nav>
 
         {loading && <div>Loading…</div>}
 
         {!loading && product && (
-          <div style={{ display: 'flex', gap: 24 }}>
+          <div className={pageStyles.contentRow}>
             <ProductGallery imageUrl={product.thumbnail || null} alt={product.title} />
 
-            <div style={{ flex: 1 }}>
+            <div className={pageStyles.rightCol}>
               <ProductSummary title={product.title} brand={product.brand} productId={product.product_id} stock={product.stock} />
               <ProductActions price={product.price || null} />
               <ProductSpecs specs={product.specs || null} />

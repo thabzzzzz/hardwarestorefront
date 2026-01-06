@@ -1,0 +1,19 @@
+.root{padding:24px}
+.heading{margin-top:16px}
+.emptyWrap{min-height:40vh;display:flex;align-items:center;justify-content:center}
+.emptyText{text-align:center;font-weight:700}
+.emptySub{margin-top:8px;font-weight:700}
+.table{width:100%;border-collapse:collapse;margin-top:12px}
+.headerRow{text-align:left;border-bottom:1px solid #ddd}
+.cell{padding:8px 6px}
+.row{border-bottom:1px solid #f0f0f0}
+.productCell{display:flex;gap:12px;align-items:center}
+.thumb{width:64px;height:48px;object-fit:cover}
+.prodTitle{font-weight:600}
+.prodStock{font-size:13px;color:#666}
+.metaCell{font-size:13px;color:#444}
+.select{padding:6px}
+.qtyInput{width:80px;padding:6px}
+.error{color:#c00;font-size:12px}
+.removeButton{background:transparent;border:1px solid #ddd;padding:6px 10px;cursor:pointer}
+.cellBold{padding:12px 6px;font-weight:700}
