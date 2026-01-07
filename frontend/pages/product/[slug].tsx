@@ -9,7 +9,9 @@ import ProductActions from '../../components/product/ProductActions'
 import styles from '../../styles/home.module.css'
 import pageStyles from './[slug].module.css'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.SERVER_API_BASE_URL || 'http://web')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
 type ProductPayload = {
   slug: string

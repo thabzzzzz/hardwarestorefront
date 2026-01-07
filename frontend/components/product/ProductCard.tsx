@@ -24,7 +24,9 @@ type Props = {
   socket?: string | null
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.SERVER_API_BASE_URL || 'http://web')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
 export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket }: Props) {
   // normalize legacy `/products/...` paths to `/images/products/...` so thumbnails resolve

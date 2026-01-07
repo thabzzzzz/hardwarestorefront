@@ -7,7 +7,9 @@ import pageStyles from './search.module.css'
 import formatPriceFromCents from '../lib/formatPrice'
 import { useRouter } from 'next/router'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.SERVER_API_BASE_URL || 'http://web')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
 function matches(item: any, q: string) {
   const needle = q.trim().toLowerCase()

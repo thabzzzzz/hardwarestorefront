@@ -8,7 +8,9 @@ import Popular from '../components/landing/popular'
 import NewArrivals from '../components/landing/newArrivals'
 import styles from '../styles/home.module.css'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080'
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.SERVER_API_BASE_URL || 'http://web')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
 export default function Home(): JSX.Element {
   return (
