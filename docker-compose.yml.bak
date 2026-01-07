@@ -10,7 +10,7 @@ services:
       - DB_CONNECTION=${DB_CONNECTION:-pgsql}
       - DB_HOST=${DB_HOST:-db}
       - DB_PORT=${DB_PORT:-5432}
-      - DB_DATABASE=${DB_DATABASE:-storefrontproj}
+      - DB_DATABASE=${DB_DATABASE:-homestead}
       - DB_USERNAME=${DB_USERNAME:-homestead}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
     volumes:
@@ -40,7 +40,7 @@ services:
     image: postgres:${POSTGRES_TAG:-15}
     container_name: ${DB_CONTAINER_NAME:-hw_db}
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-storefrontproj}
+      POSTGRES_DB: ${DB_DATABASE:-homestead}
       POSTGRES_USER: ${DB_USERNAME:-homestead}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:
@@ -64,7 +64,7 @@ services:
       - DB_CONNECTION=${DB_CONNECTION:-pgsql}
       - DB_HOST=${DB_HOST:-db}
       - DB_PORT=${DB_PORT:-5432}
-      - DB_DATABASE=${DB_DATABASE:-storefrontproj}
+      - DB_DATABASE=${DB_DATABASE:-homestead}
       - DB_USERNAME=${DB_USERNAME:-homestead}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
     volumes:
