@@ -82,7 +82,7 @@ services:
     working_dir: /usr/src/app
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_BASE_URL=
+        - NEXT_PUBLIC_API_BASE_URL=http://web
     volumes:
       - ./frontend:/usr/src/app:cached
     command: sh -c "npm ci --silent && npm run build && HOST=0.0.0.0 npm run start"
