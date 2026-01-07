@@ -112,7 +112,13 @@ export default function ProductPage(): JSX.Element {
 
             <div className={pageStyles.rightCol}>
               <ProductSummary title={product.title} brand={product.brand} productId={product.product_id} stock={product.stock} />
-              <ProductActions price={product.price || null} />
+              <ProductActions
+                price={product.price || null}
+                id={product.product_id || product.title}
+                title={product.title}
+                thumbnail={product.thumbnail || null}
+                stock={product.stock || null}
+              />
               <ProductSpecs specs={product.specs || null} />
             </div>
           </div>
