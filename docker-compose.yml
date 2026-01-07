@@ -35,6 +35,7 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - app
+      - frontend
     networks:
       - hw
 
@@ -72,6 +73,20 @@ services:
     volumes:
       - ./:/var/www/html
     command: tail -f /dev/null
+    networks:
+      - hw
+
+  frontend:
+    image: node:20-alpine
+    container_name: hw_frontend
+    working_dir: /usr/src/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/usr/src/app:cached
+    command: sh -c "npm ci --silent && npm run build && HOST=0.0.0.0 npm run start"
+    depends_on:
+      - app
     networks:
       - hw
 
