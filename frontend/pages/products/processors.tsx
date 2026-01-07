@@ -13,6 +13,7 @@ type ProcessorItem = {
   current_price?: { amount_cents: number; currency: string } | null
   thumbnail?: string | null
   stock?: { qty_available: number; qty_reserved?: number; status: string } | null
+  slug?: string | null
   manufacturer?: string | null
   product_type?: string | null
   cores?: number | string | null
