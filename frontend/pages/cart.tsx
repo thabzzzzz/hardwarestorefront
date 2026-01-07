@@ -77,7 +77,7 @@ export default function CartPage(): JSX.Element {
               <td className={styles.tdSummaryValue}>{cart.formatPrice(cart.totalCents)}</td>
               <td className={styles.td}>
                 <button onClick={() => {
-                  let id: React.ReactText | null = null
+                  let id: string | number | null = null
                   const handleConfirm = () => { cart.clear(); if (id) toast.dismiss(id) }
                   const content = (
                     <div>

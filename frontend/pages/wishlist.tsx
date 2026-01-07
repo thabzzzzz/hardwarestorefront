@@ -93,7 +93,7 @@ export default function WishlistPage(): JSX.Element {
               <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
               <td>
                 <button onClick={() => {
-                  let id: React.ReactText | null = null
+                  let id: string | number | null = null
                   const handleConfirm = () => { w.clear(); if (id) toast.dismiss(id) }
                   const content = (
                     <div>
