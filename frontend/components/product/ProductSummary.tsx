@@ -30,10 +30,7 @@ export default function ProductSummary({ title, brand, productId, stock }: Props
           </div>
         </div>
 
-        <div className={styles.actionsRow}>
-          <button className={styles.primary}>Confirm Availability</button>
-          <button className={styles.secondary}>Calculate Delivery</button>
-        </div>
+        {/* availability and delivery actions removed per request */}
       </div>
 
       <div className={styles.brandCol}>

@@ -1,0 +1,56 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: hw_db_dev
+    environment:
+      POSTGRES_DB: storefrontproj
+      POSTGRES_USER: homestead
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - dbdata_dev:/var/lib/postgresql/data
+    networks:
+      - hw
+
+  redis:
+    image: redis:7-alpine
+    container_name: hw_redis_dev
+    networks:
+      - hw
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hw_app_dev
+    working_dir: /var/www/html
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=storefrontproj
+      - DB_USERNAME=homestead
+      - DB_PASSWORD=secret
+    volumes:
+      - ./:/var/www/html:cached
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8080:8080"  # expose artisan dev server on host:8080
+    command: sh -c "composer install --no-interaction || true && php artisan migrate --force || true && php artisan serve --host=0.0.0.0 --port=8080"
+    networks:
+      - hw
+
+volumes:
+  dbdata_dev:
+
+networks:
+  hw:
+    driver: bridge
+
+# Usage:
+# 1. Copy or create a .env for the app if you haven't already (DO NOT commit secrets).
+# 2. Start dev stack: `docker compose -f docker-compose.dev.yml up --build`
+# 3. Visit: http://localhost:8080 for the backend (artisan) and run the frontend dev server locally with
+#    `cd frontend && npm install && npm run dev` so the client uses http://localhost:8080 as API_BASE.
