@@ -162,6 +162,7 @@
 	fill: currentColor;
 }
 
+
 .navItem {
 	position: static;
 }
@@ -221,9 +222,22 @@
 	transition: color .18s ease;
 }
 
-.category li a:hover,
-.category li a:focus {
-	color: #ff8c00;
+/* Working sublinks (have href) should appear darker/stronger */
+.category li a[href] {
+  color: #222;
+  font-weight: 500;
+}
+
+/* Non-working sublinks (no href) are slightly greyed */
+.category li a:not([href]) {
+  color: #999;
+  opacity: 0.9;
+}
+
+/* Hover/focus only for working links */
+.category li a[href]:hover,
+.category li a[href]:focus {
+  color: #ff8c00;
 }
 
 .brandActions {
@@ -231,6 +245,13 @@
 	display: flex;
 	align-items: stretch;
 	gap: 12px;
+}
+
+.topbarRightInBrand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-right: 8px;
 }
 
 .cartButton {

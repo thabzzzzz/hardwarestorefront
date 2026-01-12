@@ -91,21 +91,8 @@ export default function WishlistPage(): JSX.Element {
               <td />
               <td className={styles.cellBold}>Total</td>
               <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
-              <td>
-                <button onClick={() => {
-                  let id: string | number | null = null
-                  const handleConfirm = () => { w.clear(); if (id) toast.dismiss(id) }
-                  const content = (
-                    <div>
-                      <div>Clear all items from your wishlist?</div>
-                      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                        <button onClick={handleConfirm} className={styles.clearAllButton}>Confirm</button>
-                        <button onClick={() => id && toast.dismiss(id)} className={styles.removeButton}>Cancel</button>
-                      </div>
-                    </div>
-                  )
-                  id = toast.info(content, { autoClose: 8000 })
-                }} className={styles.clearAllButton}>Clear wishlist</button>
+                <td>
+                <button onClick={() => { w.clear() }} className={styles.clearAllButton}>Clear wishlist</button>
               </td>
               <td />
             </tr>

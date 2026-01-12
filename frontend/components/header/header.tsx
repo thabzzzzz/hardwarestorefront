@@ -195,6 +195,14 @@ export default function Header(): JSX.Element {
           </nav>
           <div className={styles.brandDivider} aria-hidden="true" />
           <div className={styles.brandActions}>
+            <div className={styles.topbarRightInBrand}>
+              <Link href="/wishlist" className={styles.wishlistLink} aria-label="View wishlist">
+                <svg className={styles.wishlistIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6.5 3.5 5 5.5 5c1.54 0 3.04.99 3.57 2.36h.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                <span>Wishlist ({wishlist.count})</span>
+              </Link>
+            </div>
             <div className={styles.searchBox}>
               <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
               <input placeholder="search" value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
