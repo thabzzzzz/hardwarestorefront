@@ -247,13 +247,6 @@
 	gap: 12px;
 }
 
-.topbarRightInBrand {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-right: 8px;
-}
-
 .cartButton {
 	padding-left: 20px;
 	display: inline-flex;
