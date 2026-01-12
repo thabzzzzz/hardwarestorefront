@@ -98,9 +98,17 @@ export default function Header(): JSX.Element {
     <>
       <header className={styles.header}>
         <div ref={topbarRef} className={styles.topbar}>
-          <div />
+          <div className={styles.topbarLeft}>
+            <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Login <span className={styles.coming}>(Coming soon)</span></a>
+            <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Blog <span className={styles.coming}>(Coming soon)</span></a>
+          </div>
           <div className={styles.topbarRight}>
-            <Link href="/wishlist">Wishlist ({wishlist.count})</Link>
+            <Link href="/wishlist" className={styles.wishlistLink} aria-label="View wishlist">
+              <svg className={styles.wishlistIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6.5 3.5 5 5.5 5c1.54 0 3.04.99 3.57 2.36h.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span>Wishlist ({wishlist.count})</span>
+            </Link>
           </div>
         </div>
         <div ref={brandRef} className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}>

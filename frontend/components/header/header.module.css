@@ -42,6 +42,62 @@
   align-items: center;
 }
 
+.topbarLeft {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+}
+
+.disabledLink {
+	color: #666;
+	text-decoration: none;
+	font-size: 12px;
+	cursor: default;
+}
+
+.coming {
+	font-size: 11px;
+	color: #999;
+	margin-left: 6px;
+}
+
+.wishlistLink {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.wishlistIcon {
+	width: 18px;
+	height: 18px;
+	flex: 0 0 18px;
+	fill: currentColor;
+	color: #e0245e; /* filled heart color */
+}
+
+/* Hover/focus animations for topbar links (Login, Blog, Wishlist) */
+.wishlistLink,
+.disabledLink {
+	transition: color .18s ease, transform .12s ease;
+}
+
+.wishlistLink:hover,
+.wishlistLink:focus-visible,
+.disabledLink:hover,
+.disabledLink:focus-visible {
+	color: #ff8c00; /* main theme orange */
+}
+
+.wishlistLink:hover .wishlistIcon,
+.wishlistLink:focus-visible .wishlistIcon {
+	transform: scale(1.06);
+	color: #ff8c00; /* ensure icon follows text color */
+}
+
+.wishlistLink:active { transform: translateY(0); }
+
 .brandRow {
 	display: flex;
 	align-items: center;
