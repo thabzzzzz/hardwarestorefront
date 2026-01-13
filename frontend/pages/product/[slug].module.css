@@ -1,4 +1,17 @@
-.main{padding:24px}
-.breadcrumb{font-size:13px;margin-bottom:12px}
-.contentRow{display:flex;gap:24px}
-.rightCol{flex:1}
+.main {
+	padding: 24px;
+}
+
+.breadcrumb {
+	font-size: 13px;
+	margin-bottom: 12px;
+}
+
+.contentRow {
+	display: flex;
+	gap: 24px;
+}
+
+.rightCol {
+	flex: 1;
+}
