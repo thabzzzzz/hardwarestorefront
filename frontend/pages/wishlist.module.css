@@ -19,9 +19,32 @@
 .prodTitle{font-weight:600}
 .prodStock{font-size:13px;color:#666}
 .metaCell{font-size:13px;color:#444}
-.select{padding:6px}
+.select{padding:6px;background:transparent;border:0;border-radius:4px;color:inherit;font-weight:400;font-size:13px}
 .qtyInput{width:80px;padding:6px}
 .error{color:#c00;font-size:12px}
 .removeButton{background:transparent;border:1px solid #ddd;padding:6px 10px;cursor:pointer}
-.clearAllButton{background:#fff;border:1px solid #c00;color:#c00;padding:6px 8px;cursor:pointer}
+.clearAllButton{background:#fff;border:1px solid #c00;color:#c00;padding:6px 8px;cursor:pointer;font-size:13px;font-weight:400}
 .cellBold{padding:12px 6px;font-weight:700}
+
+/* colored label/select styles for priorities and tags */
+.labelPill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:400;font-size:13px;margin-right:6px}
+
+/* wrapper that shows the colored border/background while the inner select remains transparent
+	so the native dropdown (opened) uses default OS/browser styling */
+.pillWrap{display:inline-block;padding:4px 8px;border-radius:0}
+.pillWrap select{background:transparent;border:0;padding:6px;color:inherit;font-weight:400;font-size:13px}
+
+.priorityLowWrap{color:#3cb371;border:1px solid #3cb371;background:rgba(60,179,113,0.08)}
+.priorityMedWrap{color:#e6a700;border:1px solid #e6a700;background:rgba(230,167,0,0.08)}
+.priorityHighWrap{color:#e5533d;border:1px solid #e5533d;background:rgba(229,83,61,0.08)}
+.tagGiftWrap{color:#8b5cf6;border:1px solid #8b5cf6;background:rgba(139,92,246,0.08)}
+.tagResearchWrap{color:#3b82f6;border:1px solid #3b82f6;background:rgba(59,130,246,0.08)}
+
+/* force native dropdown options to default text color (may be ignored by some browsers) */
+.pillWrap select option,
+.pillWrap option {
+	color: initial !important;
+	background: initial !important;
+	font-size:13px !important;
+	font-weight:400 !important;
+}

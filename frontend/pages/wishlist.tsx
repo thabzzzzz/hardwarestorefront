@@ -62,18 +62,30 @@ export default function WishlistPage(): JSX.Element {
                 </td>
                 <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
                 <td className={styles.cell}>
-                  <select value={item.tag ?? 'none'} onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })} className={styles.select}>
-                    <option value="none">None</option>
-                    <option value="gift">Gift</option>
-                    <option value="research">Research</option>
-                  </select>
+                  <span className={`${styles.pillWrap} ${item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : ''}`}>
+                    <select
+                      value={item.tag ?? 'none'}
+                      onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })}
+                      className={styles.select}
+                    >
+                      <option value="none">None</option>
+                      <option value="gift">Gift</option>
+                      <option value="research">Research</option>
+                    </select>
+                  </span>
                 </td>
                 <td className={styles.cell}>
-                  <select value={item.priority ?? 'low'} onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })} className={styles.select}>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                  <span className={`${styles.pillWrap} ${item.priority === 'low' ? styles.priorityLowWrap : item.priority === 'medium' ? styles.priorityMedWrap : item.priority === 'high' ? styles.priorityHighWrap : ''}`}>
+                    <select
+                      value={item.priority ?? 'low'}
+                      onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })}
+                      className={styles.select}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </span>
                 </td>
                 <td className={styles.cell}>
                   <input type="number" min={1} value={item.qty} onChange={(e) => onQtyChange(item.id, e.target.value)} className={styles.qtyInput} max={item.stock?.qty_available ?? undefined} />
