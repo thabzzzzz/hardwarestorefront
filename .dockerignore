@@ -1,0 +1,36 @@
+# Ignore git and editor files
+.git
+.gitignore
+.vscode
+.idea
+
+# Node / frontend
+node_modules
+frontend/node_modules
+frontend/.next
+
+# PHP / Composer dependencies
+vendor
+
+# Build outputs, caches, and archives
+dist
+build
+*.tgz
+*.zip
+
+# Environment and secrets
+.env
+.env.*
+auth.json
+
+# Local dev overrides (we keep examples committed)
+docker-compose.dev.yml
+nginx/dev-default.conf
+
+# Persistent storage
+/storage
+/public/storage
+
+# OS files
+Thumbs.db
+desktop.ini
