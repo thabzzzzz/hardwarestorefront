@@ -51,3 +51,5 @@ desktop.ini
 # Local dev overrides and nginx dev config (ignored; keep examples committed)
 docker-compose.dev.yml
 nginx/dev-default.conf
+nginx/empty-letsencrypt/
+frontend/.env.local

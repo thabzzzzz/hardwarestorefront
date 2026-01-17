@@ -2,11 +2,19 @@ server {
   listen 80;
   server_name localhost;
 
+  # Development: do not set CORS headers here to avoid duplicates.
+  # Let the application (Laravel) set `Access-Control-Allow-*` headers.
+
   root /var/www/html/public;
   index index.php index.html;
 
   location / {
     try_files $uri $uri/ /index.php?$query_string;
+  }
+
+  # Handle CORS preflight: return 204; headers are set globally above with `always`
+  if ($request_method = OPTIONS) {
+    return 204;
   }
 
   location ~ \.php$ {
