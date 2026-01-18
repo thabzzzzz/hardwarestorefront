@@ -53,3 +53,6 @@ docker-compose.dev.yml
 nginx/dev-default.conf
 nginx/empty-letsencrypt/
 frontend/.env.local
+
+# Local-only backups and moved compose files
+.local-dev/
