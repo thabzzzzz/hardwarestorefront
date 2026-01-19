@@ -224,3 +224,5 @@ export default function Header(): JSX.Element {
     </>
   )
 }
+
+  // HMR test: appended comment

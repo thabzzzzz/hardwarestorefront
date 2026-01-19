@@ -62,23 +62,23 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     e.stopPropagation()
     if (busyAdd) return
     setBusyAdd(true)
-    try {
-      const already = wishlist.isWished(id)
-      if (already) {
-        wishlist.remove(id)
-        toast.info('Removed from wishlist')
-      } else {
-        try {
-          wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: t, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
-          toast.success('Added to wishlist')
-        } catch (err) {
-          console.error('Failed to add to wishlist', err)
-          toast.error('Could not add to wishlist')
+      try {
+        const already = wishlist.isWished(id)
+        if (already) {
+          wishlist.remove(id)
+          console.info('Removed from wishlist')
+        } else {
+          try {
+            wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: t, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+            console.info('Added to wishlist')
+          } catch (err) {
+            console.error('Failed to add to wishlist', err)
+            console.error('Could not add to wishlist')
+          }
         }
+      } finally {
+        setBusyAdd(false)
       }
-    } finally {
-      setBusyAdd(false)
-    }
   }
 
   const content = (
@@ -121,12 +121,12 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
                   }
                   const res = cart.addOrUpdate(entry, 1)
                   if (!res.added) {
-                    toast.info('Product already in cart')
+                    console.info('Product already in cart')
                   } else {
-                    toast.success('Added to cart')
+                    console.info('Added to cart')
                   }
                 } catch (e) {
-                  toast.error('Failed to add to cart')
+                  console.error('Failed to add to cart')
                 } finally { setBusy(false) }
               }}
               disabled={busy || inCart}

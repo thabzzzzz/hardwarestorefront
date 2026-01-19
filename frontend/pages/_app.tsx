@@ -1,8 +1,7 @@
 import '../styles/globals.css'
-import 'react-toastify/dist/ReactToastify.css'
 import Head from 'next/head'
 import type { AppProps } from 'next/app'
-import { ToastContainer } from 'react-toastify'
+
 import Footer from '../components/footer/Footer'
 import styles from './_app.module.css'
 
@@ -22,7 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <main className={styles.main}>
         <Component {...pageProps} />
       </main>
-      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover />
+      
       <Footer />
     </div>
   )
