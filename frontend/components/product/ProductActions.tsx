@@ -3,7 +3,6 @@ import formatPriceFromCents from '../../lib/formatPrice'
 import styles from './ProductActions.module.css'
 import useCart from '../../hooks/useCart'
 import useWishlist from '../../hooks/useWishlist'
-import { toast } from 'react-toastify'
 
 type Props = {
   price?: { amount_cents: number; currency: string } | null,
@@ -24,7 +23,7 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
 
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault()
-    if (!id) return toast.error('Missing product id')
+    if (!id) { console.error('Missing product id'); return }
     if (busyAdd) return
     setBusyAdd(true)
     try {
@@ -37,13 +36,12 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
       }
       const res = cart.addOrUpdate(entry, qty)
       if (res.added) {
-        toast.success('Added to cart')
+        console.info('Added to cart')
       } else {
-        toast.info(res.message || 'Updated cart')
+        console.info(res.message || 'Updated cart')
       }
     } catch (err) {
       console.error('Failed to add to cart', err)
-      toast.error('Failed to add to cart')
     } finally {
       setBusyAdd(false)
     }
@@ -51,21 +49,21 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
 
   async function handleWishlist(e: React.MouseEvent) {
     e.preventDefault()
-    if (!id) return toast.error('Missing product id')
+    if (!id) { console.error('Missing product id'); return }
     if (busyWish) return
     setBusyWish(true)
     try {
       const already = wishlist.isWished(id)
       if (already) {
         wishlist.remove(id)
-        toast.info('Removed from wishlist')
+        console.info('Removed from wishlist')
       } else {
         wishlist.addOrUpdate({ id, title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
-        toast.success('Added to wishlist')
+        console.info('Added to wishlist')
       }
     } catch (err) {
       console.error('Wishlist error', err)
-      toast.error('Could not update wishlist')
+      console.error('Could not update wishlist')
     } finally {
       setBusyWish(false)
     }

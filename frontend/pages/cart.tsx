@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { toast } from 'react-toastify'
 import Head from 'next/head'
 import Link from 'next/link'
 import useCart from '../hooks/useCart'

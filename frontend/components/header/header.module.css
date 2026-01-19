@@ -2,23 +2,6 @@
 	border-bottom: 1px solid #eee;
 	position: relative;
 }
-
-@font-face {
-	font-family: 'Lexend';
-	src: url('/fonts/Lexend/static/Lexend-Medium.ttf') format('truetype');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
-@font-face {
-	font-family: 'LexendThin';
-	src: url('/fonts/Lexend/static/Lexend-Thin.ttf') format('truetype');
-	font-weight: 100;
-	font-style: normal;
-	font-display: swap;
-}
-
 @font-face {
 	font-family: 'LexendLight';
 	src: url('/fonts/Lexend/static/Lexend-Light.ttf') format('truetype');
@@ -37,9 +20,9 @@
 }
 
 .topbarRight {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+	display: flex;
+	gap: 12px;
+	align-items: center;
 }
 
 .topbarLeft {
@@ -96,7 +79,9 @@
 	color: #ff8c00; /* ensure icon follows text color */
 }
 
-.wishlistLink:active { transform: translateY(0); }
+.wishlistLink:active {
+	transform: translateY(0);
+}
 
 .brandRow {
 	display: flex;
@@ -162,7 +147,6 @@
 	fill: currentColor;
 }
 
-
 .navItem {
 	position: static;
 }
@@ -224,20 +208,20 @@
 
 /* Working sublinks (have href) should appear darker/stronger */
 .category li a[href] {
-  color: #222;
-  font-weight: 500;
+	color: #222;
+	font-weight: 500;
 }
 
 /* Non-working sublinks (no href) are slightly greyed */
 .category li a:not([href]) {
-  color: #999;
-  opacity: 0.9;
+	color: #999;
+	opacity: 0.9;
 }
 
 /* Hover/focus only for working links */
 .category li a[href]:hover,
 .category li a[href]:focus {
-  color: #ff8c00;
+	color: #ff8c00;
 }
 
 .brandActions {
@@ -277,7 +261,23 @@
 
 .logoImage {
 	height: 40px;
+	width: auto;
+	max-width: 160px;
 	display: block;
+}
+
+@media (max-width: 900px) {
+	.logoImage {
+		height: 28px;
+		max-width: 140px;
+	}
+}
+
+@media (max-width: 480px) {
+	.logoImage {
+		height: 24px;
+		max-width: 120px;
+	}
 }
 
 /* enlarged search box inside brandRow */
@@ -348,13 +348,26 @@
 	display: block;
 }
 
-.suggestionMeta { font-size: 13px; }
-.suggestionTitle { font-weight: 600; }
-.suggestionPrice { font-size: 12px; color: #666; }
+.suggestionMeta {
+	font-size: 13px;
+}
 
-.cartCount { margin-left: 6px; }
+.suggestionTitle {
+	font-weight: 600;
+}
 
-.spacer { height: var(--brand-height, 0px); }
+.suggestionPrice {
+	font-size: 12px;
+	color: #666;
+}
+
+.cartCount {
+	margin-left: 6px;
+}
+
+.spacer {
+	height: var(--brand-height, 0px);
+}
 
 .cartDropdown {
 	position: absolute;
@@ -365,6 +378,158 @@
 	border: 1px solid #eee;
 	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 	z-index: 1400;
+}
+
+/* Mobile-specific header (hidden on desktop) */
+.mobileHeader {
+	display: none;
+}
+
+.mobileRow1 {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 8px 12px;
+}
+
+.mobileLogo {
+	display: flex;
+	align-items: center;
+}
+
+.mobileIcons {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.iconButton {
+	background: transparent;
+	border: 0;
+	padding: 6px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.iconButton img {
+	width: 22px;
+	height: 22px;
+	display: block;
+}
+
+.profileWrap {
+	position: relative;
+}
+
+.profileWrap img {
+	transform: scale(0.7);
+	transform-origin: center;
+	display: block;
+}
+
+.profileMenu {
+	position: absolute;
+	right: 0;
+	top: calc(100% + 8px);
+	background: #fff;
+	border: 1px solid #eee;
+	box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+	padding: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	z-index: 1500;
+}
+
+.profileMenu a {
+	color: #333;
+	text-decoration: none;
+	padding: 6px 12px;
+}
+
+.mobileRow2 {
+	padding: 8px 12px 12px 12px;
+}
+
+.searchBoxMobile {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.searchBoxMobile input {
+	width: 100%;
+	padding: 10px 12px 10px 40px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+/* Mobile menu overlay */
+.mobileMenuOverlay {
+	position: fixed;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0,0,0,0.4);
+	z-index: 1600;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.mobileMenuInner {
+	width: 280px;
+	max-width: 80%;
+	background: #fff;
+	padding: 16px;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+	transform: translateX(100%);
+	transition: transform .22s ease, opacity .18s ease;
+}
+
+.mobileMenuInnerOpen {
+	transform: translateX(0);
+	opacity: 1;
+}
+
+.mobileMenuClose {
+	background: transparent;
+	border: 0;
+	padding: 8px;
+	margin-bottom: 8px;
+}
+
+.mobileNav {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.mobileNav a {
+	padding: 8px 6px;
+	text-decoration: none;
+	color: #222;
+}
+
+/* Responsive overrides: show mobile header and hide desktop elements on small screens */
+@media (max-width: 767px) {
+	.topbar {
+		display: none;
+	}
+
+	.brandRow {
+		display: none;
+	}
+
+	.mobileHeader {
+		display: block;
+	}
+
+	.spacer {
+		display: none;
+	}
 }
 
 .viewCart {
