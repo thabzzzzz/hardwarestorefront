@@ -5,7 +5,6 @@ import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
-import { toast } from 'react-toastify'
 
 type Props = {
   title: string
