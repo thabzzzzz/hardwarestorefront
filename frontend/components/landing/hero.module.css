@@ -15,7 +15,7 @@
 }
 
 .heroText h1 {
-  font-size: 38px;
+  font-size: clamp(36px, 4.5vw + 12px, 64px);
   margin: 0 0 8px;
 }
 
@@ -101,5 +101,37 @@
 
   .heroSidebar {
     width: 100%;
+  }
+  /* Make the hero poster proportionally smaller on mobile */
+  .heroSidebar img {
+    width: 90%;
+    max-width: 380px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .heroText h1 {
+    font-size: 28px;
+  }
+
+  .heroLogoLarge {
+    height: 64px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSidebar img {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .heroText h1 {
+    font-size: 22px;
+  }
+
+  .heroText {
+    padding: 18px 12px;
   }
 }

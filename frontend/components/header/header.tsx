@@ -56,6 +56,29 @@ export default function Header(): JSX.Element {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const debounceRef = useRef<number | null>(null)
 
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
+  const [mobileMenuActive, setMobileMenuActive] = useState(false)
+
+  useEffect(() => {
+    let openTimer: number | undefined
+    let closeTimer: number | undefined
+
+    if (mobileMenuOpen) {
+      setMobileMenuVisible(true)
+      openTimer = window.setTimeout(() => setMobileMenuActive(true), 20)
+    } else {
+      setMobileMenuActive(false)
+      closeTimer = window.setTimeout(() => setMobileMenuVisible(false), 220)
+    }
+
+    return () => {
+      if (openTimer) window.clearTimeout(openTimer)
+      if (closeTimer) window.clearTimeout(closeTimer)
+    }
+  }, [mobileMenuOpen])
+
   function doSearchNavigate(q: string) {
     if (!q || String(q).trim().length === 0) return
     router.push(`/search?q=${encodeURIComponent(q)}`)
@@ -97,6 +120,42 @@ export default function Header(): JSX.Element {
   return (
     <>
       <header className={styles.header}>
+        {/* Mobile header: shown only on small screens via CSS */}
+        <div className={styles.mobileHeader}>
+          <div className={styles.mobileRow1}>
+            <div className={styles.mobileLogo}>
+              <Link href="/">
+                <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+              </Link>
+            </div>
+            <div className={styles.mobileIcons}>
+              <button aria-label="Open menu" className={styles.iconButton} onClick={() => setMobileMenuOpen(true)}>
+                <img src="/images/icons/burger-menu.svg" alt="Menu" />
+              </button>
+              <div className={styles.profileWrap}>
+                <button aria-haspopup="true" aria-expanded={profileOpen} className={styles.iconButton} onClick={() => setProfileOpen(v => !v)}>
+                  <img src="/images/icons/profile.svg" alt="Profile" />
+                </button>
+                {profileOpen && (
+                  <div className={styles.profileMenu} onMouseLeave={() => setProfileOpen(false)}>
+                    <a href="#" onClick={(e)=>e.preventDefault()}>Login</a>
+                    <a href="#" onClick={(e)=>e.preventDefault()}>Blog</a>
+                    <Link href="/wishlist">Wishlist</Link>
+                  </div>
+                )}
+              </div>
+              <Link href="/cart" className={styles.iconButton} aria-label="View cart">
+                <img src="/icons/cart.svg" alt="Cart" />
+              </Link>
+            </div>
+          </div>
+          <div className={styles.mobileRow2}>
+            <div className={styles.searchBoxMobile}>
+              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
+              <input placeholder="Search..." value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
+            </div>
+          </div>
+        </div>
         <div ref={topbarRef} className={styles.topbar}>
           <div className={styles.topbarLeft}>
             <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Login <span className={styles.coming}>(Coming soon)</span></a>
@@ -218,6 +277,19 @@ export default function Header(): JSX.Element {
             </Link>
           </div>
         </div>
+        {mobileMenuVisible && (
+          <div className={styles.mobileMenuOverlay} role="dialog" aria-modal="true" onClick={() => setMobileMenuOpen(false)}>
+            <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
+              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)}>Close</button>
+              <nav className={styles.mobileNav}>
+                <a>HARDWARE</a>
+                <a>PCS & LAPTOPS</a>
+                <a>PROMOS</a>
+                <a>PC BUILDER</a>
+              </nav>
+            </div>
+          </div>
+        )}
       </header>
       {/* spacer to prevent layout jump because brandRow is fixed */}
       <div className={styles.spacer} aria-hidden="true" />
