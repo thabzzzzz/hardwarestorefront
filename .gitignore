@@ -53,3 +53,8 @@ docker-compose.dev.yml
 nginx/dev-default.conf
 nginx/empty-letsencrypt/
 frontend/.env.local
+# Local docker-compose overrides and local env
+docker-compose.local.yml
+docker-compose.override.yml
+docker-compose.dev.yml
+.env.local
