@@ -38,7 +38,7 @@ export default function Hero(): JSX.Element {
           <h1>BUILD. PLAY. CREATE.</h1>
           <p>Quality PC hardware, built for performance and reliability.</p>
           <div className={styles.heroLogoWrap}>
-            <img src="/images/logo/logo.svg" alt="Logo" className={styles.heroLogoLarge} />
+            <img src="/images/logo/logo2.svg" alt="Logo" className={styles.heroLogoLarge} />
           </div>
         </div>
         <div className={styles.heroSidebar}>

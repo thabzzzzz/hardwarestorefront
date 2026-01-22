@@ -125,7 +125,7 @@ export default function Header(): JSX.Element {
           <div className={styles.mobileRow1}>
             <div className={styles.mobileLogo}>
               <Link href="/">
-                <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+                <img src="/images/logo/logo2.svg" alt="WiredWorkshop" className={styles.logoImage} />
               </Link>
             </div>
             <div className={styles.mobileIcons}>
@@ -173,7 +173,7 @@ export default function Header(): JSX.Element {
         <div ref={brandRef} className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}>
           <div className={styles.logo}>
             <Link href="/">
-              <img src="/images/logo/logo.svg" alt="Wootware" className={styles.logoImage} />
+              <img src="/images/logo/logo2.svg" alt="WiredWorkshop" className={styles.logoImage} />
             </Link>
           </div>
           <nav className={styles.nav}>

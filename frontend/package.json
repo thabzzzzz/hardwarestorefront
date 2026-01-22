@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "set TURBO_FORCE=false && next dev",
     "build": "next build",
     "start": "next start",
+    "dev:no-turbo": "next dev",
     "dev:webpack": "node ./scripts/dev-webpack.js"
   },
   "dependencies": {
-    "next": "^16.1.0",
+    "next": "^15.0.0",
     "react": "18.x",
     "react-dom": "18.x"
   },

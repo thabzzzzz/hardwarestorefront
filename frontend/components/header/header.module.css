@@ -70,13 +70,13 @@
 .wishlistLink:focus-visible,
 .disabledLink:hover,
 .disabledLink:focus-visible {
-	color: #ff8c00; /* main theme orange */
+	color: #1f7a8c; /* main theme color */
 }
 
 .wishlistLink:hover .wishlistIcon,
 .wishlistLink:focus-visible .wishlistIcon {
 	transform: scale(1.06);
-	color: #ff8c00; /* ensure icon follows text color */
+	color: #1f7a8c; /* ensure icon follows text color */
 }
 
 .wishlistLink:active {
@@ -105,7 +105,7 @@
 
 .logo {
 	font-weight: 800;
-	color: #ff8c00;
+	color: #1f7a8c;
 	font-size: 24px;
 	position: relative;
 	display: inline-flex;
@@ -221,7 +221,7 @@
 /* Hover/focus only for working links */
 .category li a[href]:hover,
 .category li a[href]:focus {
-	color: #ff8c00;
+	color: #1f7a8c;
 }
 
 .brandActions {
@@ -316,8 +316,8 @@
 .searchBox input:focus,
 .searchBox input:focus-visible {
 	outline: none;
-	border-color: #ff8c00;
-	box-shadow: 0 0 0 4px rgba(255,140,0,0.10), 0 6px 18px rgba(255,140,0,0.12);
+	border-color: #1f7a8c;
+	box-shadow: 0 0 0 4px rgba(31,122,140,0.10), 0 6px 18px rgba(31,122,140,0.12);
 	transition: box-shadow .12s ease, border-color .12s ease;
 }
 
@@ -534,7 +534,7 @@
 
 .viewCart {
 	display: inline-block;
-	background: #ff8c00;
+	background: #1f7a8c;
 	color: #fff;
 	padding: 8px 12px;
 	text-decoration: none;

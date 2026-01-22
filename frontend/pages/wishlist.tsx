@@ -23,7 +23,7 @@ export default function WishlistPage(): JSX.Element {
   return (
     <div className={styles.root}>
       <Head>
-        <title>Wishlist - Wootware Clone</title>
+        <title>Wishlist - WiredWorkshop</title>
       </Head>
       <Header />
       <h1 className={styles.heading}>My Wishlist</h1>

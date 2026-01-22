@@ -10,7 +10,7 @@
 .heroText {
   flex: 1;
   padding: 28px 18px;
-  background: linear-gradient(90deg, rgba(120,80,255,0.06), rgba(255,140,0,0.03));
+  background: linear-gradient(90deg, rgba(120,80,255,0.06), rgba(31,122,140,0.03));
   border-radius: 6px;
 }
 
@@ -61,7 +61,7 @@
   background: #fff;
   padding: 8px;
   border-radius: 4px;
-  color: #ff8c00;
+  color: #1f7a8c;
   font-weight: 700;
 }
 

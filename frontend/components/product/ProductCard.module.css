@@ -49,7 +49,7 @@
 
 .container:hover .title,
 .title:hover {
-  color: #ff8c00;
+  color: #1f7a8c;
 }
 
 .sku {
@@ -88,14 +88,14 @@
 }
 
 .wishlistButton {
-  background: #ff8c00;
+  background: #1f7a8c;
   border: none;
   color: #fff;
   padding: 6px 10px;
   border-radius: 0;
   cursor: pointer;
   font-weight: 600;
-  border: 1px solid #ff8c00;
+  border: 1px solid #1f7a8c;
   transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 .actionsRow {
@@ -133,14 +133,14 @@
 /* When item is already in wishlist: white fill, orange text and orange border */
 .inWishlist {
   background: #ffffff;
-  color: #ff8c00;
-  border-color: #ff8c00;
+  color: #1f7a8c;
+  border-color: #1f7a8c;
 }
 
 .inCart {
   background: #ffffff;
-  color: #ff8c00;
-  border-color: #ff8c00;
+  color: #1f7a8c;
+  border-color: #1f7a8c;
 }
 
 .link {
