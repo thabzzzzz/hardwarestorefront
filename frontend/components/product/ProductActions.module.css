@@ -28,7 +28,7 @@
 }
 
 .addButton {
-	background: #ff8c00;
+	background: #1f7a8c;
 	color: #fff;
 	border: none;
 	padding: 10px 14px;
@@ -37,8 +37,8 @@
 
 .wishlistButtonLarge {
 	background: transparent;
-	border: 1px solid #ff8c00;
-	color: #ff8c00;
+	border: 1px solid #1f7a8c;
+	color: #1f7a8c;
 	padding: 10px 14px;
 	cursor: pointer;
 	font-weight: 700;

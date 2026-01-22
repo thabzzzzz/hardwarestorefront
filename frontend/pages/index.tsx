@@ -16,13 +16,13 @@ export default function Home(): JSX.Element {
   return (
     <div className={styles.page}>
       <Head>
-        <title>Wootware Clone</title>
-        <meta name="description" content="Wootware Clone — a personal storefront hobby project showcasing hardware products. For demo and learning purposes only." />
+        <title>WiredWorkshop</title>
+        <meta name="description" content="WiredWorkshop — a personal storefront hobby project showcasing hardware products. For demo and learning purposes only." />
         <meta name="author" content="Personal project" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {/* Open Graph / social */}
-        <meta property="og:title" content="Wootware Clone" />
+        <meta property="og:title" content="WiredWorkshop" />
         <meta property="og:description" content="A personal storefront hobby project showcasing hardware products. Not a production store." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="/" />
@@ -30,7 +30,7 @@ export default function Home(): JSX.Element {
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Wootware Clone" />
+        <meta name="twitter:title" content="WiredWorkshop" />
         <meta name="twitter:description" content="Personal storefront hobby project — demo site." />
       </Head>
       <Header />

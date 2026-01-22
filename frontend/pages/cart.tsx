@@ -23,7 +23,7 @@ export default function CartPage(): JSX.Element {
   return (
     <div className={styles.page}>
       <Head>
-        <title>Cart - Wootware Clone</title>
+        <title>Cart - WiredWorkshop</title>
       </Head>
       <Header />
       <h1 className={styles.title}>My Cart</h1>

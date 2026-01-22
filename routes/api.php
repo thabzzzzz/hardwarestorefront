@@ -15,12 +15,12 @@ Route::get('/products/{slug}', [ProductController::class, 'show']);
 Route::get('/product/{slug}', [ProductController::class, 'show']);
 
 // Authentication
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Middleware\AuthenticateWithApiToken;
+// use App\Http\Controllers\Api\AuthController;
+// use App\Http\Middleware\AuthenticateWithApiToken;
 
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::get('/auth/me', [AuthController::class, 'me'])->middleware(AuthenticateWithApiToken::class);
-Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware(AuthenticateWithApiToken::class);
+// Route::post('/auth/register', [AuthController::class, 'register']);
+// Route::post('/auth/login', [AuthController::class, 'login']);
+// Route::get('/auth/me', [AuthController::class, 'me'])->middleware(AuthenticateWithApiToken::class);
+// Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware(AuthenticateWithApiToken::class);
 
 // Wishlist removed

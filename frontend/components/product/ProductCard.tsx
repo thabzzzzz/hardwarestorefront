@@ -28,15 +28,10 @@ const API_BASE = typeof window === 'undefined'
   : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
 export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket }: Props) {
-  // normalize legacy `/products/...` paths to `/images/products/...` so thumbnails resolve
   let t = thumbnail || null
-  if (t && typeof t === 'string' && t.startsWith('/products/')) {
-    t = t.replace(/^\/products\//, '/images/products/')
-  }
-  // If `t` is an absolute path (starts with '/'), use it directly so the browser
-  // requests the asset from the same origin (avoids cross-origin opaque blocking).
+  // If `t` is an absolute path (starts with '/'), use it directly so Next.js serves from frontend/public
   const src = t
-    ? (t.startsWith('http') ? t : (t.startsWith('/') ? t : `${API_BASE}${t}`))
+    ? (t.startsWith('http') ? t : t)
     : '/images/products/placeholder.png'
 
   function escapeRegExp(s: string) {
