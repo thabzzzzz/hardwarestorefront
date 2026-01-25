@@ -113,13 +113,8 @@
 }
 
 .logo::after {
-	content: "";
-	position: absolute;
-	left: calc(100% + 20px);
-	top: -27px;
-	bottom: -27px;
-	width: 1px;
-	background: #eee;
+	/* hide the visual divider after the logo */
+	content: none;
 }
 
 .nav {
@@ -239,13 +234,8 @@
 }
 
 .cartButton::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: -18px;
-	bottom: -18px;
-	width: 1px;
-	background: #eee;
+	/* hide the vertical divider before the cart button */
+	content: none;
 }
 
 .cartButton img {
@@ -308,7 +298,8 @@
 	margin-top: -6px;
 	margin-bottom: -6px;
 	border: 1px solid #ddd;
-	border-radius: 2px;
+	/* match product card rounding */
+	border-radius: 12px;
 	font-size: 14px;
 	background: #fff;
 }
@@ -463,7 +454,8 @@
 	width: 100%;
 	padding: 10px 12px 10px 40px;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	/* match product card rounding on mobile */
+	border-radius: 12px;
 }
 
 /* Mobile menu overlay */
