@@ -76,20 +76,12 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
       }
   }
 
-  const content = (
-    <article className={styles.container}>
-      {/* Wishlist button placed beneath the price (no heart icon) */}
+  // Build the non-interactive navigable area (image/title/price)
+  const navigable = (
+    <>
       <div className={styles.title}>{displayTitle}</div>
       <div className={styles.imageWrapper}>
         <img src={src} alt={title} className={styles.img} />
-      </div>
-      {/* removed brand/vendor display */}
-      <div className={`${styles.sku} ${stock ? (stock.status === 'out_of_stock' ? styles.stockOut : (stock.status === 'reserved' ? styles.stockReserved : styles.stockIn)) : ''}`}>
-        {stock ? (
-          stock.status === 'out_of_stock' ? 'Out of stock' : (stock.status === 'reserved' ? `Reserved (${stock.qty_reserved ?? 0})` : `In stock (${stock.qty_available ?? 0})`)
-        ) : (
-          'Availability unknown'
-        )}
       </div>
       <div className={styles.priceWrap}>
         {price ? (
@@ -97,70 +89,90 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         ) : (
           <div className={styles.priceEmpty}>Price not available</div>
         )}
-        <div className={styles.actionsRow}>
-          <div>
-            <button
-              className={`${styles.wishlistButton} ${inCart ? styles.inCart : ''}`}
-              onClick={async (e: React.MouseEvent) => {
-                e.preventDefault()
-                e.stopPropagation()
-                if (busy || inCart) return
-                setBusy(true)
-                try {
-                  const entry = {
-                    id: sku ?? id,
-                    title: displayTitle,
-                    thumbnail: t,
-                    price: price ? { amount_cents: price.amount_cents } : null,
-                    stock: stock || null
-                  }
-                  const res = cart.addOrUpdate(entry, 1)
-                  if (!res.added) {
-                    console.info('Product already in cart')
-                  } else {
-                    console.info('Added to cart')
-                  }
-                } catch (e) {
-                  console.error('Failed to add to cart')
-                } finally { setBusy(false) }
-              }}
-              disabled={busy || inCart}
-              aria-busy={busy}
-            >
-              {inCart ? 'In cart' : (busy ? 'Adding...' : 'Add to cart')}
-            </button>
-          </div>
-          <div>
-            <button
-              onClick={handleWishlistClick}
-              disabled={busyAdd}
-              aria-busy={busyAdd}
-              aria-pressed={wishlist.isWished(id)}
-              className={`${styles.wishlistHeart} ${wishlist.isWished(id) ? styles.inWishlistHeart : ''}`}
-              title={wishlist.isWished(id) ? 'Remove from wishlist' : 'Add to wishlist'}
-            >
-              {wishlist.isWished(id) ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 3.99 4 6.5 4c1.74 0 3.41.81 4.5 2.09C12.09 4.81 13.76 4 15.5 4 18.01 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M20.8 8.6c0 4.2-3.4 7.3-8.1 11.8L12 21.35l-0.7-0.85C6.6 15.9 3.2 12.8 3.2 8.6 3.2 6 5.2 4 7.8 4c1.9 0 3.7 1 4.2 2.4.5-1.4 2.3-2.4 4.2-2.4 2.6 0 4.6 2 4.6 4.6z" />
-                </svg>
-              )}
-            </button>
-          </div>
+
+        <div className={`${styles.sku} ${stock ? (stock.status === 'out_of_stock' ? styles.stockOut : (stock.status === 'reserved' ? styles.stockReserved : styles.stockIn)) : ''}`}>
+          {stock ? (
+            stock.status === 'out_of_stock' ? 'Out of stock' : (stock.status === 'reserved' ? `Reserved (${stock.qty_reserved ?? 0})` : `In stock (${stock.qty_available ?? 0})`)
+          ) : (
+            'Availability unknown'
+          )}
         </div>
       </div>
-      {/* wishlist button present */}
-    </article>
+    </>
   )
 
-  if (slug) {
-    return (
-      <Link href={`/product/${slug}`} className={styles.link}>{content}</Link>
-    )
-  }
+  // Actions (Add to cart + wishlist) must NOT be nested inside the Link
+  const actions = (
+    <div className={styles.actionsRow}>
+      <div>
+        <button
+          className={`${styles.wishlistButton} ${inCart ? styles.inCart : ''}`}
+          onClick={async (e: React.MouseEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (busy || inCart) return
+            setBusy(true)
+            try {
+              const entry = {
+                id: sku ?? id,
+                title: displayTitle,
+                thumbnail: t,
+                price: price ? { amount_cents: price.amount_cents } : null,
+                stock: stock || null
+              }
+              const res = cart.addOrUpdate(entry, 1)
+              if (!res.added) {
+                console.info('Product already in cart')
+              } else {
+                console.info('Added to cart')
+              }
+            } catch (e) {
+              console.error('Failed to add to cart')
+            } finally { setBusy(false) }
+          }}
+          disabled={busy || inCart}
+          aria-busy={busy}
+        >
+          {inCart ? 'In cart' : (busy ? 'Adding...' : 'Add to cart')}
+        </button>
+      </div>
+      <div>
+        <button
+          onClick={handleWishlistClick}
+          disabled={busyAdd}
+          aria-busy={busyAdd}
+          aria-pressed={wishlist.isWished(id)}
+          className={`${styles.wishlistHeart} ${wishlist.isWished(id) ? styles.inWishlistHeart : ''}`}
+          title={wishlist.isWished(id) ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          {wishlist.isWished(id) ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 3.99 4 6.5 4c1.74 0 3.41.81 4.5 2.09C12.09 4.81 13.76 4 15.5 4 18.01 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+              <path d="M20.8 8.6c0 4.2-3.4 7.3-8.1 11.8L12 21.35l-0.7-0.85C6.6 15.9 3.2 12.8 3.2 8.6 3.2 6 5.2 4 7.8 4c1.9 0 3.7 1 4.2 2.4.5-1.4 2.3-2.4 4.2-2.4 2.6 0 4.6 2 4.6 4.6z" />
+            </svg>
+          )}
+        </button>
+      </div>
+    </div>
+  )
+
+  const content = (
+    <article className={styles.container}>
+      {slug ? (
+        // Only wrap the navigable area in the Link — actions remain outside
+        <Link href={`/product/${slug}`} className={styles.link}>
+          {navigable}
+        </Link>
+      ) : (
+        navigable
+      )}
+
+      {actions}
+    </article>
+  )
 
   return content
 }
