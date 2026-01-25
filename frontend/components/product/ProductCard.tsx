@@ -4,6 +4,7 @@ import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
+import Button from '@mui/material/Button'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { toast } from '../../lib/toast'
 
@@ -107,8 +108,10 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
   const actions = (
     <div className={styles.actionsRow}>
       <div>
-        <button
-          className={`${styles.wishlistButton} ${inCart ? styles.inCart : ''}`}
+        <Button
+          variant={inCart ? 'outlined' : 'contained'}
+          color="primary"
+          className={`${styles.muiAddButton} ${inCart ? styles.inCart : ''}`}
           onClick={async (e: React.MouseEvent) => {
             e.preventDefault()
             e.stopPropagation()
@@ -139,7 +142,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
           aria-busy={busy}
         >
           {inCart ? 'In cart' : (busy ? 'Adding...' : 'Add to cart')}
-        </button>
+        </Button>
       </div>
       <div>
         <button

@@ -17,6 +17,9 @@
   min-height: 400px;
   border: 1px solid #eee;
   padding: 12px;
+  /* match product card rounding */
+  border-radius: 12px;
+  background: #fff;
 }
 .maxPrice {
   margin-top: 12px;

@@ -41,7 +41,7 @@
   color: #7c8797;
   font-weight: 700;
   margin-bottom: 4px;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.06em;
 }
 
@@ -157,6 +157,14 @@
   /* show a thin outline when item is in cart */
   border: 1px solid var(--accent, #1f7a8c);
   box-shadow: none;
+}
+
+.muiAddButton {
+  width: 100%;
+  border-radius: 10px;
+  font-weight: 800;
+  /* MUI buttons default to uppercase — force normal case here */
+  text-transform: none !important;
 }
 
 .link { text-decoration: none; color: inherit }
