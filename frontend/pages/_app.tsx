@@ -4,6 +4,7 @@ import type { AppProps } from 'next/app'
 
 import Footer from '../components/footer/Footer'
 import styles from './_app.module.css'
+import { Toaster } from 'sonner'
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -21,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <main className={styles.main}>
         <Component {...pageProps} />
       </main>
+      <Toaster />
       
       <Footer />
     </div>

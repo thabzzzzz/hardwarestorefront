@@ -5,7 +5,7 @@ import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
-import { toast } from 'react-toastify'
+import { toast } from '../../lib/toast'
 
 type Props = {
   title: string
@@ -62,10 +62,12 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         if (already) {
           wishlist.remove(id)
           console.info('Removed from wishlist')
+          toast('Removed from wishlist')
         } else {
           try {
             wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: t, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
             console.info('Added to wishlist')
+            toast.success('Added to wishlist')
           } catch (err) {
             console.error('Failed to add to wishlist', err)
             console.error('Could not add to wishlist')
@@ -123,11 +125,14 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const res = cart.addOrUpdate(entry, 1)
               if (!res.added) {
                 console.info('Product already in cart')
+                toast('Already in cart')
               } else {
                 console.info('Added to cart')
+                toast.success('Added to cart')
               }
             } catch (e) {
               console.error('Failed to add to cart')
+              toast.error('Failed to add to cart')
             } finally { setBusy(false) }
           }}
           disabled={busy || inCart}
