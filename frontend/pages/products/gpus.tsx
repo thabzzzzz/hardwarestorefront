@@ -5,6 +5,18 @@ import styles from '../../styles/home.module.css'
 import pageStyles from './gpus.module.css'
 
 import formatPriceFromCents from '../../lib/formatPrice'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import FormControl from '@mui/material/FormControl'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import Button from '@mui/material/Button'
+import InputLabel from '@mui/material/InputLabel'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import Pagination from '@mui/material/Pagination'
 
 type GpuItem = {
   variant_id: string
@@ -154,65 +166,94 @@ export default function GpuListing(): JSX.Element {
 
         <div className={pageStyles.controlsRow}>
           <div className={pageStyles.controlsLeft}>
-            <label className={pageStyles.smallSelectLabel}>Sort By
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={pageStyles.smallSelectLabel}>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="date_desc">Date: Newest</option>
-                <option value="date_asc">Date: Oldest</option>
-              </select>
-            </label>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="sort-by-label">Sort By</InputLabel>
+              <Select
+                labelId="sort-by-label"
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(String(e.target.value))}
+              >
+                <MenuItem value={"price_asc"}>Price: Low to High</MenuItem>
+                <MenuItem value={"price_desc"}>Price: High to Low</MenuItem>
+                <MenuItem value={"date_desc"}>Date: Newest</MenuItem>
+                <MenuItem value={"date_asc"}>Date: Oldest</MenuItem>
+              </Select>
+            </FormControl>
 
-            <label className={pageStyles.smallSelectLabel}>Show
-              <select disabled value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className={pageStyles.smallSelectLabel}>
-                <option value={12}>12</option>
-                <option value={24}>24</option>
-                <option value={48}>48</option>
-                <option value={100}>100</option>
-              </select>
-            </label>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="show-label">Show</InputLabel>
+              <Select
+                labelId="show-label"
+                value={perPage}
+                label="Show"
+                onChange={(e) => setPerPage(Number(e.target.value))}
+                disabled
+              >
+                <MenuItem value={12}>12</MenuItem>
+                <MenuItem value={24}>24</MenuItem>
+                <MenuItem value={48}>48</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
           </div>
 
           <div className={pageStyles.pageNav}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>Previous</button>
+            <Pagination
+              count={Math.max(1, totalPages)}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              size="small"
+              showFirstButton={false}
+              showLastButton={false}
+            />
             <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>Next</button>
           </div>
         </div>
 
         <div className={pageStyles.container}>
-          <aside className={pageStyles.sidebar}>
-            <h3 className={pageStyles.filterHeading}>Sort & Filter</h3>
-            <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
-            <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
-            <div className={pageStyles.stockBlock}>
-              <div className={pageStyles.stockLabel}>Manufacturer</div>
-              {manufacturers.length === 0 ? (
-                <div className={pageStyles.checkboxLabel}>No manufacturers</div>
-              ) : (
-                <>
-                  {manufacturers.map(m => (
-                    <label key={m} className={pageStyles.checkboxLabel}>
-                      <input type="checkbox" checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} /> {m}
-                    </label>
-                  ))}
-                  <button type="button" onClick={() => setSelectedManufacturers([])} className={pageStyles.clearButton}>Clear</button>
-                </>
-              )}
-            </div>
-            <div className={pageStyles.stockBlock}>
-              <div className={pageStyles.stockLabel}>Stock</div>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} /> In stock
-              </label>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} /> Reserved
-              </label>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} /> Out of stock
-              </label>
-            </div>
-          </aside>
+          <Paper className={pageStyles.sidebar} elevation={1}>
+            <Box p={1}>
+              <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
+              <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
+              <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
+
+              <div className={pageStyles.stockBlock}>
+                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Manufacturer</Typography>
+                {manufacturers.length === 0 ? (
+                  <div className={pageStyles.checkboxLabel}>No manufacturers</div>
+                ) : (
+                  <>
+                    <FormControl component="fieldset" variant="standard">
+                      <FormGroup>
+                        {manufacturers.map(m => (
+                          <FormControlLabel
+                            key={m}
+                            control={<Checkbox checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
+                            label={m}
+                          />
+                        ))}
+                      </FormGroup>
+                    </FormControl>
+                    <Box mt={1}>
+                      <Button size="small" onClick={() => setSelectedManufacturers([])}>Clear</Button>
+                    </Box>
+                  </>
+                )}
+              </div>
+
+              <div className={pageStyles.stockBlock}>
+                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Stock</Typography>
+                <FormControl component="fieldset" variant="standard">
+                  <FormGroup>
+                    <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
+                    <FormControlLabel control={<Checkbox checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} size="small" />} label="Reserved" />
+                    <FormControlLabel control={<Checkbox checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} size="small" />} label="Out of stock" />
+                  </FormGroup>
+                </FormControl>
+              </div>
+            </Box>
+          </Paper>
           <section className={pageStyles.resultsSection}>
             {loading && <div>Loading…</div>}
             <div className={pageStyles.grid}>

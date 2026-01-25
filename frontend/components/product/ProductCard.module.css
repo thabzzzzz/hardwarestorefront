@@ -162,7 +162,7 @@
 .muiAddButton {
   width: 100%;
   border-radius: 10px;
-  font-weight: 800;
+  font-weight: 600;
   /* MUI buttons default to uppercase — force normal case here */
   text-transform: none !important;
 }
