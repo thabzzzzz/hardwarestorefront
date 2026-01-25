@@ -151,6 +151,12 @@
 .inWishlistHeart svg { fill: currentColor; stroke: none }
 
 .inWishlist { background: #ffffff; color: #1f7a8c; border-color: #1f7a8c }
-.inCart { background: #ffffff; color: #1f7a8c; border-color: #1f7a8c }
+.inCart {
+  background: #ffffff;
+  color: var(--accent, #1f7a8c);
+  /* show a thin outline when item is in cart */
+  border: 1px solid var(--accent, #1f7a8c);
+  box-shadow: none;
+}
 
 .link { text-decoration: none; color: inherit }
