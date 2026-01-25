@@ -100,7 +100,7 @@
 
 
 .wishlistButton {
-  background: #0f1724;
+  background: var(--accent);
   border: none;
   color: #fff;
   padding: 10px 12px;
