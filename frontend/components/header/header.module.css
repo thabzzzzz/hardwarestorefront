@@ -312,6 +312,7 @@
 	width: 100%;
 	max-width: 100%;
 	overflow: hidden;
+	border-radius: 12px;
 	box-sizing: border-box;
 	z-index: 60;
 	box-shadow: 0 6px 18px rgba(0,0,0,0.06);

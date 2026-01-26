@@ -62,7 +62,7 @@ export default function GpuListing(): JSX.Element {
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
-  const [sortBy, setSortBy] = useState<string>('')
+  const [sortBy, setSortBy] = useState<string>('price_asc')
 
   const manufacturers = useMemo(() => {
     const s = new Set<string>()
