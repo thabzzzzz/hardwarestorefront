@@ -258,7 +258,7 @@ export default function GpuListing(): JSX.Element {
               <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
 
               <div className={pageStyles.priceBlock}>
-                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Price Range</Typography>
+                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
                 <Slider
                   value={priceRangeRand}
                   onChange={handlePriceSliderChange}
@@ -292,7 +292,7 @@ export default function GpuListing(): JSX.Element {
               </div>
 
               <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Manufacturer</Typography>
+                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
                 {manufacturers.length === 0 ? (
                   <div className={pageStyles.checkboxLabel}>No manufacturers</div>
                 ) : (
@@ -316,7 +316,7 @@ export default function GpuListing(): JSX.Element {
               </div>
 
               <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Stock</Typography>
+                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Stock</Typography>
                 <FormControl component="fieldset" variant="standard">
                   <FormGroup>
                     <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
