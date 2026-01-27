@@ -5,20 +5,20 @@ import styles from '../../styles/home.module.css'
 import pageStyles from './gpus.module.css'
 
 import formatPriceFromCents from '../../lib/formatPrice'
-import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import FormControl from '@mui/material/FormControl'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import Button from '@mui/material/Button'
-import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import Pagination from '@mui/material/Pagination'
-import Slider from '@mui/material/Slider'
-import TextField from '@mui/material/TextField'
+import Paper from '@mui/material/node/Paper'
+import Box from '@mui/material/node/Box'
+import Typography from '@mui/material/node/Typography'
+import FormControl from '@mui/material/node/FormControl'
+import FormGroup from '@mui/material/node/FormGroup'
+import FormControlLabel from '@mui/material/node/FormControlLabel'
+import Checkbox from '@mui/material/node/Checkbox'
+import Button from '@mui/material/node/Button'
+import InputLabel from '@mui/material/node/InputLabel'
+import Select from '@mui/material/node/Select'
+import MenuItem from '@mui/material/node/MenuItem'
+import Pagination from '@mui/material/node/Pagination'
+import Slider from '@mui/material/node/Slider'
+import TextField from '@mui/material/node/TextField'
 
 type GpuItem = {
   variant_id: string
@@ -328,27 +328,34 @@ export default function GpuListing(): JSX.Element {
             </Box>
           </Paper>
           <section className={pageStyles.resultsSection}>
-            {loading && <div>Loading…</div>}
             <div className={pageStyles.grid}>
-              {sortedProducts.map(it => (
-                <ProductCard
-                  key={it.variant_id}
-                  name={(it as any).name}
-                  title={it.title}
-                  vendor={(it as any).brand}
-                  sku={it.sku}
-                  stock={(it as any).stock || null}
-                  thumbnail={it.thumbnail}
-                  price={it.current_price || null}
-                  slug={it.slug}
-                  manufacturer={(it as any).manufacturer}
-                  productType={(it as any).product_type || (it as any).productType}
-                  cores={(it as any).cores}
-                  boostClock={(it as any).boost_clock}
-                  microarchitecture={(it as any).microarchitecture}
-                  socket={(it as any).socket}
-                />
-              ))}
+              {loading
+                ? Array.from({ length: 12 }, (_, i) => (
+                    <div className={pageStyles.skelCard} key={`gpu-skel-${i}`}>
+                      <div className={`${pageStyles.skel} ${pageStyles.skelImage}`} />
+                      <div className={`${pageStyles.skel} ${pageStyles.skelTitle}`} />
+                      <div className={`${pageStyles.skel} ${pageStyles.skelPrice}`} />
+                    </div>
+                  ))
+                : sortedProducts.map(it => (
+                    <ProductCard
+                      key={it.variant_id}
+                      name={(it as any).name}
+                      title={it.title}
+                      vendor={(it as any).brand}
+                      sku={it.sku}
+                      stock={(it as any).stock || null}
+                      thumbnail={it.thumbnail}
+                      price={it.current_price || null}
+                      slug={it.slug}
+                      manufacturer={(it as any).manufacturer}
+                      productType={(it as any).product_type || (it as any).productType}
+                      cores={(it as any).cores}
+                      boostClock={(it as any).boost_clock}
+                      microarchitecture={(it as any).microarchitecture}
+                      socket={(it as any).socket}
+                    />
+                  ))}
             </div>
 
             {/* pagination moved to the small nav row under the breadcrumb */}

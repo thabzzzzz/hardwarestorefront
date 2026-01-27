@@ -54,3 +54,38 @@
 .stockBlock { margin-top: 20px }
 .stockLabel { font-size: 13px; font-weight: 700; margin-bottom: 6px }
 .checkboxLabel { display: flex; align-items: center; gap: 8px; font-size: 13px }
+
+/* Skeleton placeholders for product cards while loading */
+.skelCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.skel {
+  position: relative;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(243,244,246,0) 0%, rgba(229,231,235,0.7) 50%, rgba(243,244,246,0) 100%);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
+}
+
+.skelImage { height: 160px; border-radius: 6px; }
+.skelTitle { height: 16px; width: 70%; border-radius: 4px; }
+.skelPrice { height: 14px; width: 40%; border-radius: 4px; }
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
