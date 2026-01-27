@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from '@mui/material/node/styles'
 
 // Use the same accent used in CSS :root
 const theme = createTheme({

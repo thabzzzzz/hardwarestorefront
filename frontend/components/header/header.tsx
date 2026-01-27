@@ -5,9 +5,9 @@ import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { useRouter } from 'next/router'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
-import IconButton from '@mui/material/IconButton'
+import TextField from '@mui/material/node/TextField'
+import InputAdornment from '@mui/material/node/InputAdornment'
+import IconButton from '@mui/material/node/IconButton'
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
