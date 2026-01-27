@@ -12,6 +12,8 @@ import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
+import IconButton from '@mui/material/IconButton'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
@@ -122,10 +124,10 @@ export default function WishlistPage(): JSX.Element {
 
                       <td className={styles.cell}>{w.formatPrice(item.price?.amount_cents ?? 0)}</td>
 
-                      <td className={styles.cell}>
-                        <Button size="small" variant="outlined" color="error" onClick={() => onRemove(item.id)}>
-                          Remove
-                        </Button>
+                      <td className={`${styles.cell} ${styles.colActions}`}>
+                        <IconButton size="small" color="error" onClick={() => onRemove(item.id)} aria-label="Remove">
+                          <DeleteOutlineIcon fontSize="small" />
+                        </IconButton>
                       </td>
                     </tr>
                   )
@@ -133,7 +135,10 @@ export default function WishlistPage(): JSX.Element {
               </tbody>
               <tfoot>
                 <tr>
-                  <td />
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                   <td className={styles.cellBold}>Total</td>
                   <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
                   <td>
@@ -141,7 +146,6 @@ export default function WishlistPage(): JSX.Element {
                       Clear wishlist
                     </Button>
                   </td>
-                  <td />
                 </tr>
               </tfoot>
             </table>
