@@ -17,6 +17,8 @@ import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import Pagination from '@mui/material/Pagination'
+import Slider from '@mui/material/Slider'
+import TextField from '@mui/material/TextField'
 
 type GpuItem = {
   variant_id: string
@@ -55,9 +57,14 @@ export default function GpuListing(): JSX.Element {
     return m
   }, [items])
   const [priceMax, setPriceMax] = useState<number>(maxCents)
+  const [priceRangeRand, setPriceRangeRand] = useState<[number, number]>([0, Math.ceil(maxCents / 100)])
 
   // resync max when items change
-  useEffect(() => { setPriceMax(maxCents) }, [maxCents])
+  useEffect(() => {
+    const nextMaxCents = Math.max(0, Math.ceil(maxCents || 0))
+    setPriceMax(nextMaxCents)
+    setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil(nextMaxCents / 100))])
+  }, [maxCents])
 
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
@@ -76,6 +83,44 @@ export default function GpuListing(): JSX.Element {
 
   function toggleManufacturer(m: string) {
     setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
+  }
+
+  const sliderMaxRand = Math.max(Math.ceil((maxCents || 0) / 100), 1)
+  const sliderStep = 1
+
+  useEffect(() => {
+    const boundedMin = Math.max(0, Math.min(Math.round(priceMin / 100), sliderMaxRand))
+    const boundedMax = Math.max(boundedMin, Math.min(Math.round((priceMax || sliderMaxRand * 100) / 100), sliderMaxRand))
+    setPriceRangeRand([boundedMin, boundedMax])
+  }, [priceMin, priceMax, sliderMaxRand])
+
+  function handlePriceSliderChange(_event: Event, value: number | number[]) {
+    if (Array.isArray(value)) {
+      const [min, max] = value
+      const boundedMin = Math.max(0, Math.min(Math.round(min), sliderMaxRand))
+      const boundedMax = Math.max(boundedMin, Math.min(Math.round(max), sliderMaxRand))
+      setPriceRangeRand([boundedMin, boundedMax])
+    }
+  }
+
+  function handlePriceSliderCommit() {
+    const [min, max] = priceRangeRand
+    setPriceMin(min * 100)
+    setPriceMax(max * 100)
+  }
+
+  function handlePriceInput(kind: 'min' | 'max') {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const raw = Number(e.target.value)
+      const safe = Number.isFinite(raw) ? Math.round(raw) : 0
+      if (kind === 'min') {
+        const bounded = Math.max(0, Math.min(safe, Math.round((priceMax ?? sliderMaxRand * 100) / 100)))
+        setPriceMin(bounded * 100)
+      } else {
+        const bounded = Math.max(Math.round(priceMin / 100), Math.min(safe, sliderMaxRand))
+        setPriceMax(bounded * 100)
+      }
+    }
   }
 
   const filtered = useMemo(() => {
@@ -118,10 +163,6 @@ export default function GpuListing(): JSX.Element {
       setLoading(true)
       try {
         let url = `${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`
-        // only send price filters when we have a meaningful max (> 0)
-        if (priceMin !== undefined && priceMax !== undefined && priceMax > 0) {
-          url += `&price_min=${priceMin}&price_max=${priceMax}`
-        }
         if (sortBy.startsWith('date')) {
           const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
           url += `&sort=date&order=${order}`
@@ -147,7 +188,7 @@ export default function GpuListing(): JSX.Element {
       }
     }
     load()
-  }, [page, perPage, sortBy, priceMin, priceMax])
+  }, [page, perPage, sortBy])
 
   // Reset to first page when sort changes
   useEffect(() => {
@@ -215,8 +256,40 @@ export default function GpuListing(): JSX.Element {
           <Paper className={pageStyles.sidebar} elevation={1}>
             <Box p={1}>
               <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
-              <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
-              <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
+
+              <div className={pageStyles.priceBlock}>
+                <Typography variant="subtitle2" className={pageStyles.stockLabel}>Price Range</Typography>
+                <Slider
+                  value={priceRangeRand}
+                  onChange={handlePriceSliderChange}
+                  onChangeCommitted={handlePriceSliderCommit}
+                  valueLabelDisplay="auto"
+                  step={sliderStep}
+                  min={0}
+                  max={sliderMaxRand}
+                  disableSwap
+                  valueLabelFormat={(v) => Math.round(v)}
+                />
+                <div className={pageStyles.priceInputs}>
+                  <TextField
+                    label="Min"
+                    type="number"
+                    size="small"
+                    value={priceRangeRand[0]}
+                    onChange={handlePriceInput('min')}
+                    InputProps={{ inputProps: { min: 0, max: priceRangeRand[1], step: 1 } }}
+                  />
+                  <TextField
+                    label="Max"
+                    type="number"
+                    size="small"
+                    value={priceRangeRand[1] || ''}
+                    onChange={handlePriceInput('max')}
+                    InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
+                  />
+                  <Button size="small" onClick={() => { setPriceMin(0); setPriceMax(maxCents); setPriceRangeRand([0, Math.ceil(maxCents / 100)]); }}>Reset</Button>
+                </div>
+              </div>
 
               <div className={pageStyles.stockBlock}>
                 <Typography variant="subtitle2" className={pageStyles.stockLabel}>Manufacturer</Typography>

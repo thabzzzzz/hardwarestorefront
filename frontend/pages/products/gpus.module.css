@@ -55,7 +55,8 @@
   margin-bottom: 6px;
 }
 .filterHeading { margin-top: 0 }
-.maxPrice { margin-top: 12px; font-size: 13px }
+.priceBlock { margin-top: 16px; }
+.priceInputs { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 .stockBlock { margin-top: 20px }
 .stockLabel { font-size: 13px; font-weight: 700; margin-bottom: 6px }
 .checkboxLabel { display: flex; align-items: center; gap: 8px; font-size: 13px }
