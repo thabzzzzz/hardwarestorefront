@@ -1,10 +1,17 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
 import useWishlist from '../hooks/useWishlist'
-import formatPriceFromCents from '../lib/formatPrice'
 import Header from '../components/header/header'
 import styles from './wishlist.module.css'
+
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
@@ -26,90 +33,121 @@ export default function WishlistPage(): JSX.Element {
         <title>Wishlist - WiredWorkshop</title>
       </Head>
       <Header />
-      <h1 className={styles.heading}>My Wishlist</h1>
-      {w.count === 0 ? (
-        <div className={styles.emptyWrap}>
-          <div className={styles.emptyText}>
-            <div>{'No items in wishlist¯\\_(ツ)_/¯'}</div>
-            <div className={styles.emptySub}>Browse the cataloge and add some</div>
+      <main className={styles.main}>
+        <Typography variant="h4" className={styles.heading}>My Wishlist</Typography>
+
+        {w.count === 0 ? (
+          <Paper className={styles.emptyCard} elevation={1}>
+            <Box textAlign="center" py={6}>
+              <Typography variant="h6">{'No items in wishlist¯\\_(ツ)_/¯'}</Typography>
+              <Typography variant="body2" color="text.secondary" className={styles.emptySub}>Browse the catalog and add some</Typography>
+            </Box>
+          </Paper>
+        ) : (
+          <div className={styles.tableCard}>
+            <table className={styles.table}>
+              <thead>
+                <tr className={styles.headerRow}>
+                  <th className={styles.cell}>Product</th>
+                  <th className={`${styles.cell} ${styles.colDate}`}>Date added</th>
+                  <th className={`${styles.cell} ${styles.colTag}`}>Tag</th>
+                  <th className={`${styles.cell} ${styles.colPriority}`}>Priority</th>
+                  <th className={`${styles.cell} ${styles.colQty}`}>
+                    Qty <span className={styles.smallNote}>(limited by stock)</span>
+                  </th>
+                  <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
+                  <th className={`${styles.cell} ${styles.colActions}`}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {w.items.map(item => {
+                  const tagClass = item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : styles.tagNoneWrap
+                  const priorityClass = item.priority === 'high' ? styles.priorityHighWrap : item.priority === 'medium' ? styles.priorityMedWrap : styles.priorityLowWrap
+
+                  return (
+                    <tr key={item.id} className={styles.row}>
+                      <td className={styles.cell}>
+                        <div className={styles.productCell}>
+                          <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.thumb} />
+                          <div>
+                            <div className={styles.prodTitle}>{item.title}</div>
+                            <div className={styles.prodStock}>
+                              {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
+
+                      <td className={styles.cell}>
+                        <FormControl size="small" variant="outlined" className={`${styles.pillControl} ${tagClass}`} fullWidth>
+                          <Select
+                            value={item.tag ?? 'none'}
+                            onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })}
+                            fullWidth
+                          >
+                            <MenuItem value="none">None</MenuItem>
+                            <MenuItem value="gift">Gift</MenuItem>
+                            <MenuItem value="research">Research</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </td>
+
+                      <td className={styles.cell}>
+                        <FormControl size="small" variant="outlined" className={`${styles.pillControl} ${priorityClass}`} fullWidth>
+                          <Select
+                            value={item.priority ?? 'low'}
+                            onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })}
+                            fullWidth
+                          >
+                            <MenuItem value="low">Low</MenuItem>
+                            <MenuItem value="medium">Medium</MenuItem>
+                            <MenuItem value="high">High</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </td>
+
+                      <td className={styles.cell}>
+                        <TextField
+                          type="number"
+                          size="small"
+                          value={item.qty}
+                          onChange={(e) => onQtyChange(item.id, e.target.value)}
+                          inputProps={{ min: 1, max: item.stock?.qty_available ?? undefined }}
+                          error={Boolean(errors[item.id])}
+                          helperText={errors[item.id] || ''}
+                        />
+                      </td>
+
+                      <td className={styles.cell}>{w.formatPrice(item.price?.amount_cents ?? 0)}</td>
+
+                      <td className={styles.cell}>
+                        <Button size="small" variant="outlined" color="error" onClick={() => onRemove(item.id)}>
+                          Remove
+                        </Button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td />
+                  <td className={styles.cellBold}>Total</td>
+                  <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
+                  <td>
+                    <Button size="small" variant="outlined" color="error" onClick={() => w.clear()}>
+                      Clear wishlist
+                    </Button>
+                  </td>
+                  <td />
+                </tr>
+              </tfoot>
+            </table>
           </div>
-        </div>
-      ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr className={styles.headerRow}>
-              <th className={styles.cell}>Product</th>
-              <th className={`${styles.cell} ${styles.colDate}`}>Date added</th>
-              <th className={`${styles.cell} ${styles.colTag}`}>Tag</th>
-              <th className={`${styles.cell} ${styles.colPriority}`}>Priority</th>
-              <th className={`${styles.cell} ${styles.colQty}`}>Qty <span className={styles.smallNote}>(limited by stock)</span></th>
-              <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
-              <th className={`${styles.cell} ${styles.colActions}`}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {w.items.map(item => (
-              <tr key={item.id} className={styles.row}>
-                <td className={styles.cell}>
-                  <div className={styles.productCell}>
-                    <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.thumb} />
-                    <div>
-                      <div className={styles.prodTitle}>{item.title}</div>
-                      <div className={styles.prodStock}>{item.stock?.status === 'out_of_stock' ? 'Out of stock' : (item.stock?.status === 'reserved' ? 'Reserved' : '')}</div>
-                    </div>
-                  </div>
-                </td>
-                <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
-                <td className={styles.cell}>
-                  <span className={`${styles.pillWrap} ${item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : ''}`}>
-                    <select
-                      value={item.tag ?? 'none'}
-                      onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })}
-                      className={styles.select}
-                    >
-                      <option value="none">None</option>
-                      <option value="gift">Gift</option>
-                      <option value="research">Research</option>
-                    </select>
-                  </span>
-                </td>
-                <td className={styles.cell}>
-                  <span className={`${styles.pillWrap} ${item.priority === 'low' ? styles.priorityLowWrap : item.priority === 'medium' ? styles.priorityMedWrap : item.priority === 'high' ? styles.priorityHighWrap : ''}`}>
-                    <select
-                      value={item.priority ?? 'low'}
-                      onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })}
-                      className={styles.select}
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </span>
-                </td>
-                <td className={styles.cell}>
-                  <input type="number" min={1} value={item.qty} onChange={(e) => onQtyChange(item.id, e.target.value)} className={styles.qtyInput} max={item.stock?.qty_available ?? undefined} />
-                  {errors[item.id] && <div className={styles.error}>{errors[item.id]}</div>}
-                </td>
-                <td className={styles.cell}>{w.formatPrice(item.price?.amount_cents ?? 0)}</td>
-                <td className={styles.cell}>
-                  <button onClick={() => onRemove(item.id)} className={styles.removeButton}>Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td />
-              <td className={styles.cellBold}>Total</td>
-              <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
-                <td>
-                <button onClick={() => { w.clear() }} className={styles.clearAllButton}>Clear wishlist</button>
-              </td>
-              <td />
-            </tr>
-          </tfoot>
-        </table>
-      )}
+        )}
+      </main>
     </div>
   )
 }
