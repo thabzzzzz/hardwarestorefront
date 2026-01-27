@@ -23,13 +23,14 @@ type Props = {
   boostClock?: string | null
   microarchitecture?: string | null
   socket?: string | null
+  footerSlot?: React.ReactNode
 }
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
   : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
-export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket }: Props) {
+export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket, footerSlot }: Props) {
   let t = thumbnail || null
   // If `t` is an absolute path (starts with '/'), use it directly so Next.js serves from frontend/public
   const src = t
@@ -179,6 +180,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
       )}
 
       {actions}
+      {footerSlot ? <div className={styles.footerSlot}>{footerSlot}</div> : null}
     </article>
   )
 

@@ -297,7 +297,8 @@
 
 /* Let MUI TextField render its own outlined style. Remove legacy native input styling
    but keep left padding so the absolute search icon doesn't overlap the text. */
-.searchBox .MuiOutlinedInput-root { width: 100%; }
+.searchBox .MuiOutlinedInput-root { width: 100%; border-radius: 10px; }
+.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { border-radius: 10px; }
 .searchBox .MuiOutlinedInput-input { padding: 12px 12px 12px 44px; height: 44px; box-sizing: border-box; }
 
 /* Mobile search: keep same left padding as previous mobile input */

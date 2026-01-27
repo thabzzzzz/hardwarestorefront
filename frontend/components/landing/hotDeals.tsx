@@ -23,6 +23,7 @@ const API_BASE = typeof window === 'undefined'
 
 export default function HotDeals(): JSX.Element {
   const [items, setItems] = useState<HotDealItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(()=>{
     async function load(){
@@ -33,12 +34,15 @@ export default function HotDeals(): JSX.Element {
           const text = await res.text()
           console.error('fetch hot-deals failed (non-JSON)', res.status, text.slice(0,400))
           setItems([])
+          setLoading(false)
           return
         }
         const json = await res.json()
         setItems(json.data || [])
       }catch(e){
         console.error('fetch hot-deals failed', e)
+      }finally{
+        setLoading(false)
       }
     }
     load()
@@ -48,25 +52,33 @@ export default function HotDeals(): JSX.Element {
     <section className={styles.hotDeals}>
       <h2>Hot Deals</h2>
       <div className={styles.grid}>
-          {items.map(it => (
-            <ProductCard
-              key={it.variant_id}
-              name={(it as any).name}
-              title={it.title}
-              vendor={(it as any).brand}
-              sku={it.sku}
-              stock={(it as any).stock || null}
-              thumbnail={it.thumbnail}
-              price={it.current_price || null}
-              slug={it.slug}
-              manufacturer={(it as any).manufacturer}
-              productType={(it as any).product_type || (it as any).productType}
-              cores={(it as any).cores}
-              boostClock={(it as any).boost_clock}
-              microarchitecture={(it as any).microarchitecture}
-              socket={(it as any).socket}
-            />
-          ))}
+          {loading
+            ? Array.from({ length: 6 }, (_, i) => (
+                <div className={styles.skelCard} key={`hot-skel-${i}`}>
+                  <div className={`${styles.skel} ${styles.skelImage}`} />
+                  <div className={`${styles.skel} ${styles.skelTitle}`} />
+                  <div className={`${styles.skel} ${styles.skelPrice}`} />
+                </div>
+              ))
+            : items.map(it => (
+                <ProductCard
+                  key={it.variant_id}
+                  name={(it as any).name}
+                  title={it.title}
+                  vendor={(it as any).brand}
+                  sku={it.sku}
+                  stock={(it as any).stock || null}
+                  thumbnail={it.thumbnail}
+                  price={it.current_price || null}
+                  slug={it.slug}
+                  manufacturer={(it as any).manufacturer}
+                  productType={(it as any).product_type || (it as any).productType}
+                  cores={(it as any).cores}
+                  boostClock={(it as any).boost_clock}
+                  microarchitecture={(it as any).microarchitecture}
+                  socket={(it as any).socket}
+                />
+              ))}
       </div>
     </section>
   )

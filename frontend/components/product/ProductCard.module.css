@@ -168,3 +168,9 @@
 }
 
 .link { text-decoration: none; color: inherit }
+
+.footerSlot {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}

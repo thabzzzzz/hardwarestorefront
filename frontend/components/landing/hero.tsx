@@ -1,8 +1,6 @@
 import styles from './hero.module.css'
 import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import formatPriceFromCents from '../../lib/formatPrice'
-import getDisplayTitle from '../../lib/getDisplayTitle'
+import ProductCard from '../product/ProductCard'
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
@@ -42,28 +40,33 @@ export default function Hero(): JSX.Element {
           </div>
         </div>
         <div className={styles.heroSidebar}>
-          {featured && featured.slug ? (
-            <Link href={`/product/${featured.slug}`} className={styles.featureLink}>
-              <div className={styles.featureLinkInner}>
-                {featured.thumbnail ? (
-                  <img src={featured.thumbnail} alt={featured.title || 'featured'} />
-                ) : (
-                  <img src="/products/prod-0001/1ed6bb69-400w.webp" alt="featured" />
-                )}
-                <div className={styles.featureTitle}>{getDisplayTitle({ title: featured.title, name: (featured as any).name, manufacturer: (featured as any).manufacturer, productType: (featured as any).product_type || (featured as any).productType })}</div>
-                <div className={styles.featurePrice}>{featured.current_price ? formatPriceFromCents(featured.current_price.amount_cents) : ''}</div>
-                <div className={styles.featureTag}>FEATURED DEAL →</div>
-              </div>
-            </Link>
+          {featured ? (
+            <div className={styles.featureCardWrap}>
+              <ProductCard
+                name={(featured as any).name}
+                title={featured.title}
+                vendor={(featured as any).brand}
+                sku={featured.sku}
+                stock={(featured as any).stock || null}
+                thumbnail={featured.thumbnail || null}
+                price={featured.current_price || null}
+                slug={featured.slug}
+                manufacturer={(featured as any).manufacturer}
+                productType={(featured as any).product_type || (featured as any).productType}
+                cores={(featured as any).cores}
+                boostClock={(featured as any).boost_clock}
+                microarchitecture={(featured as any).microarchitecture}
+                socket={(featured as any).socket}
+                footerSlot={<div className={styles.featureTag}>FEATURED DEAL</div>}
+              />
+            </div>
           ) : (
-            <>
-              {featured && featured.thumbnail ? (
-                <img src={featured.thumbnail} alt={featured.title || 'featured'} />
-              ) : (
-                <img src="/products/prod-0001/1ed6bb69-400w.webp" alt="featured" />
-              )}
-              <div className={styles.featureTag}>FEATURED DEAL →</div>
-            </>
+            <div className={styles.featureSkeleton}>
+              <div className={styles.skelImg} />
+              <div className={styles.skelLine} />
+              <div className={styles.skelLineShort} />
+              <div className={styles.skelPill}>FEATURED DEAL →</div>
+            </div>
           )}
         </div>
       </div>
