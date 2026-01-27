@@ -5,6 +5,9 @@ import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { useRouter } from 'next/router'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import IconButton from '@mui/material/IconButton'
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
@@ -151,8 +154,25 @@ export default function Header(): JSX.Element {
           </div>
           <div className={styles.mobileRow2}>
             <div className={styles.searchBoxMobile}>
-              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
-              <input placeholder="Search..." value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
+              <TextField
+                placeholder="Search..."
+                value={query}
+                size="small"
+                fullWidth
+                onChange={(e) => onQueryChange(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }}
+                onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
+                        <img src="/icons/search.svg" alt="Search" />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
             </div>
           </div>
         </div>
@@ -255,8 +275,25 @@ export default function Header(): JSX.Element {
           <div className={styles.brandDivider} aria-hidden="true" />
           <div className={styles.brandActions}>
             <div className={styles.searchBox}>
-              <img src="/icons/search.svg" alt="Search" className={styles.searchIcon} onClick={() => doSearchNavigate(query)} />
-              <input placeholder="search" value={query} onChange={(e) => onQueryChange(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }} onFocus={() => { if (suggestions.length) setShowSuggestions(true) }} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} />
+              <TextField
+                placeholder="search"
+                value={query}
+                size="small"
+                fullWidth
+                onChange={(e) => onQueryChange(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }}
+                onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
+                        <img src="/icons/search.svg" alt="Search" />
+                      </IconButton>
+                    </InputAdornment>
+                  )
+                }}
+              />
               {showSuggestions && suggestions.length > 0 && (
                 <div className={styles.suggestions}>
                   {suggestions.map((s: any) => (

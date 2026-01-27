@@ -10,9 +10,16 @@
     "dev:webpack": "node ./scripts/dev-webpack.js"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.11",
+    "@mui/material": "^5.14.11",
     "next": "^15.0.0",
     "react": "18.x",
-    "react-dom": "18.x"
+    "react-dom": "18.x",
+    "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@types/node": "25.0.6",

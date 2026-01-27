@@ -113,13 +113,8 @@
 }
 
 .logo::after {
-	content: "";
-	position: absolute;
-	left: calc(100% + 20px);
-	top: -27px;
-	bottom: -27px;
-	width: 1px;
-	background: #eee;
+	/* hide the visual divider after the logo */
+	content: none;
 }
 
 .nav {
@@ -227,25 +222,20 @@
 .brandActions {
 	margin-left: auto;
 	display: flex;
-	align-items: stretch;
+	align-items: center;
 	gap: 12px;
 }
 
 .cartButton {
-	padding-left: 20px;
-	display: inline-flex;
-	align-items: center;
-	position: relative;
+  padding-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
 }
 
 .cartButton::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	top: -18px;
-	bottom: -18px;
-	width: 1px;
-	background: #eee;
+	/* hide the vertical divider before the cart button */
+	content: none;
 }
 
 .cartButton img {
@@ -286,8 +276,12 @@
 	display: flex;
 	align-items: center;
 	align-self: center;
-	width: 70%;
-	min-width: 700px;
+	/* keep left position; grow to fill remaining space up to the cart button */
+	flex: 1 1 auto;
+	width: auto;
+	max-width: none;
+	min-width: 320px;
+	margin-right: 8px;
 }
 
 .searchIcon {
@@ -301,25 +295,14 @@
 	z-index: 2;
 }
 
-.searchBox input {
-	width: 100%;
-	padding: 12px 12px 12px 44px;
-	height: 44px;
-	margin-top: -6px;
-	margin-bottom: -6px;
-	border: 1px solid #ddd;
-	border-radius: 2px;
-	font-size: 14px;
-	background: #fff;
-}
+/* Let MUI TextField render its own outlined style. Remove legacy native input styling
+   but keep left padding so the absolute search icon doesn't overlap the text. */
+.searchBox .MuiOutlinedInput-root { width: 100%; border-radius: 10px; }
+.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { border-radius: 10px; }
+.searchBox .MuiOutlinedInput-input { padding: 12px 12px 12px 44px; height: 44px; box-sizing: border-box; }
 
-.searchBox input:focus,
-.searchBox input:focus-visible {
-	outline: none;
-	border-color: #1f7a8c;
-	box-shadow: 0 0 0 4px rgba(31,122,140,0.10), 0 6px 18px rgba(31,122,140,0.12);
-	transition: box-shadow .12s ease, border-color .12s ease;
-}
+/* Mobile search: keep same left padding as previous mobile input */
+.searchBoxMobile .MuiOutlinedInput-input { padding: 10px 12px 10px 40px; box-sizing: border-box; }
 
 .suggestions {
 	position: absolute;
@@ -328,6 +311,9 @@
 	background: #fff;
 	border: 1px solid #ddd;
 	width: 100%;
+	max-width: 100%;
+	overflow: hidden;
+	border-radius: 12px;
 	box-sizing: border-box;
 	z-index: 60;
 	box-shadow: 0 6px 18px rgba(0,0,0,0.06);
@@ -339,6 +325,7 @@
 	padding: 8px;
 	align-items: center;
 	cursor: pointer;
+	min-width: 0;
 }
 
 .suggestionThumb {
@@ -350,10 +337,14 @@
 
 .suggestionMeta {
 	font-size: 13px;
+	min-width: 0;
 }
 
 .suggestionTitle {
 	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .suggestionPrice {
@@ -463,7 +454,8 @@
 	width: 100%;
 	padding: 10px 12px 10px 40px;
 	border: 1px solid #ddd;
-	border-radius: 4px;
+	/* match product card rounding on mobile */
+	border-radius: 12px;
 }
 
 /* Mobile menu overlay */
