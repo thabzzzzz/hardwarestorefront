@@ -4,7 +4,7 @@ import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
-import Button from '@mui/material/Button'
+import Button from '@mui/material/node/Button/index.js'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { toast } from '../../lib/toast'
 
