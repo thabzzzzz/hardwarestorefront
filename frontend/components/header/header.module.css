@@ -1,6 +1,8 @@
 .header {
 	border-bottom: 1px solid #eee;
 	position: relative;
+	/* ensure header (and its fixed brandRow) stays above page content */
+	z-index: 2000;
 }
 @font-face {
 	font-family: 'LexendLight';
@@ -17,6 +19,12 @@
 	background: #fafafa;
 	color: #666;
 	font-size: 12px;
+	/* make topbar full-bleed to viewport edges */
+	position: relative;
+	left: 50%;
+	width: 100vw;
+	margin-left: -50vw;
+	box-sizing: border-box;
 }
 
 .topbarRight {

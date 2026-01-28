@@ -1,4 +1,10 @@
-.root { padding: 24px; }
+.root {
+	padding: 0 24px 24px;
+	/* match cart page: remove top padding and avoid visible background */
+	background: transparent;
+	position: relative;
+	z-index: 0;
+}
 .main { margin: 0; }
 .heading { margin: 16px 0 12px; }
 .emptyCard { margin-top: 16px; }

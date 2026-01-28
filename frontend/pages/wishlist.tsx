@@ -36,7 +36,14 @@ export default function WishlistPage(): JSX.Element {
       </Head>
       <Header />
       <main className={styles.main}>
-        <Typography variant="h4" className={styles.heading}>My Wishlist</Typography>
+        <Typography
+          variant="h4"
+          component="h1"
+          className={styles.heading}
+          sx={{ fontFamily: 'Helvetica, Roboto, Arial, sans-serif', fontWeight: 700 }}
+        >
+          My Wishlist
+        </Typography>
 
         {w.count === 0 ? (
           <Paper className={styles.emptyCard} elevation={1}>
@@ -72,7 +79,9 @@ export default function WishlistPage(): JSX.Element {
                         <div className={styles.productCell}>
                           <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.thumb} />
                           <div>
-                            <div className={styles.prodTitle}>{item.title}</div>
+                            <Typography component="div" variant="body1" className={styles.prodTitle} sx={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', fontWeight: 600 }}>
+                              {item.title}
+                            </Typography>
                             <div className={styles.prodStock}>
                               {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}
                             </div>
@@ -122,7 +131,9 @@ export default function WishlistPage(): JSX.Element {
                         />
                       </td>
 
-                      <td className={styles.cell}>{w.formatPrice(item.price?.amount_cents ?? 0)}</td>
+                      <td className={styles.cell}>
+                        <Typography variant="body1" component="span">{w.formatPrice(item.price?.amount_cents ?? 0)}</Typography>
+                      </td>
 
                       <td className={`${styles.cell} ${styles.colActions}`}>
                         <IconButton size="small" color="error" onClick={() => onRemove(item.id)} aria-label="Remove">
@@ -140,7 +151,7 @@ export default function WishlistPage(): JSX.Element {
                   <td></td>
                   <td></td>
                   <td className={styles.cellBold}>Total</td>
-                  <td className={styles.cellBold}>{w.formatPrice(w.totalCents)}</td>
+                  <td className={styles.cellBold}><Typography variant="body1" component="span">{w.formatPrice(w.totalCents)}</Typography></td>
                   <td>
                     <Button size="small" variant="outlined" color="error" onClick={() => w.clear()}>
                       Clear wishlist
