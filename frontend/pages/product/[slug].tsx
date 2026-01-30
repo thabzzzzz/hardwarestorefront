@@ -21,18 +21,51 @@ type ProductPayload = {
   thumbnail?: string | null
   stock?: { qty_available?: number; qty_reserved?: number; status?: string }
   price?: { amount_cents: number; currency: string } | null
-  specs?: Record<string, string>
+    specs?: Record<string, string>
+    spec_tables?: any
+    spec_fields?: Record<string, any>
 }
 
-export default function ProductPage(): JSX.Element {
+// Server-side fetch so product pages render specs from the DB on first load.
+export async function getServerSideProps(context: any) {
+  const slug = context.params?.slug
+  if (!slug) return { props: { initialProduct: null } }
+
+  const API_BASE = process.env.SERVER_API_BASE_URL || 'http://web'
+  try {
+    const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(String(slug))}`)
+    if (!res.ok) return { props: { initialProduct: null } }
+    const json = await res.json()
+    // normalize thumbnail as in client
+    if (json.thumbnail && typeof json.thumbnail === 'string') {
+      if (!json.thumbnail.startsWith('http') && !json.thumbnail.startsWith('/')) {
+        json.thumbnail = `${API_BASE}${json.thumbnail}`
+      }
+    }
+    return { props: { initialProduct: json } }
+  } catch (e) {
+    return { props: { initialProduct: null } }
+  }
+}
+
+type PageProps = {
+  initialProduct?: ProductPayload | null
+}
+
+export default function ProductPage({ initialProduct }: PageProps): JSX.Element {
   const router = useRouter()
   const { slug } = router.query
-  const [product, setProduct] = useState<ProductPayload | null>(null)
+  const [product, setProduct] = useState<ProductPayload | null>(initialProduct || null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (!router.isReady) return
     if (!slug) return
+    // If we already have server-provided product for this slug, skip client fetch
+    if (product && product.slug === slug) {
+      setLoading(false)
+      return
+    }
 
     async function load() {
       setLoading(true)
@@ -119,7 +152,7 @@ export default function ProductPage(): JSX.Element {
                 thumbnail={product.thumbnail || null}
                 stock={product.stock || null}
               />
-              <ProductSpecs specs={product.specs || null} />
+              <ProductSpecs specs={product.specs || null} specTables={product.spec_tables || null} specFields={product.spec_fields || null} />
             </div>
           </div>
         )}

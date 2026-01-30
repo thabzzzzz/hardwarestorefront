@@ -73,6 +73,40 @@ class ProductController extends Controller
             }
 
             $specs = $variant->specs ?? [];
+
+            // If explicit specs JSON is empty, synthesize a readable key/value
+            // specs object from available normalized attributes and numeric columns
+            if (empty($specs)) {
+                $specs = [];
+                // merge any normalized attributes first
+                $attrs = $variant->attributes_normalized ?? [];
+                if (is_array($attrs)) {
+                    foreach ($attrs as $k => $v) {
+                        if ($v !== null && $v !== '') {
+                            $specs[$k] = (string) $v;
+                        }
+                    }
+                }
+
+                // helper to set if present
+                $setIf = function($key, $val) use (&$specs) {
+                    if ($val !== null && $val !== '') {
+                        $specs[$key] = (string) $val;
+                    }
+                };
+
+                // common GPU fields (use human-friendly names)
+                $setIf('Memory', $variant->vram_gb ?? $variant->vram_gb_int ?? null);
+                $setIf('Memory Type', $variant->vram_type ?? null);
+                // bus width may be stored as '256-Bit' or as integer
+                $bw = $variant->bus_width_bit ?? ($variant->bus_width_int ? ($variant->bus_width_int . '-Bit') : null);
+                $setIf('Bus Width', $bw);
+                // boost clock: prefer ghz human string, fall back to mhz
+                $setIf('Boost Clock', $variant->boost_clock_ghz ?? ($variant->boost_clock_mhz ? ($variant->boost_clock_mhz . ' MHz') : null));
+                $setIf('TDP', $variant->tdp_watts ?? $variant->tdp_watts_int ?? null);
+                $setIf('Cores', $variant->cores ?? $variant->cores_int ?? null);
+                $setIf('Threads', $variant->threads ?? $variant->threads_int ?? null);
+            }
         }
 
         // brand: prefer vendor name (vendor represents the card vendor like ASUS/XFX), include manufacturer separately
@@ -88,8 +122,44 @@ class ProductController extends Controller
             'thumbnail' => $thumbnail,
             'stock' => $stock,
             'price' => $price,
+            // Human-friendly key/value specs (synthesized if empty)
             'specs' => $specs,
+            // Preserve any parsed spec tables (from scraper/parser) when present
+            'spec_tables' => null,
+            // Raw spec-ish fields (numeric and original parsed blobs) to allow
+            // the frontend to render full spec sections beyond simple KV pairs.
+            'spec_fields' => [],
         ];
+
+        // include parsed spec tables if available
+        if (isset($variant->raw_spec_tables)) {
+            $decoded = null;
+            try {
+                $decoded = json_decode($variant->raw_spec_tables, true);
+            } catch (\Exception $e) {
+                $decoded = null;
+            }
+            if (is_array($decoded)) {
+                $payload['spec_tables'] = $decoded;
+            } else {
+                // still include raw string so front-end can attempt parsing
+                $payload['spec_tables'] = null;
+                $payload['spec_fields']['raw_spec_tables'] = $variant->raw_spec_tables;
+            }
+        }
+
+        // collect a set of useful raw fields to expose to frontend
+        $rawKeys = [
+            'raw_jsonld','raw_spec_tables','image_urls',
+            'vram_gb','vram_type','bus_width_bit','boost_clock_ghz','tdp_watts',
+            'cores','threads','vram_gb_int','bus_width_int','boost_clock_mhz',
+            'tdp_watts_int','cores_int','threads_int','mpn','source_name','source_url'
+        ];
+        foreach ($rawKeys as $rk) {
+            if (isset($variant->{$rk}) && $variant->{$rk} !== null && $variant->{$rk} !== '') {
+                $payload['spec_fields'][$rk] = $variant->{$rk};
+            }
+        }
 
         return response()->json($payload);
     }

@@ -56,3 +56,6 @@ frontend/.env.local
 
 # Local-only backups and moved compose files
 .local-dev/
+
+# Temp scraping/debug artifacts
+tmp/

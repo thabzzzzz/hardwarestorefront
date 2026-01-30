@@ -17,6 +17,11 @@ class Kernel extends ConsoleKernel
     {
         $this->load(__DIR__ . '/Commands');
 
+        // register import command
+        $this->commands([
+            \App\Console\Commands\ImportNeweggCsv::class,
+        ]);
+
         require base_path('routes/console.php');
     }
 }
