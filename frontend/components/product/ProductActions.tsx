@@ -3,6 +3,10 @@ import formatPriceFromCents from '../../lib/formatPrice'
 import styles from './ProductActions.module.css'
 import useCart from '../../hooks/useCart'
 import useWishlist from '../../hooks/useWishlist'
+import Button from '@mui/material/node/Button/index.js'
+import TextField from '@mui/material/node/TextField/index.js'
+import Paper from '@mui/material/node/Paper/index.js'
+import Typography from '@mui/material/node/Typography/index.js'
 
 type Props = {
   price?: { amount_cents: number; currency: string } | null,
@@ -70,18 +74,30 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.price}>{displayPrice}</div>
+    <Paper className={styles.container} elevation={0}>
+      <div className={styles.price}>
+        <Typography variant="h6">{displayPrice}</Typography>
+      </div>
 
       <div className={styles.controls}>
-        <label className={styles.qtyLabel}>Qty
-          <input type="number" min={1} value={qty} onChange={(e) => setQty(Number(e.target.value || 1))} className={styles.qtyInput} />
-        </label>
-        <button className={styles.addButton} onClick={handleAddToCart} disabled={busyAdd} aria-busy={busyAdd}>{busyAdd ? 'Adding...' : 'Add to Basket'}</button>
-        <button className={styles.wishlistButtonLarge} onClick={handleWishlist} disabled={busyWish} aria-pressed={wishlist.isWished(id || '')} aria-busy={busyWish} title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}>
+        <TextField
+          type="number"
+          inputProps={{ min: 1 }}
+          value={qty}
+          size="small"
+          onChange={(e) => setQty(Number((e.target as HTMLInputElement).value || 1))}
+          className={styles.qtyInput}
+          label="Qty"
+        />
+
+        <Button variant="contained" className={styles.addButton} onClick={handleAddToCart} disabled={busyAdd} aria-busy={busyAdd}>
+          {busyAdd ? 'Adding...' : 'Add to Basket'}
+        </Button>
+
+        <Button variant="outlined" className={styles.wishlistButtonLarge} onClick={handleWishlist} disabled={busyWish} aria-pressed={wishlist.isWished(id || '')} aria-busy={busyWish} title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}>
           {wishlist.isWished(id || '') ? 'In Wishlist' : (busyWish ? '...' : 'Add to Wishlist')}
-        </button>
+        </Button>
       </div>
-    </div>
+    </Paper>
   )
 }

@@ -22,7 +22,7 @@ class ImportNeweggCsv extends Command
     {
         $file = base_path($this->argument('file'));
         if (!file_exists($file)) {
-            $this->error('File not found: '.$file);
+            $this->error('File not found: ' . $file);
             return 1;
         }
 
@@ -87,11 +87,12 @@ class ImportNeweggCsv extends Command
                 if (!$variant) {
                     // create product
                     $productId = (string) Str::uuid();
-                    $slug = Str::slug(substr($r['name'] ?? $sku ?? ($r['mpn'] ?? ''),0,80));
+                    $slug = Str::slug(substr($r['name'] ?? $sku ?? ($r['mpn'] ?? ''), 0, 80));
                     $i = 0;
                     $baseSlug = $slug;
                     while (Product::where('slug', $slug)->exists()) {
-                        $i++; $slug = $baseSlug.'-'.$i;
+                        $i++;
+                        $slug = $baseSlug . '-' . $i;
                     }
                     $product = Product::create([
                         'id' => $productId,
@@ -193,7 +194,7 @@ class ImportNeweggCsv extends Command
                 if (!empty($variant->image_urls) && is_array($variant->image_urls)) {
                     $i = 0;
                     foreach ($variant->image_urls as $img) {
-                        if ($i++>2) break;
+                        if ($i++ > 2) break;
                         Image::firstOrCreate([
                             'product_id' => $variant->product_id,
                             'variant_id' => $variant->id,
@@ -212,7 +213,7 @@ class ImportNeweggCsv extends Command
         } catch (\Exception $e) {
             DB::rollBack();
             $lock->release();
-            $this->error('Import failed: '.$e->getMessage());
+            $this->error('Import failed: ' . $e->getMessage());
             return 1;
         } finally {
             fclose($fh);
@@ -281,7 +282,7 @@ class ImportNeweggCsv extends Command
         // normalize commas
         $out = [];
         foreach ($m[0] as $num) {
-            $n = str_replace([',',' '],'',$num);
+            $n = str_replace([',', ' '], '', $num);
             $out[] = floatval($n);
         }
         return $out;
@@ -296,7 +297,8 @@ class ImportNeweggCsv extends Command
                 $d = json_decode($json, true);
                 if (!empty($d['rates']['ZAR'])) return floatval($d['rates']['ZAR']);
             }
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
         $env = env('USD_TO_ZAR');
         if ($env) return floatval($env);
         return 18.0;

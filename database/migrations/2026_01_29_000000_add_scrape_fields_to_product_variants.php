@@ -32,8 +32,20 @@ return new class extends Migration
     {
         Schema::table('product_variants', function (Blueprint $table) {
             $table->dropColumn([
-                'mpn','source_name','source_url','scraped_at','raw_jsonld','raw_spec_tables','image_urls',
-                'vram_gb','vram_type','bus_width_bit','boost_clock_ghz','tdp_watts','cores','threads'
+                'mpn',
+                'source_name',
+                'source_url',
+                'scraped_at',
+                'raw_jsonld',
+                'raw_spec_tables',
+                'image_urls',
+                'vram_gb',
+                'vram_type',
+                'bus_width_bit',
+                'boost_clock_ghz',
+                'tdp_watts',
+                'cores',
+                'threads'
             ]);
         });
     }

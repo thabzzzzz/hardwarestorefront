@@ -89,7 +89,7 @@ class ProductController extends Controller
                 }
 
                 // helper to set if present
-                $setIf = function($key, $val) use (&$specs) {
+                $setIf = function ($key, $val) use (&$specs) {
                     if ($val !== null && $val !== '') {
                         $specs[$key] = (string) $val;
                     }
@@ -150,10 +150,25 @@ class ProductController extends Controller
 
         // collect a set of useful raw fields to expose to frontend
         $rawKeys = [
-            'raw_jsonld','raw_spec_tables','image_urls',
-            'vram_gb','vram_type','bus_width_bit','boost_clock_ghz','tdp_watts',
-            'cores','threads','vram_gb_int','bus_width_int','boost_clock_mhz',
-            'tdp_watts_int','cores_int','threads_int','mpn','source_name','source_url'
+            'raw_jsonld',
+            'raw_spec_tables',
+            'image_urls',
+            'vram_gb',
+            'vram_type',
+            'bus_width_bit',
+            'boost_clock_ghz',
+            'tdp_watts',
+            'cores',
+            'threads',
+            'vram_gb_int',
+            'bus_width_int',
+            'boost_clock_mhz',
+            'tdp_watts_int',
+            'cores_int',
+            'threads_int',
+            'mpn',
+            'source_name',
+            'source_url'
         ];
         foreach ($rawKeys as $rk) {
             if (isset($variant->{$rk}) && $variant->{$rk} !== null && $variant->{$rk} !== '') {

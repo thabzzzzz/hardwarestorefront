@@ -1,5 +1,9 @@
 import React from 'react'
 import styles from './ProductSpecs.module.css'
+import Paper from '@mui/material/node/Paper/index.js'
+import Typography from '@mui/material/node/Typography/index.js'
+import List from '@mui/material/node/List/index.js'
+import ListItem from '@mui/material/node/ListItem/index.js'
 
 type Props = {
   specs?: Record<string, string> | null,
@@ -137,8 +141,8 @@ export default function ProductSpecs({ specs, specTables, specFields, boldCutoff
   }
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.heading}>Specifications</h3>
+    <Paper className={styles.container} elevation={0}>
+      <Typography variant="h5" className={styles.heading}>Specifications</Typography>
 
       {hasSpecs && (() => {
         const entries = Object.entries(specs!)
@@ -159,14 +163,13 @@ export default function ProductSpecs({ specs, specTables, specFields, boldCutoff
         }
 
         return (
-          <ul className={styles.list}>
+          <List className={styles.list}>
             {processed.map(([k, v]) => (
-              <li key={k}><strong>{k}:</strong> {v}</li>
+              <ListItem key={k} className={styles.listItem}><strong>{k}:</strong>&nbsp;{v}</ListItem>
             ))}
-          </ul>
+          </List>
         )
       })()}
-
       {hasTables && (
         <div className={styles.tables}>
           {Array.isArray(specTables) ? renderSpecTable(specTables, boldCutoffTerms, useHeuristics ?? true) : renderSpecTable([specTables], boldCutoffTerms, useHeuristics ?? true)}
@@ -175,14 +178,14 @@ export default function ProductSpecs({ specs, specTables, specFields, boldCutoff
 
       {hasFields && (
         <div className={styles.rawFields}>
-          <h4 className={styles.subHeading}>Raw fields</h4>
-          <ul className={styles.list}>
+          <Typography variant="h6" className={styles.subHeading}>Raw fields</Typography>
+          <List className={styles.list}>
             {Object.entries(specFields!).map(([k, v]) => (
-              <li key={k}><strong>{k}:</strong> {typeof v === 'object' ? JSON.stringify(v) : String(v)}</li>
+              <ListItem key={k} className={styles.listItem}><strong>{k}:</strong>&nbsp;{typeof v === 'object' ? JSON.stringify(v) : String(v)}</ListItem>
             ))}
-          </ul>
+          </List>
         </div>
       )}
-    </div>
+    </Paper>
   )
 }

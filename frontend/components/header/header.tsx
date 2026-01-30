@@ -63,6 +63,7 @@ export default function Header(): JSX.Element {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
+  
 
   useEffect(() => {
     let openTimer: number | undefined
