@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/router'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
@@ -17,6 +18,7 @@ import InputLabel from '@mui/material/node/InputLabel'
 import Select from '@mui/material/node/Select'
 import MenuItem from '@mui/material/node/MenuItem'
 import Pagination from '@mui/material/node/Pagination'
+import PaginationItem from '@mui/material/node/PaginationItem'
 import Slider from '@mui/material/node/Slider'
 import TextField from '@mui/material/node/TextField'
 
@@ -81,6 +83,34 @@ export default function GpuListing(): JSX.Element {
   }, [items])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
+  const router = useRouter()
+
+  // read initial page from URL query when router is ready
+  useEffect(() => {
+    if (!router.isReady) return
+    const raw = router.query.page
+    const qp = Array.isArray(raw) ? raw[0] : raw
+    const qnum = Number(qp || 1) || 1
+    if (qnum !== page) setPage(qnum)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady, router.query.page])
+
+  // keep URL in sync with page state (shallow replace)
+  useEffect(() => {
+    if (!router.isReady) return
+    const cur = { ...router.query }
+    if (page === 1) {
+      if (cur.page) {
+        delete cur.page
+        router.replace({ pathname: router.pathname, query: cur }, undefined, { shallow: true })
+      }
+    } else {
+      if (String(cur.page || '') !== String(page)) {
+        router.replace({ pathname: router.pathname, query: { ...cur, page: String(page) } }, undefined, { shallow: true })
+      }
+    }
+  }, [page, router, router.isReady])
+
   function toggleManufacturer(m: string) {
     setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
   }
@@ -107,6 +137,7 @@ export default function GpuListing(): JSX.Element {
     const [min, max] = priceRangeRand
     setPriceMin(min * 100)
     setPriceMax(max * 100)
+    setPage(1)
   }
 
   function handlePriceInput(kind: 'min' | 'max') {
@@ -120,6 +151,7 @@ export default function GpuListing(): JSX.Element {
         const bounded = Math.max(Math.round(priceMin / 100), Math.min(safe, sliderMaxRand))
         setPriceMax(bounded * 100)
       }
+      setPage(1)
     }
   }
 
@@ -195,8 +227,8 @@ export default function GpuListing(): JSX.Element {
     setPage(1)
   }, [sortBy])
 
-  // Reset to first page when price filters change
-  useEffect(() => { setPage(1) }, [priceMin, priceMax])
+  // Note: page resets for explicit user price interactions are handled
+  // inside the slider commit / input handlers to avoid programmatic resets
 
   return (
     <div className={styles.page}>
@@ -243,10 +275,11 @@ export default function GpuListing(): JSX.Element {
             <Pagination
               count={Math.max(1, totalPages)}
               page={page}
-              onChange={(_, value) => setPage(value)}
+              onChange={(e, value) => { if (e && typeof (e as any).preventDefault === 'function') (e as any).preventDefault(); setPage(value) }}
               size="small"
               showFirstButton={false}
               showLastButton={false}
+              renderItem={(item) => <PaginationItem {...item} component="button" />}
             />
             <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
           </div>
@@ -287,7 +320,7 @@ export default function GpuListing(): JSX.Element {
                     onChange={handlePriceInput('max')}
                     InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
                   />
-                  <Button size="small" onClick={() => { setPriceMin(0); setPriceMax(maxCents); setPriceRangeRand([0, Math.ceil(maxCents / 100)]); }}>Reset</Button>
+                  <Button size="small" onClick={() => { setPriceMin(0); setPriceMax(maxCents); setPriceRangeRand([0, Math.ceil(maxCents / 100)]); setPage(1); }}>Reset</Button>
                 </div>
               </div>
 

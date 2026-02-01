@@ -75,14 +75,14 @@ class Product extends Model
         }
 
         // find first http(s) image URL (jpg/png/webp/gif)
-            if (preg_match('/https?:\\/\\/[^"\'\s,]+?\\.(?:jpg|jpeg|png|webp|gif)/i', $t, $m)) {
+        if (preg_match('/https?:\\/\\/[^"\'\s,]+?\\.(?:jpg|jpeg|png|webp|gif)/i', $t, $m)) {
             return $m[0];
         }
 
         // try a more permissive match per comma-separated parts
         $parts = array_filter(array_map('trim', explode(',', $t)));
         foreach ($parts as $p) {
-                    if (preg_match('/https?:\\/\\/[^\\s"\']+/i', $p, $mm)) {
+            if (preg_match('/https?:\\/\\/[^\\s"\']+/i', $p, $mm)) {
                 return $mm[0];
             }
         }
