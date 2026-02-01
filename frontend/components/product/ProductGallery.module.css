@@ -1,5 +1,8 @@
 .wrapper {
-	max-width: 480px;
+	width: 480px;
+	max-width: 100%;
+	min-width: 320px;
+	display: block;
 }
 
 .image {
@@ -8,6 +11,7 @@
 	object-fit: contain;
 	background: #fff;
 	border: 1px solid #eee;
+	display: block;
 }
 
 .empty {

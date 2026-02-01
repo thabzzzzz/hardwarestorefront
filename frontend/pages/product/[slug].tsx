@@ -36,11 +36,67 @@ export async function getServerSideProps(context: any) {
     const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(String(slug))}`)
     if (!res.ok) return { props: { initialProduct: null } }
     const json = await res.json()
-    // normalize thumbnail as in client
-    if (json.thumbnail && typeof json.thumbnail === 'string') {
-      if (!json.thumbnail.startsWith('http') && !json.thumbnail.startsWith('/')) {
-        json.thumbnail = `${API_BASE}${json.thumbnail}`
+
+    // helper: extract first http(s) image URL from messy strings (handles brackets, nested quotes, escaped slashes)
+    const extractFirstImageUrl = (s: string | null | undefined) => {
+      if (!s) return null
+      let t = String(s).trim()
+      // convert escaped \/ to /
+      t = t.replace(/\\\//g, '/')
+      // strip outer brackets and quotes repeatedly
+      while ((t.startsWith('[') && t.endsWith(']')) || (t.startsWith('"') && t.endsWith('"'))) {
+        t = t.slice(1, -1).trim()
       }
+      // attempt to find first https? URL with common image extensions
+      const m = t.match(/https?:\/\/[^"'\]\s,]+?\.(?:jpg|jpeg|png|webp|gif)/i)
+      if (m) return m[0]
+      // fallback: split by comma, look for an http-like piece
+      const parts = t.split(',').map(p => p.trim()).filter(Boolean)
+      for (const p of parts) {
+        const mm = p.match(/https?:\/\/[^\s"']+/i)
+        if (mm) return mm[0]
+      }
+      // final fallback: return cleaned first part
+      return parts[0] || null
+    }
+
+    const normalize = (u: any) => {
+      if (!u) return u
+      if (typeof u === 'string') {
+        const first = extractFirstImageUrl(u)
+        if (!first) return null
+        if (first.startsWith('http') || first.startsWith('/')) return first
+        return `${API_BASE}${first}`
+      }
+      if (typeof u === 'object' && u.url) {
+        const first = extractFirstImageUrl(String(u.url))
+        if (!first) return { ...u, url: null }
+        if (first.startsWith('http') || first.startsWith('/')) return { ...u, url: first }
+        return { ...u, url: `${API_BASE}${first}` }
+      }
+      return u
+    }
+
+    // normalize thumbnail as in client (use extractFirstImageUrl when thumbnail is messy)
+    if (json.thumbnail && typeof json.thumbnail === 'string') {
+      const cleanedThumb = extractFirstImageUrl(json.thumbnail)
+      if (cleanedThumb) {
+        if (cleanedThumb.startsWith('http') || cleanedThumb.startsWith('/')) json.thumbnail = cleanedThumb
+        else json.thumbnail = `${API_BASE}${cleanedThumb}`
+      }
+    }
+
+    if (Array.isArray(json.images)) {
+      json.images = json.images.map((x: any) => normalize(x))
+    } else if (json.images && typeof json.images === 'string') {
+      const first = extractFirstImageUrl(String(json.images))
+      json.images = [normalize(first)]
+    }
+    if (json.spec_fields && Array.isArray(json.spec_fields.images)) {
+      json.spec_fields.images = json.spec_fields.images.map((x: any) => normalize(x))
+    } else if (json.spec_fields && json.spec_fields.images && typeof json.spec_fields.images === 'string') {
+      const first = extractFirstImageUrl(String(json.spec_fields.images))
+      json.spec_fields.images = [normalize(first)]
     }
     return { props: { initialProduct: json } }
   } catch (e) {
@@ -58,9 +114,24 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const [product, setProduct] = useState<ProductPayload | null>(initialProduct || null)
   const [loading, setLoading] = useState(false)
 
+  const mapCategory = (cat: string | undefined | null) => {
+    if (!cat) return null
+    const s = String(cat).toLowerCase().trim()
+    if (s.includes('gpu') || s.includes('graphics') || s.includes('video')) return { label: 'Graphics Cards', href: '/products/gpus' }
+    if (s.includes('cpu') || s.includes('processor')) return { label: 'CPUs', href: '/products/processors' }
+    if (s.includes('motherboard')) return { label: 'Motherboards', href: '/products/motherboards' }
+    if (s.includes('memory') || s.includes('ram')) return { label: 'Memory', href: '/products/memory' }
+    // fallback: make a friendly label and link to a products listing by slug
+    const label = String(cat).replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    return { label, href: `/products/${encodeURIComponent(String(cat))}` }
+  }
+
   useEffect(() => {
     if (!router.isReady) return
     if (!slug) return
+    // ensure we only fetch once on the client to avoid multiple network requests
+    const fetchedRef = (load as any).__hasFetched
+    if (fetchedRef) return
     // If we already have server-provided product for this slug, skip client fetch
     if (product && product.slug === slug) {
       setLoading(false)
@@ -69,6 +140,7 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
 
     async function load() {
       setLoading(true)
+      ;(load as any).__hasFetched = true
       try {
         const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(String(slug))}`)
         if (!res.ok) {
@@ -105,6 +177,50 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
               json.thumbnail = `${API_BASE}${json.thumbnail}`
             }
           }
+          // normalize images and spec_fields.images on client fetch (use same robust extractor)
+          const extractFirstImageUrl = (s: string | null | undefined) => {
+            if (!s) return null
+            let t = String(s).trim()
+            t = t.replace(/\\\//g, '/')
+            while ((t.startsWith('[') && t.endsWith(']')) || (t.startsWith('"') && t.endsWith('"'))) {
+              t = t.slice(1, -1).trim()
+            }
+            const m = t.match(/https?:\/\/[^"'\]\s,]+?\.(?:jpg|jpeg|png|webp|gif)/i)
+            if (m) return m[0]
+            const parts = t.split(',').map(p => p.trim()).filter(Boolean)
+            for (const p of parts) {
+              const mm = p.match(/https?:\/\/[^\s"']+/i)
+              if (mm) return mm[0]
+            }
+            return parts[0] || null
+          }
+
+          const normalizeClient = (u: any) => {
+            if (!u) return u
+            if (typeof u === 'string') {
+              const first = extractFirstImageUrl(u)
+              if (!first) return null
+              if (first.startsWith('http') || first.startsWith('/')) return first
+              return `${API_BASE}${first}`
+            }
+            if (typeof u === 'object' && u.url) {
+              const first = extractFirstImageUrl(String(u.url))
+              if (!first) return { ...u, url: null }
+              if (first.startsWith('http') || first.startsWith('/')) return { ...u, url: first }
+              return { ...u, url: `${API_BASE}${first}` }
+            }
+            return u
+          }
+          if (Array.isArray(json.images)) {
+            json.images = json.images.map((x: any) => normalizeClient(x))
+          } else if (json.images && typeof json.images === 'string') {
+            json.images = [normalizeClient(String(json.images).split(',')[0].trim())]
+          }
+          if (json.spec_fields && Array.isArray(json.spec_fields.images)) {
+            json.spec_fields.images = json.spec_fields.images.map((x: any) => normalizeClient(x))
+          } else if (json.spec_fields && json.spec_fields.images && typeof json.spec_fields.images === 'string') {
+            json.spec_fields.images = [normalizeClient(String(json.spec_fields.images).split(',')[0].trim())]
+          }
           setProduct(json)
         }
       } catch (e) {
@@ -135,13 +251,30 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
 
       <Header />
       <main className={`${styles.main} ${pageStyles.main}`}>
-        <nav className={pageStyles.breadcrumb}>Home / Hardware / Video Cards / {slug}</nav>
+        <nav className={pageStyles.breadcrumb}>
+          {(() => {
+            const prodAny = (product as any) || {}
+            const catCandidate = (Array.isArray(prodAny.categories) && prodAny.categories.length > 0)
+              ? prodAny.categories[0]
+              : (prodAny.product_type || prodAny.type || prodAny.category || null)
+            const mapped = mapCategory(catCandidate)
+            if (mapped) return `Home / Hardware / ${mapped.label} / ${slug}`
+            // fallback: try to infer from slug (e.g., contains 'cpu') or product_type hints
+            const inferred = mapCategory(prodAny.product_type || prodAny.type || prodAny.title || null)
+            if (inferred) return `Home / Hardware / ${inferred.label} / ${slug}`
+            return `Home / Hardware / Video Cards / ${slug}`
+          })()}
+        </nav>
 
         {loading && <div>Loading…</div>}
 
         {!loading && product && (
           <div className={pageStyles.contentRow}>
-            <ProductGallery imageUrl={product.thumbnail || null} alt={product.title} />
+            <ProductGallery
+              imageUrl={product.thumbnail || null}
+              images={(product as any).images || (product.spec_fields && (product.spec_fields as any).images) || null}
+              alt={product.title}
+            />
 
             <div className={pageStyles.rightCol}>
               <ProductSummary title={product.title} brand={product.brand} productId={product.product_id} stock={product.stock} />

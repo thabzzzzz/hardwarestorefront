@@ -121,7 +121,9 @@ class ProductsController extends Controller
                 'microarchitecture' => $variant->product->microarchitecture,
                 'socket' => $variant->product->socket,
                 'current_price' => $price ? ['amount_cents' => $price->amount_cents, 'currency' => $price->currency] : null,
-                'thumbnail' => $thumbnail ? $thumbnail->path : null,
+                // prefer cleaned product-level thumbnail when available so listing cards
+                // use the same image as the product page
+                'thumbnail' => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnail ? $thumbnail->path : null),
                 'short_specs' => array_slice((array)($variant->specs ?? []), 0, 6),
                 'stock' => $variant->stock ? ['qty_available' => $variant->stock->qty_available, 'status' => $variant->stock->status] : null,
                 'release_date' => $variant->product->release_date ?? null,

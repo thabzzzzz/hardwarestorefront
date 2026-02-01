@@ -113,13 +113,24 @@ class ProductController extends Controller
         $brand = $product->vendor ? $product->vendor->name : $product->brand;
         $manufacturer = $product->manufacturer;
 
+        // prefer a cleaned thumbnail URL when available
+        $cleanThumb = null;
+        try {
+            $cleanThumb = $product->clean_thumbnail ?? null;
+        } catch (\Exception $e) {
+            $cleanThumb = null;
+        }
+
         $payload = [
             'slug' => $product->slug,
             'title' => $product->name,
             'brand' => $brand,
             'manufacturer' => $manufacturer,
+            'product_type' => $product->product_type,
+            'categories' => $product->product_type ? [$product->product_type] : [],
             'product_id' => (string) $product->id,
-            'thumbnail' => $thumbnail,
+            // expose cleaned thumbnail first; fall back to previously-selected path
+            'thumbnail' => $cleanThumb ?? $thumbnail,
             'stock' => $stock,
             'price' => $price,
             // Human-friendly key/value specs (synthesized if empty)

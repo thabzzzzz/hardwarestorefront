@@ -32,9 +32,70 @@ const API_BASE = typeof window === 'undefined'
 
 export default function ProductCard({ name, title, vendor, sku, stock, thumbnail, price, slug, manufacturer, productType, cores, boostClock, microarchitecture, socket, footerSlot }: Props) {
   let t = thumbnail || null
-  // If `t` is an absolute path (starts with '/'), use it directly so Next.js serves from frontend/public
-  const src = t
-    ? (t.startsWith('http') ? t : t)
+  // robust extractor: cleans messy image strings (brackets, nested quotes, escaped slashes)
+  const extractFirstImageUrl = (s: string | null | undefined) => {
+    if (!s) return null
+    let t = String(s).trim()
+    t = t.replace(/\\\//g, '/')
+    while ((t.startsWith('[') && t.endsWith(']')) || (t.startsWith('"') && t.endsWith('"'))) {
+      t = t.slice(1, -1).trim()
+    }
+    const m = t.match(/https?:\/\/[^"'\s,]+?\.(?:jpg|jpeg|png|webp|gif)/i)
+    if (m) return m[0]
+    const parts = t.split(',').map(p => p.trim()).filter(Boolean)
+    for (const p of parts) {
+      const mm = p.match(/https?:\/\/[^\s"']+/i)
+      if (mm) return mm[0]
+    }
+    return parts[0] || null
+  }
+
+  const normalizeClient = (u: any) => {
+    if (!u) return null
+    // If it's already a string, try to extract the first image URL
+    if (typeof u === 'string') {
+      const first = extractFirstImageUrl(u)
+      return first || null
+    }
+
+    // If it's an array, try the first element
+    if (Array.isArray(u) && u.length > 0) {
+      const first = extractFirstImageUrl(String(u[0]))
+      return first || null
+    }
+
+    // If it's an object with common image properties, try those and return a string URL
+    if (typeof u === 'object') {
+      const candidates = [u.url, u.src, u.path, u.image, u.thumbnail, u.thumb].filter(Boolean)
+      // fallback: iterate over object values looking for a string
+      for (const c of candidates) {
+        if (typeof c === 'string') {
+          const first = extractFirstImageUrl(String(c))
+          if (first) return first
+        }
+      }
+      // try common fields individually
+      if (typeof u.url === 'string') {
+        const first = extractFirstImageUrl(u.url)
+        if (first) return first
+      }
+      if (typeof u.src === 'string') {
+        const first = extractFirstImageUrl(u.src)
+        if (first) return first
+      }
+      // nothing found
+      return null
+    }
+
+    return null
+  }
+
+  let tClean = null
+  try { tClean = normalizeClient(thumbnail) as string | null } catch (e) { tClean = null }
+
+  // If `tClean` is an absolute path (starts with '/'), use it directly so Next.js serves from frontend/public
+  const src = tClean
+    ? (typeof tClean === 'string' ? (tClean.startsWith('http') ? tClean : tClean) : '/images/products/placeholder.png')
     : '/images/products/placeholder.png'
 
   function escapeRegExp(s: string) {
@@ -67,7 +128,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
           toast('Removed from wishlist')
         } else {
           try {
-            wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: t, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+            wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: src, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
             console.info('Added to wishlist')
             toast.success('Added to wishlist')
           } catch (err) {
@@ -122,7 +183,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const entry = {
                 id: sku ?? id,
                 title: displayTitle,
-                thumbnail: t,
+                thumbnail: src,
                 price: price ? { amount_cents: price.amount_cents } : null,
                 stock: stock || null
               }
