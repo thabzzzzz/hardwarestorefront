@@ -92,8 +92,9 @@ export default function GpuListing(): JSX.Element {
   const [sortBy, setSortBy] = useState<string>('price_asc')
 
   const manufacturers = useMemo(() => {
+    const source = allFilteredItems && Array.isArray(allFilteredItems) ? allFilteredItems : items
     const s = new Set<string>()
-    for (const it of items) {
+    for (const it of source) {
       const m = String(it.manufacturer || '').trim()
       if (m) s.add(m)
     }
@@ -252,6 +253,25 @@ export default function GpuListing(): JSX.Element {
     setHasAppliedPriceFilter(true)
   }
 
+  // Sort helper - keeps client-side sorting logic in one place
+  function sortItems(arr: GpuItem[], sortKey: string) {
+    const out = arr.slice()
+    if (sortKey === 'price_asc') {
+      out.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
+    } else if (sortKey === 'price_desc') {
+      out.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
+    } else if (sortKey === 'date_asc' || sortKey === 'date_desc') {
+      // if server returns date strings in `created_at` or similar, attempt to sort by that field
+      const dir = sortKey === 'date_asc' ? 1 : -1
+      out.sort((a, b) => {
+        const da = new Date((a as any).created_at || 0).getTime()
+        const db = new Date((b as any).created_at || 0).getTime()
+        return (da - db) * dir
+      })
+    }
+    return out
+  }
+
   function handlePriceSliderChange(_e: Event, value: number | number[]) {
     userTouchedPrice.current = true
     const next: [number, number] = Array.isArray(value) ? [Number(value[0]), Number(value[1])] : [0, Number(value)]
@@ -275,6 +295,93 @@ export default function GpuListing(): JSX.Element {
     setPage(1)
     setLastAction(`manufacturer:${name}`)
   }
+
+  // Recompute the full filtered set (client-side) when any client-only filters change.
+  // This ensures pagination and manufacturer lists reflect the full filtered dataset.
+  useEffect(() => {
+    // if there are no client-side filters active, clear the cached full set
+    const hasMan = selectedManufacturers && selectedManufacturers.length > 0
+    const hasStock = filterInStock || filterReserved || filterOutOfStock
+    const needClientFilter = hasMan || hasStock || hasAppliedPriceFilter
+    if (!needClientFilter) {
+      setAllFilteredItems(null)
+      return
+    }
+
+    let cancelled = false
+    async function fetchAndFilter() {
+      setLoading(true)
+      try {
+        let url = `${API_BASE}/api/gpus?per_page=10000&page=1`
+        if (hasAppliedPriceFilter) {
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+        }
+        if (sortBy.startsWith('date')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=date&order=${order}`
+        }
+
+        const res = await fetch(url)
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) {
+          const text = await res.text()
+          console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
+          if (!cancelled) {
+            setAllFilteredItems([])
+            setItems([])
+            setTotalPages(1)
+          }
+          return
+        }
+
+        const json = await res.json()
+        const all = json.data || []
+
+        const matched = all.filter(it => {
+          // price
+          const cents = Number(it.current_price?.amount_cents || 0)
+          if (hasAppliedPriceFilter) {
+            if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
+          }
+          // manufacturer
+          if (hasMan) {
+            const man = String(it.manufacturer || '').trim()
+            if (!selectedManufacturers.includes(man)) return false
+          }
+          // stock
+          if (hasStock) {
+            const raw = String(it.stock?.status || '').toLowerCase()
+            const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
+            if (status === 'in_stock' && !filterInStock) return false
+            if (status === 'reserved' && !filterReserved) return false
+            if (status === 'out_of_stock' && !filterOutOfStock) return false
+          }
+          return true
+        })
+
+        const sorted = sortItems(matched, sortBy)
+        if (!cancelled) {
+          setAllFilteredItems(sorted)
+          const total = Math.max(1, Math.ceil((sorted.length || 0) / perPage))
+          setTotalPages(total)
+          setItems(sorted.slice((page - 1) * perPage, page * perPage))
+        }
+      } catch (e) {
+        console.error('fetch/filter failed', e)
+        if (!cancelled) {
+          setAllFilteredItems([])
+          setItems([])
+          setTotalPages(1)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchAndFilter()
+    return () => { cancelled = true }
+  }, [selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter, priceMin, priceMax, sortBy, perPage, page])
 
   const filtered = useMemo(() => {
     return items.filter(it => {
