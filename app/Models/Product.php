@@ -28,7 +28,7 @@ class Product extends Model
         'microarchitecture',
         'socket',
         'is_featured',
-        'is_popular',
+        'board_partner_id',
         'is_new',
     ];
 
@@ -45,6 +45,11 @@ class Product extends Model
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    public function boardPartner()
+    {
+        return $this->belongsTo(Vendor::class, 'board_partner_id');
     }
 
     /**

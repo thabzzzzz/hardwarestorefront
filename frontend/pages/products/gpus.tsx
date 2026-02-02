@@ -31,6 +31,7 @@ type GpuItem = {
   stock?: { qty_available: number; qty_reserved?: number; status: string } | null
   slug?: string | null
   manufacturer?: string | null
+  board_partner?: string | null
   product_type?: string | null
   cores?: number | string | null
   boost_clock?: string | null
@@ -124,6 +125,9 @@ export default function GpuListing(): JSX.Element {
   }, [rawAllItems, allFilteredItems, items])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
+  const normalizeKey = (s: string | null | undefined) => String(s || '').trim().toLowerCase()
+  const selectedIncludes = (name: string) => selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(name))
+
   const router = useRouter()
   const [lastAction, setLastAction] = useState<string>('')
   const [mounted, setMounted] = useState(false)
@@ -150,6 +154,15 @@ export default function GpuListing(): JSX.Element {
     if (!router.isReady) return
 
     async function load() {
+      // If we already have a client-side filtered set, use it for pagination
+      const needClientFilter = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
+      if (allFilteredItems && Array.isArray(allFilteredItems) && needClientFilter) {
+        const total = Math.max(1, Math.ceil((allFilteredItems.length || 0) / perPage))
+        setTotalPages(total)
+        setItems(allFilteredItems.slice((page - 1) * perPage, page * perPage))
+        setLoading(false)
+        return
+      }
       console.debug('[DBG] load() page=', page, 'perPage=', perPage, 'sortBy=', sortBy, 'hasAppliedPriceFilter=', hasAppliedPriceFilter)
       setLoading(true)
       try {
@@ -186,7 +199,7 @@ export default function GpuListing(): JSX.Element {
           }
           const json = await res.json()
           const all = json.data || []
-          setRawAllItems(prev => prev ?? all)
+          setRawAllItems(all)
           // client-side price filter as final safeguard
           const matched = all.filter(it => {
             const cents = Number(it.current_price?.amount_cents || 0)
@@ -229,7 +242,7 @@ export default function GpuListing(): JSX.Element {
         setAllFilteredItems(null)
         // store raw full page list when available (do not overwrite once cached)
         const all = json.data || []
-        setRawAllItems(prev => prev ?? all)
+        setRawAllItems(all)
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
@@ -317,7 +330,15 @@ export default function GpuListing(): JSX.Element {
   }
 
   function toggleManufacturer(name: string) {
-    setSelectedManufacturers(prev => prev.includes(name) ? prev.filter(x => x !== name) : [...prev, name])
+    setSelectedManufacturers(prev => {
+      const exists = prev.some(p => normalizeKey(p) === normalizeKey(name))
+      if (exists) return prev.filter(x => normalizeKey(x) !== normalizeKey(name))
+      return [...prev, name]
+    })
+    // clear any cached page-only dataset so the full catalog is fetched
+    // and client-side filtering can produce condensed pagination.
+    setRawAllItems(null)
+    setAllFilteredItems(null)
     setPage(1)
     setLastAction(`manufacturer:${name}`)
   }
@@ -335,6 +356,44 @@ export default function GpuListing(): JSX.Element {
     }
 
     let cancelled = false
+    // Fast path: if we already have the full dataset cached locally, filter immediately
+    if (rawAllItems && Array.isArray(rawAllItems)) {
+      const all = rawAllItems
+      const matched = all.filter(it => {
+        // price
+        const cents = Number(it.current_price?.amount_cents || 0)
+        if (hasAppliedPriceFilter) {
+          if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
+        }
+        // manufacturer
+        if (hasMan) {
+          const man = String(it.manufacturer || '').trim()
+          const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
+          if (!ok) return false
+        }
+        // stock
+        if (hasStock) {
+          const raw = String(it.stock?.status || '').toLowerCase()
+          const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
+          if (status === 'in_stock' && !filterInStock) return false
+          if (status === 'reserved' && !filterReserved) return false
+          if (status === 'out_of_stock' && !filterOutOfStock) return false
+        }
+        return true
+      })
+
+      const sorted = sortItems(matched, sortBy)
+      if (!cancelled) {
+        setAllFilteredItems(sorted)
+        // reset to first page to ensure condensation on each tick/untick
+        setPage(1)
+        const total = Math.max(1, Math.ceil((sorted.length || 0) / perPage))
+        setTotalPages(total)
+        setItems(sorted.slice(0, perPage))
+      }
+      return () => { cancelled = true }
+    }
+
     async function fetchAndFilter() {
       setLoading(true)
       try {
@@ -363,19 +422,20 @@ export default function GpuListing(): JSX.Element {
 
         const json = await res.json()
         const all = json.data || []
-        setRawAllItems(prev => prev ?? all)
+        setRawAllItems(all)
 
-        const matched = all.filter(it => {
+          const matched = all.filter(it => {
           // price
           const cents = Number(it.current_price?.amount_cents || 0)
           if (hasAppliedPriceFilter) {
             if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
           }
           // manufacturer
-          if (hasMan) {
-            const man = String(it.manufacturer || '').trim()
-            if (!selectedManufacturers.includes(man)) return false
-          }
+            if (hasMan) {
+              const man = String(it.manufacturer || '').trim()
+              const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
+              if (!ok) return false
+            }
           // stock
           if (hasStock) {
             const raw = String(it.stock?.status || '').toLowerCase()
@@ -408,14 +468,22 @@ export default function GpuListing(): JSX.Element {
 
     fetchAndFilter()
     return () => { cancelled = true }
-  }, [selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter, priceMin, priceMax, sortBy, perPage, page])
+  }, [selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter, priceMin, priceMax, sortBy, perPage])
 
   const filtered = useMemo(() => {
-    return items.filter(it => {
+    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
+    // When client-side filters are active prefer to run filters over the
+    // full cached dataset (`allFilteredItems` or `rawAllItems`) so pages
+    // are condensed. When no client filters are active, fall back to the
+    // current `items` (server-driven page) to preserve server pagination.
+    const source: GpuItem[] = clientFilteringActive ? (allFilteredItems ?? rawAllItems ?? items) : items
+
+    return source.filter(it => {
       // manufacturer filter
       if (selectedManufacturers.length > 0) {
         const man = String(it.manufacturer || '').trim()
-        if (!selectedManufacturers.includes(man)) return false
+        const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
+        if (!ok) return false
       }
       // price filtering: if the user has applied the price filter we rely
       // on the server to return the correctly filtered result set so we
@@ -436,7 +504,7 @@ export default function GpuListing(): JSX.Element {
       if (status === 'out_of_stock' && filterOutOfStock) return true
       return false
     })
-  }, [items, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock, selectedManufacturers])
+  }, [items, rawAllItems, allFilteredItems, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock, selectedManufacturers, hasAppliedPriceFilter])
   
 
   // apply client-side sorting for price options (server handles date sorting)
@@ -447,8 +515,26 @@ export default function GpuListing(): JSX.Element {
     } else if (sortBy === 'price_desc') {
       arr.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
     }
+
+    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
+    if (clientFilteringActive) {
+      const start = (page - 1) * perPage
+      return arr.slice(start, start + perPage)
+    }
+
+    // when not doing client-side filtering, server already returned a
+    // paginated page in `items` so return the sorted page as-is
     return arr
-  }, [filtered, sortBy])
+  }, [filtered, sortBy, page, perPage, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter])
+
+  // Keep `totalPages` in sync when client-side filtering is active.
+  useEffect(() => {
+    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
+    if (!clientFilteringActive) return
+    setTotalPages(Math.max(1, Math.ceil(filtered.length / perPage)))
+    // ensure page is within bounds
+    setPage(prev => Math.min(prev, Math.max(1, Math.ceil(filtered.length / perPage))))
+  }, [filtered, perPage, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter])
 
   useEffect(() => {
     if (!router.isReady) return
@@ -624,7 +710,7 @@ export default function GpuListing(): JSX.Element {
                         {manufacturers.map(m => (
                           <FormControlLabel
                             key={m}
-                            control={<Checkbox checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
+                            control={<Checkbox checked={selectedIncludes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
                             label={m}
                           />
                         ))}
@@ -664,7 +750,7 @@ export default function GpuListing(): JSX.Element {
                       key={it.variant_id}
                       name={(it as any).name}
                       title={it.title}
-                      vendor={(it as any).brand}
+                      vendor={(it as any).board_partner || (it as any).brand}
                       sku={it.sku}
                       stock={(it as any).stock || null}
                       thumbnail={it.thumbnail}

@@ -25,7 +25,7 @@ class ProductsController extends Controller
             $categoryId = Category::where('slug', $categorySlug)->value('id');
         }
 
-        $query = ProductVariant::with(['product', 'images', 'stock', 'prices'])
+        $query = ProductVariant::with(['product.vendor', 'product.boardPartner', 'images', 'stock', 'prices'])
             ->where('is_active', true);
 
         if ($categoryId) {
@@ -122,12 +122,41 @@ class ProductsController extends Controller
             $price = $variant->prices()->orderByDesc('valid_from')->first();
             $thumbnail = $variant->images()->where('role', 'thumbnail')->first() ?? $variant->product->images()->where('role', 'thumbnail')->first();
 
+            // determine board partner (explicit FK) falling back to vendor/name
+            $boardPartnerName = null;
+            if (isset($variant->product->boardPartner) && $variant->product->boardPartner) {
+                $boardPartnerName = $variant->product->boardPartner->name;
+            } elseif (isset($variant->product->vendor) && $variant->product->vendor) {
+                $boardPartnerName = $variant->product->vendor->name;
+            } else {
+                $boardPartnerName = $variant->product->brand;
+            }
+
+            // normalize manufacturer/brand for GPUs: prefer canonical NVIDIA/AMD/INTEL
+            $manufacturer = $variant->product->manufacturer;
+            if (($variant->product->product_type ?? '') === 'gpus') {
+                $m = strtolower(trim((string)($manufacturer ?? '')));
+                $pname = strtolower(trim((string)($variant->product->name ?? '')));
+                if (strpos($m, 'nvidia') !== false || strpos($pname, 'nvidia') !== false || strpos($pname, 'geforce') !== false || strpos($pname, 'rtx') !== false) {
+                    $manufacturer = 'NVIDIA';
+                } elseif (strpos($m, 'amd') !== false || strpos($m, 'radeon') !== false || strpos($pname, 'radeon') !== false || preg_match('/\brx\b/i', $pname)) {
+                    $manufacturer = 'AMD';
+                } elseif (strpos($m, 'intel') !== false || strpos($pname, 'intel') !== false) {
+                    $manufacturer = 'INTEL';
+                } else {
+                    $manufacturer = strtoupper(trim((string)$manufacturer));
+                }
+            }
+
+            $brandField = ($variant->product->product_type ?? '') === 'gpus' ? $manufacturer : (isset($variant->product->vendor) && $variant->product->vendor ? $variant->product->vendor->name : $variant->product->brand);
+
             return [
                 'variant_id' => $variant->id,
                 'product_id' => $variant->product_id,
                 'name' => $variant->product->name,
-                'brand' => $variant->product->vendor ? $variant->product->vendor->name : $variant->product->brand,
-                'manufacturer' => $variant->product->manufacturer,
+                'brand' => $brandField,
+                'board_partner' => $boardPartnerName,
+                'manufacturer' => $manufacturer,
                 'slug' => $variant->product->slug,
                 'sku' => $variant->sku,
                 'title' => $variant->title,
