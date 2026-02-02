@@ -64,6 +64,28 @@ export default function GpuListing(): JSX.Element {
   const [globalMaxCents, setGlobalMaxCents] = useState<number | null>(null)
   const [hasAppliedPriceFilter, setHasAppliedPriceFilter] = useState(false)
   const [allFilteredItems, setAllFilteredItems] = useState<GpuItem[] | null>(null)
+  const [rawAllItems, setRawAllItems] = useState<GpuItem[] | null>(null)
+
+  // Ensure we cache the full catalog (safe since catalog ~500 items)
+  useEffect(() => {
+    if (rawAllItems !== null) return
+    let cancelled = false
+    async function fetchAll() {
+      try {
+        const url = `${API_BASE}/api/gpus?per_page=1000&page=1`
+        const res = await fetch(url)
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) return
+        const json = await res.json()
+        const all = json.data || []
+        if (!cancelled) setRawAllItems(all)
+      } catch (e) {
+        console.error('fetchAll failed', e)
+      }
+    }
+    fetchAll()
+    return () => { cancelled = true }
+  }, [rawAllItems])
   const userTouchedPrice = useRef(false)
   const effectiveMaxCents = globalMaxCents ?? Math.max(maxCents, priceMax || 0)
   const sliderMaxRand = Math.max(Math.ceil((effectiveMaxCents || 0) / 100), 1)
@@ -92,14 +114,14 @@ export default function GpuListing(): JSX.Element {
   const [sortBy, setSortBy] = useState<string>('price_asc')
 
   const manufacturers = useMemo(() => {
-    const source = allFilteredItems && Array.isArray(allFilteredItems) ? allFilteredItems : items
+    const source = rawAllItems ?? (allFilteredItems && Array.isArray(allFilteredItems) ? allFilteredItems : items)
     const s = new Set<string>()
     for (const it of source) {
       const m = String(it.manufacturer || '').trim()
       if (m) s.add(m)
     }
     return Array.from(s).sort()
-  }, [items])
+  }, [rawAllItems, allFilteredItems, items])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
   const router = useRouter()
@@ -164,6 +186,7 @@ export default function GpuListing(): JSX.Element {
           }
           const json = await res.json()
           const all = json.data || []
+          setRawAllItems(prev => prev ?? all)
           // client-side price filter as final safeguard
           const matched = all.filter(it => {
             const cents = Number(it.current_price?.amount_cents || 0)
@@ -204,6 +227,9 @@ export default function GpuListing(): JSX.Element {
         }
         const json = await res.json()
         setAllFilteredItems(null)
+        // store raw full page list when available (do not overwrite once cached)
+        const all = json.data || []
+        setRawAllItems(prev => prev ?? all)
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
@@ -337,6 +363,7 @@ export default function GpuListing(): JSX.Element {
 
         const json = await res.json()
         const all = json.data || []
+        setRawAllItems(prev => prev ?? all)
 
         const matched = all.filter(it => {
           // price
