@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
@@ -60,13 +60,31 @@ export default function GpuListing(): JSX.Element {
   }, [items])
   const [priceMax, setPriceMax] = useState<number>(maxCents)
   const [priceRangeRand, setPriceRangeRand] = useState<[number, number]>([0, Math.ceil(maxCents / 100)])
+  const [globalMinCents, setGlobalMinCents] = useState<number | null>(null)
+  const [globalMaxCents, setGlobalMaxCents] = useState<number | null>(null)
+  const [hasAppliedPriceFilter, setHasAppliedPriceFilter] = useState(false)
+  const [allFilteredItems, setAllFilteredItems] = useState<GpuItem[] | null>(null)
+  const userTouchedPrice = useRef(false)
+  const effectiveMaxCents = globalMaxCents ?? Math.max(maxCents, priceMax || 0)
+  const sliderMaxRand = Math.max(Math.ceil((effectiveMaxCents || 0) / 100), 1)
+  const sliderStep = 1
 
-  // resync max when items change
+  // resync max when items change — but do NOT shrink the slider max
+  // once the user has interacted with it, and prefer server-provided
+  // global bounds when available.
   useEffect(() => {
     const nextMaxCents = Math.max(0, Math.ceil(maxCents || 0))
-    setPriceMax(nextMaxCents)
-    setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil(nextMaxCents / 100))])
-  }, [maxCents])
+    if (globalMaxCents !== null) return
+    if (userTouchedPrice.current) return
+
+    // never reduce the visible max; keep at least the previous value
+    setPriceMax(prev => Math.max(prev || 0, nextMaxCents))
+    setPriceRangeRand(prev => {
+      const minRand = Math.max(0, Math.round(priceMin / 100))
+      const newMaxRand = Math.max(1, Math.ceil(nextMaxCents / 100))
+      return [minRand, Math.max(prev?.[1] || 0, newMaxRand)]
+    })
+  }, [maxCents, globalMaxCents, priceMin])
 
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
@@ -84,66 +102,136 @@ export default function GpuListing(): JSX.Element {
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
   const router = useRouter()
+  const [lastAction, setLastAction] = useState<string>('')
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  const initialPageSynced = useRef(false)
 
-  // read initial page from URL query when router is ready
+  // On first ready, initialize `page` from the URL query if present.
   useEffect(() => {
     if (!router.isReady) return
-    const raw = router.query.page
-    const qp = Array.isArray(raw) ? raw[0] : raw
-    const qnum = Number(qp || 1) || 1
-    if (qnum !== page) setPage(qnum)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (initialPageSynced.current) return
+    initialPageSynced.current = true
+    const qp = router.query.page
+    if (!qp) return
+    const raw = Array.isArray(qp) ? qp[0] : qp
+    const n = Number(raw)
+    if (Number.isFinite(n) && n >= 1) {
+      setPage(Math.max(1, Math.floor(n)))
+      setLastAction(`url:page:${n}`)
+    }
   }, [router.isReady, router.query.page])
-
-  // keep URL in sync with page state (shallow replace)
+  // guard to avoid replace->read cycles and to handle environments
+  // where history operations may be restricted (SecurityError)
   useEffect(() => {
     if (!router.isReady) return
-    const cur = { ...router.query }
-    if (page === 1) {
-      if (cur.page) {
-        delete cur.page
-        router.replace({ pathname: router.pathname, query: cur }, undefined, { shallow: true })
-      }
-    } else {
-      if (String(cur.page || '') !== String(page)) {
-        router.replace({ pathname: router.pathname, query: { ...cur, page: String(page) } }, undefined, { shallow: true })
+
+    async function load() {
+      console.debug('[DBG] load() page=', page, 'perPage=', perPage, 'sortBy=', sortBy, 'hasAppliedPriceFilter=', hasAppliedPriceFilter)
+      setLoading(true)
+      try {
+        // If price filter is applied, prefer to fetch a large slice and
+        // perform client-side filtering to guarantee pages are compacted
+        // to only matching items (so totalPages will shrink accordingly).
+        if (hasAppliedPriceFilter) {
+          // reuse cached matched items if available
+          if (allFilteredItems && Array.isArray(allFilteredItems)) {
+            const matched = allFilteredItems
+            const total = Math.max(1, Math.ceil((matched.length || 0) / perPage))
+            setTotalPages(total)
+            setItems(matched.slice((page - 1) * perPage, page * perPage))
+            return
+          }
+
+          // fetch a large page to collect items to filter client-side
+          let url = `${API_BASE}/api/gpus?per_page=10000&page=1`
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+          if (sortBy.startsWith('date')) {
+            const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+            url += `&sort=date&order=${order}`
+          }
+
+          const res = await fetch(url)
+          const contentType = res.headers.get('content-type') || ''
+          if (!res.ok || !contentType.includes('application/json')) {
+            const text = await res.text()
+            console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
+            setItems([])
+            setTotalPages(1)
+            return
+          }
+          const json = await res.json()
+          const all = json.data || []
+          // client-side price filter as final safeguard
+          const matched = all.filter(it => {
+            const cents = Number(it.current_price?.amount_cents || 0)
+            return cents >= (priceMin || 0) && cents <= (priceMax || Number.MAX_SAFE_INTEGER)
+          })
+          setAllFilteredItems(matched)
+          const total = Math.max(1, Math.ceil((matched.length || 0) / perPage))
+          setTotalPages(total)
+          setItems(matched.slice((page - 1) * perPage, page * perPage))
+
+          // seed slider bounds from server meta if provided
+          if (json.meta && (json.meta.price_min !== undefined || json.meta.price_max !== undefined)) {
+            if (globalMaxCents === null) {
+              setGlobalMinCents(json.meta.price_min ?? 0)
+              setGlobalMaxCents(json.meta.price_max ?? 0)
+              const nextMax = json.meta.price_max ?? maxCents
+              setPriceMax(Math.max(0, Math.ceil(nextMax || 0)))
+              setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil((nextMax || maxCents) / 100))])
+            }
+          }
+          return
+        }
+
+        // default (no price filter): server-side pagination
+        let url = `${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`
+        if (sortBy.startsWith('date')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=date&order=${order}`
+        }
+        const res = await fetch(url)
+        const contentType = res.headers.get('content-type') || ''
+        if (!res.ok || !contentType.includes('application/json')) {
+          const text = await res.text()
+          console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
+          setItems([])
+          setTotalPages(1)
+          return
+        }
+        const json = await res.json()
+        setAllFilteredItems(null)
+        setItems(json.data || [])
+        const total = json.last_page || Math.ceil((json.total || 0) / perPage)
+        setTotalPages(total)
+
+        if (json.meta && (json.meta.price_min !== undefined || json.meta.price_max !== undefined)) {
+          if (globalMaxCents === null) {
+            setGlobalMinCents(json.meta.price_min ?? 0)
+            setGlobalMaxCents(json.meta.price_max ?? 0)
+            const nextMax = json.meta.price_max ?? maxCents
+            setPriceMax(Math.max(0, Math.ceil(nextMax || 0)))
+            setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil((nextMax || maxCents) / 100))])
+          }
+        }
+      } catch (e) {
+        console.error('fetch gpus failed', e)
+      } finally {
+        setLoading(false)
       }
     }
-  }, [page, router, router.isReady])
-
-  function toggleManufacturer(m: string) {
-    setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
-  }
-
-  const sliderMaxRand = Math.max(Math.ceil((maxCents || 0) / 100), 1)
-  const sliderStep = 1
-
-  useEffect(() => {
-    const boundedMin = Math.max(0, Math.min(Math.round(priceMin / 100), sliderMaxRand))
-    const boundedMax = Math.max(boundedMin, Math.min(Math.round((priceMax || sliderMaxRand * 100) / 100), sliderMaxRand))
-    setPriceRangeRand([boundedMin, boundedMax])
-  }, [priceMin, priceMax, sliderMaxRand])
-
-  function handlePriceSliderChange(_event: Event, value: number | number[]) {
-    if (Array.isArray(value)) {
-      const [min, max] = value
-      const boundedMin = Math.max(0, Math.min(Math.round(min), sliderMaxRand))
-      const boundedMax = Math.max(boundedMin, Math.min(Math.round(max), sliderMaxRand))
-      setPriceRangeRand([boundedMin, boundedMax])
-    }
-  }
-
-  function handlePriceSliderCommit() {
-    const [min, max] = priceRangeRand
-    setPriceMin(min * 100)
-    setPriceMax(max * 100)
-    setPage(1)
-  }
+    load()
+  }, [page, perPage, sortBy, router.isReady, hasAppliedPriceFilter, priceMin, priceMax, allFilteredItems])
 
   function handlePriceInput(kind: 'min' | 'max') {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = Number(e.target.value)
       const safe = Number.isFinite(raw) ? Math.round(raw) : 0
+      console.log('[DBG] handlePriceInput', { kind, raw, safe })
+      userTouchedPrice.current = true
+      setLastAction(`input:${kind}:${raw}`)
       if (kind === 'min') {
         const bounded = Math.max(0, Math.min(safe, Math.round((priceMax ?? sliderMaxRand * 100) / 100)))
         setPriceMin(bounded * 100)
@@ -151,8 +239,41 @@ export default function GpuListing(): JSX.Element {
         const bounded = Math.max(Math.round(priceMin / 100), Math.min(safe, sliderMaxRand))
         setPriceMax(bounded * 100)
       }
-      setPage(1)
     }
+  }
+
+  function applyPriceFilter() {
+    const [min, max] = priceRangeRand
+    console.log('[DBG] applyPriceFilter', { priceRangeRand, min, max })
+    setLastAction(`apply:${min}-${max}`)
+    setPriceMin(min * 100)
+    setPriceMax(max * 100)
+    setPage(1)
+    setHasAppliedPriceFilter(true)
+  }
+
+  function handlePriceSliderChange(_e: Event, value: number | number[]) {
+    userTouchedPrice.current = true
+    const next: [number, number] = Array.isArray(value) ? [Number(value[0]), Number(value[1])] : [0, Number(value)]
+    setPriceRangeRand(next)
+    setLastAction(`slider:change:${next[0]}-${next[1]}`)
+  }
+
+  function handlePriceSliderCommit(_e: Event, value: number | number[]) {
+    userTouchedPrice.current = true
+    const next: [number, number] = Array.isArray(value) ? [Number(value[0]), Number(value[1])] : [0, Number(value)]
+    setPriceRangeRand(next)
+    setPriceMin(next[0] * 100)
+    setPriceMax(next[1] * 100)
+    setPage(1)
+    setHasAppliedPriceFilter(true)
+    setLastAction(`slider:commit:${next[0]}-${next[1]}`)
+  }
+
+  function toggleManufacturer(name: string) {
+    setSelectedManufacturers(prev => prev.includes(name) ? prev.filter(x => x !== name) : [...prev, name])
+    setPage(1)
+    setLastAction(`manufacturer:${name}`)
   }
 
   const filtered = useMemo(() => {
@@ -162,8 +283,13 @@ export default function GpuListing(): JSX.Element {
         const man = String(it.manufacturer || '').trim()
         if (!selectedManufacturers.includes(man)) return false
       }
-      const cents = Number(it.current_price?.amount_cents || 0)
-      if (cents < priceMin || cents > priceMax) return false
+      // price filtering: if the user has applied the price filter we rely
+      // on the server to return the correctly filtered result set so we
+      // should not re-filter the current page (which would shrink pages).
+      if (!hasAppliedPriceFilter) {
+        const cents = Number(it.current_price?.amount_cents || 0)
+        if (cents < priceMin || cents > priceMax) return false
+      }
 
       const raw = String(it.stock?.status || '').toLowerCase()
       const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
@@ -191,10 +317,18 @@ export default function GpuListing(): JSX.Element {
   }, [filtered, sortBy])
 
   useEffect(() => {
+    if (!router.isReady) return
+
     async function load() {
+      console.debug('[DBG] load() page=', page, 'perPage=', perPage, 'sortBy=', sortBy)
       setLoading(true)
       try {
         let url = `${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`
+        // include price filters only after the user explicitly applies them
+        if (hasAppliedPriceFilter) {
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+        }
         if (sortBy.startsWith('date')) {
           const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
           url += `&sort=date&order=${order}`
@@ -213,6 +347,17 @@ export default function GpuListing(): JSX.Element {
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
+
+        // use server-provided global price metadata to seed the slider bounds
+        if (json.meta && (json.meta.price_min !== undefined || json.meta.price_max !== undefined)) {
+          if (globalMaxCents === null) {
+            setGlobalMinCents(json.meta.price_min ?? 0)
+            setGlobalMaxCents(json.meta.price_max ?? 0)
+            const nextMax = json.meta.price_max ?? maxCents
+            setPriceMax(Math.max(0, Math.ceil(nextMax || 0)))
+            setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil((nextMax || maxCents) / 100))])
+          }
+        }
       } catch (e) {
         console.error('fetch gpus failed', e)
       } finally {
@@ -220,7 +365,7 @@ export default function GpuListing(): JSX.Element {
       }
     }
     load()
-  }, [page, perPage, sortBy])
+  }, [page, perPage, sortBy, router.isReady, hasAppliedPriceFilter, priceMin, priceMax])
 
   // Reset to first page when sort changes
   useEffect(() => {
@@ -236,6 +381,12 @@ export default function GpuListing(): JSX.Element {
       <main className={`${styles.main} ${pageStyles.main}`}>
         <nav className={pageStyles.breadcrumb}>Home / Hardware / Graphics Cards</nav>
         <h1 className={pageStyles.title}>Graphics Cards</h1>
+
+        {mounted && (
+          <div style={{ padding: '6px 12px', background: '#fff4', borderRadius: 4, marginBottom: 8 }}>
+            <strong>DEBUG:</strong>&nbsp;page={page} | url_page={String(router.query.page || '')} | lastAction={lastAction}
+          </div>
+        )}
 
         <div className={pageStyles.controlsRow}>
           <div className={pageStyles.controlsLeft}>
@@ -260,8 +411,7 @@ export default function GpuListing(): JSX.Element {
                 labelId="show-label"
                 value={perPage}
                 label="Show"
-                onChange={(e) => setPerPage(Number(e.target.value))}
-                disabled
+                  onChange={(e) => setPerPage(Number(e.target.value))}
               >
                 <MenuItem value={12}>12</MenuItem>
                 <MenuItem value={24}>24</MenuItem>
@@ -275,7 +425,7 @@ export default function GpuListing(): JSX.Element {
             <Pagination
               count={Math.max(1, totalPages)}
               page={page}
-              onChange={(e, value) => { if (e && typeof (e as any).preventDefault === 'function') (e as any).preventDefault(); setPage(value) }}
+              onChange={(e, value) => { if (e && typeof (e as any).preventDefault === 'function') (e as any).preventDefault(); console.debug('[DBG] Pagination click ->', value); setLastAction(`pagination:${value}`); setPage(value) }}
               size="small"
               showFirstButton={false}
               showLastButton={false}
@@ -303,6 +453,7 @@ export default function GpuListing(): JSX.Element {
                   disableSwap
                   valueLabelFormat={(v) => Math.round(v)}
                 />
+
                 <div className={pageStyles.priceInputs}>
                   <TextField
                     label="Min"
@@ -320,7 +471,11 @@ export default function GpuListing(): JSX.Element {
                     onChange={handlePriceInput('max')}
                     InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
                   />
-                  <Button size="small" onClick={() => { setPriceMin(0); setPriceMax(maxCents); setPriceRangeRand([0, Math.ceil(maxCents / 100)]); setPage(1); }}>Reset</Button>
+                </div>
+
+                <div style={{ marginTop: 8 }}>
+                  <Button size="small" onClick={applyPriceFilter} style={{ marginRight: 8 }}>Apply</Button>
+                  <Button size="small" onClick={() => { userTouchedPrice.current = false; setPriceMin(0); setPriceMax(effectiveMaxCents); setPriceRangeRand([0, Math.ceil((effectiveMaxCents || 0) / 100)]); setPage(1); setHasAppliedPriceFilter(false); }}>Reset</Button>
                 </div>
               </div>
 

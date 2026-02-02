@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProductVariant;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
@@ -85,6 +86,21 @@ class ProductsController extends Controller
                 ->orderByRaw("products.release_date IS NULL, products.release_date {$order}");
         }
 
+        // Compute global min/max price for the current filtered set (before applying price_min/price_max)
+        $variantIdsForMeta = (clone $query)->pluck('product_variants.id')->toArray();
+        $metaMin = null;
+        $metaMax = null;
+        if (!empty($variantIdsForMeta)) {
+            $mm = DB::table('prices')
+                ->whereIn('variant_id', $variantIdsForMeta)
+                ->whereRaw('valid_from = (select max(p2.valid_from) from prices p2 where p2.variant_id = prices.variant_id)')
+                ->selectRaw('min(amount_cents) as min_amount, max(amount_cents) as max_amount')
+                ->first();
+
+            $metaMin = $mm->min_amount !== null ? (int)$mm->min_amount : null;
+            $metaMax = $mm->max_amount !== null ? (int)$mm->max_amount : null;
+        }
+
         // Price range filtering (expects cents): price_min, price_max
         $priceMin = $request->query('price_min');
         $priceMax = $request->query('price_max');
@@ -130,6 +146,13 @@ class ProductsController extends Controller
             ];
         });
 
-        return response()->json(array_merge($page->toArray(), ['data' => $data->items()]));
+        $resp = array_merge($page->toArray(), ['data' => $data->items()]);
+        // attach price metadata when available
+        $resp['meta'] = array_merge($resp['meta'] ?? [], [
+            'price_min' => $metaMin,
+            'price_max' => $metaMax,
+        ]);
+
+        return response()->json($resp);
     }
 }
