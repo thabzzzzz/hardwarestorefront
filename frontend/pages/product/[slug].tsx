@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
 import Header from '../../components/header/header'
 import ProductGallery from '../../components/product/ProductGallery'
 import ProductSummary from '../../components/product/ProductSummary'
@@ -27,7 +28,7 @@ type ProductPayload = {
 }
 
 // Server-side fetch so product pages render specs from the DB on first load.
-export async function getServerSideProps(context: any) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params?.slug
   if (!slug) return { props: { initialProduct: null } }
 
@@ -269,25 +270,34 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
         {loading && <div>Loading…</div>}
 
         {!loading && product && (
-          <div className={pageStyles.contentRow}>
-            <ProductGallery
-              imageUrl={product.thumbnail || null}
-              images={(product as any).images || (product.spec_fields && (product.spec_fields as any).images) || null}
-              alt={product.title}
-            />
-
-            <div className={pageStyles.rightCol}>
-              <ProductSummary title={product.title} brand={product.brand} productId={product.product_id} stock={product.stock} />
-              <ProductActions
-                price={product.price || null}
-                id={product.product_id || product.title}
-                title={product.title}
-                thumbnail={product.thumbnail || null}
-                stock={product.stock || null}
+          <>
+            <div className={pageStyles.contentRow}>
+              <ProductGallery
+                imageUrl={product.thumbnail || null}
+                images={(product as any).images || (product.spec_fields && (product.spec_fields as any).images) || null}
+                alt={product.title}
               />
-              <ProductSpecs specs={product.specs || null} specTables={product.spec_tables || null} specFields={product.spec_fields || null} />
+
+              <div className={pageStyles.rightCol}>
+                <ProductSummary
+                  title={product.title}
+                  brand={product.brand}
+                  productId={product.product_id}
+                  stock={product.stock}
+                  specs={product.specs}
+                />
+                <ProductActions
+                  price={product.price || null}
+                  id={product.product_id || product.title}
+                  title={product.title}
+                  thumbnail={product.thumbnail || null}
+                  stock={product.stock || null}
+                />
+              </div>
             </div>
-          </div>
+
+            <ProductSpecs specs={product.specs || null} specTables={product.spec_tables || null} specFields={product.spec_fields || null} />
+          </>
         )}
 
         {!loading && !product && (

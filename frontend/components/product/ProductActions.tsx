@@ -7,6 +7,7 @@ import Button from '@mui/material/node/Button/index.js'
 import TextField from '@mui/material/node/TextField/index.js'
 import Paper from '@mui/material/node/Paper/index.js'
 import Typography from '@mui/material/node/Typography/index.js'
+import { toast } from '../../lib/toast'
 
 type Props = {
   price?: { amount_cents: number; currency: string } | null,
@@ -41,11 +42,14 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
       const res = cart.addOrUpdate(entry, qty)
       if (res.added) {
         console.info('Added to cart')
+        toast.success(`Check cart: Added ${qty} item(s)`)
       } else {
         console.info(res.message || 'Updated cart')
+        toast('Already in cart')
       }
     } catch (err) {
       console.error('Failed to add to cart', err)
+      toast.error('Failed to add to cart')
     } finally {
       setBusyAdd(false)
     }
@@ -61,13 +65,16 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
       if (already) {
         wishlist.remove(id)
         console.info('Removed from wishlist')
+        toast('Removed from wishlist')
       } else {
         wishlist.addOrUpdate({ id, title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
         console.info('Added to wishlist')
+        toast.success('Added to wishlist')
       }
     } catch (err) {
       console.error('Wishlist error', err)
       console.error('Could not update wishlist')
+      toast.error('Could not update wishlist')
     } finally {
       setBusyWish(false)
     }
@@ -76,7 +83,7 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
   return (
     <Paper className={styles.container} elevation={0}>
       <div className={styles.price}>
-        <Typography variant="h6">{displayPrice}</Typography>
+        <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>{displayPrice}</Typography>
       </div>
 
       <div className={styles.controls}>
