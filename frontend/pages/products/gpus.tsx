@@ -621,12 +621,6 @@ export default function GpuListing(): JSX.Element {
         <nav className={pageStyles.breadcrumb}>Home / Hardware / Graphics Cards</nav>
         <h1 className={pageStyles.title}>Graphics Cards</h1>
 
-        {mounted && (
-          <div style={{ padding: '6px 12px', background: '#fff4', borderRadius: 4, marginBottom: 8 }}>
-            <strong>DEBUG:</strong>&nbsp;page={page} | url_page={String(router.query.page || '')} | lastAction={lastAction}
-          </div>
-        )}
-
         <div className={pageStyles.controlsRow}>
           <div className={pageStyles.controlsLeft}>
             <FormControl size="small" className={pageStyles.smallSelectLabel}>
@@ -675,11 +669,6 @@ export default function GpuListing(): JSX.Element {
         </div>
 
         {/* Temporary debug: counts to diagnose pagination/filtering */}
-        {mounted && (
-          <div style={{ padding: '6px 12px', background: '#eef6', borderRadius: 4, margin: '8px 0' }}>
-            <strong>COUNTS:</strong>&nbsp;rawAll={rawAllItems ? rawAllItems.length : 0} | allFiltered={allFilteredItems ? allFilteredItems.length : 0} | filtered={filtered ? filtered.length : 0} | manufacturers={manufacturers.length} | selectedManufacturers={selectedManufacturers.length}
-          </div>
-        )}
 
         <div className={pageStyles.container}>
           <Paper className={pageStyles.sidebar} elevation={1}>
