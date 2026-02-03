@@ -140,20 +140,20 @@ class ProductsController extends Controller
                         $sub->orWhere(function ($s) use ($man) {
                             if ($man === 'AMD') {
                                 $s->where('manufacturer', 'ilike', '%amd%')
-                                  ->orWhere('name', 'ilike', '%amd%')
-                                  ->orWhere('name', 'ilike', '%ryzen%')
-                                  ->orWhere('name', 'ilike', '%threadripper%')
-                                  ->orWhere('name', 'ilike', '%radeon%')
-                                  ->orWhereRaw("name ~* '\\brx\\b'");
+                                    ->orWhere('name', 'ilike', '%amd%')
+                                    ->orWhere('name', 'ilike', '%ryzen%')
+                                    ->orWhere('name', 'ilike', '%threadripper%')
+                                    ->orWhere('name', 'ilike', '%radeon%')
+                                    ->orWhereRaw("name ~* '\\brx\\b'");
                             } elseif ($man === 'INTEL') {
                                 $s->where('manufacturer', 'ilike', '%intel%')
-                                  ->orWhere('name', 'ilike', '%intel%')
-                                  ->orWhere('name', 'ilike', '%core%');
+                                    ->orWhere('name', 'ilike', '%intel%')
+                                    ->orWhere('name', 'ilike', '%core%');
                             } elseif ($man === 'NVIDIA') {
                                 $s->where('manufacturer', 'ilike', '%nvidia%')
-                                  ->orWhere('name', 'ilike', '%nvidia%')
-                                  ->orWhere('name', 'ilike', '%geforce%')
-                                  ->orWhere('name', 'ilike', '%rtx%');
+                                    ->orWhere('name', 'ilike', '%nvidia%')
+                                    ->orWhere('name', 'ilike', '%geforce%')
+                                    ->orWhere('name', 'ilike', '%rtx%');
                             } else {
                                 $s->where('manufacturer', 'ilike', "%{$man}%");
                             }
@@ -170,15 +170,20 @@ class ProductsController extends Controller
                 $q->where(function ($sub) use ($stockStatuses) {
                     // in_stock: available > 0 and not reserved/out_of_stock status
                     if (in_array('in_stock', $stockStatuses)) {
-                        $sub->orWhere(function($s) {
+                        $sub->orWhere(function ($s) {
                             $s->where('qty_available', '>', 0)
-                              ->where('status', '!=', 'out_of_stock')
-                              ->where('status', '!=', 'reserved');
+                                ->where('status', '!=', 'out_of_stock')
+                                ->where('status', '!=', 'reserved');
                         });
                     }
                     if (in_array('out_of_stock', $stockStatuses)) {
-                        $sub->orWhere('status', 'out_of_stock')
-                            ->orWhere('qty_available', '<=', 0);
+                        $sub->orWhere(function ($s) {
+                            $s->where('status', 'out_of_stock')
+                                ->orWhere(function ($s2) {
+                                    $s2->where('qty_available', '<=', 0)
+                                        ->where('status', '!=', 'reserved');
+                                });
+                        });
                     }
                     if (in_array('reserved', $stockStatuses)) {
                         $sub->orWhere('status', 'reserved');

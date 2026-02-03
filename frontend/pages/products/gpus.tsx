@@ -64,29 +64,6 @@ export default function GpuListing(): JSX.Element {
   const [globalMinCents, setGlobalMinCents] = useState<number | null>(null)
   const [globalMaxCents, setGlobalMaxCents] = useState<number | null>(null)
   const [hasAppliedPriceFilter, setHasAppliedPriceFilter] = useState(false)
-  const [allFilteredItems, setAllFilteredItems] = useState<GpuItem[] | null>(null)
-  const [rawAllItems, setRawAllItems] = useState<GpuItem[] | null>(null)
-
-  // Ensure we cache the full catalog (safe since catalog ~500 items)
-  useEffect(() => {
-    if (rawAllItems !== null) return
-    let cancelled = false
-    async function fetchAll() {
-      try {
-        const url = `${API_BASE}/api/gpus?per_page=1000&page=1`
-        const res = await fetch(url)
-        const contentType = res.headers.get('content-type') || ''
-        if (!res.ok || !contentType.includes('application/json')) return
-        const json = await res.json()
-        const all = json.data || []
-        if (!cancelled) setRawAllItems(all)
-      } catch (e) {
-        console.error('fetchAll failed', e)
-      }
-    }
-    fetchAll()
-    return () => { cancelled = true }
-  }, [rawAllItems])
   const userTouchedPrice = useRef(false)
   const effectiveMaxCents = globalMaxCents ?? Math.max(maxCents, priceMax || 0)
   const sliderMaxRand = Math.max(Math.ceil((effectiveMaxCents || 0) / 100), 1)
@@ -114,36 +91,12 @@ export default function GpuListing(): JSX.Element {
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
   const [sortBy, setSortBy] = useState<string>('price_asc')
 
-  const manufacturers = useMemo(() => {
-    const source = rawAllItems ?? (allFilteredItems && Array.isArray(allFilteredItems) ? allFilteredItems : items)
-    const s = new Set<string>()
-    const canonicalize = (it: GpuItem) => {
-      const m = String(it.manufacturer || '').trim().toLowerCase()
-      const name = String(it.title || it.name || '').toLowerCase()
-      if (m.includes('nvidia') || name.includes('nvidia') || name.includes('geforce') || name.includes('rtx')) return 'NVIDIA'
-      if (m.includes('amd') || m.includes('radeon') || name.includes('radeon') || /\brx\b/.test(name)) return 'AMD'
-      if (m.includes('intel') || name.includes('intel')) return 'INTEL'
-      return (String(it.manufacturer || '').trim())
-    }
-    for (const it of source) {
-      const c = canonicalize(it)
-      if (c) s.add(c)
-    }
-    const excluded = new Set(['songryvga', 'srhonyra'])
-    return Array.from(s).filter(x => !excluded.has(String(x).trim().toLowerCase())).sort()
-  }, [rawAllItems, allFilteredItems, items])
+  const manufacturers = useMemo(() => ['AMD', 'INTEL', 'NVIDIA'], [])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
   const normalizeKey = (s: string | null | undefined) => String(s || '').trim().toLowerCase()
   const selectedIncludes = (name: string) => selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(name))
-  const canonicalManufacturer = (it: GpuItem) => {
-    const m = String(it.manufacturer || '').trim().toLowerCase()
-    const name = String(it.title || it.name || '').toLowerCase()
-    if (m.includes('nvidia') || name.includes('nvidia') || name.includes('geforce') || name.includes('rtx')) return 'NVIDIA'
-    if (m.includes('amd') || m.includes('radeon') || name.includes('radeon') || /\brx\b/.test(name)) return 'AMD'
-    if (m.includes('intel') || name.includes('intel')) return 'INTEL'
-    return String(it.manufacturer || '').trim()
-  }
+
 
   const router = useRouter()
   const [lastAction, setLastAction] = useState<string>('')
@@ -171,92 +124,51 @@ export default function GpuListing(): JSX.Element {
     if (!router.isReady) return
 
     async function load() {
-      // If we already have a client-side filtered set, use it for pagination
-      const needClientFilter = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
-      if (allFilteredItems && Array.isArray(allFilteredItems) && needClientFilter) {
-        const total = Math.max(1, Math.ceil(allFilteredItems.length / perPage))
-        setTotalPages(total)
-        setItems(allFilteredItems.slice((page - 1) * perPage, page * perPage))
-        setLoading(false)
-        return
-      }
-      console.debug('[DBG] load() page=', page, 'perPage=', perPage, 'sortBy=', sortBy, 'hasAppliedPriceFilter=', hasAppliedPriceFilter)
       setLoading(true)
       try {
-        // If price filter is applied, prefer to fetch a large slice and
-        // perform client-side filtering to guarantee pages are compacted
-        // to only matching items (so totalPages will shrink accordingly).
-        if (needClientFilter) {
-          // reuse cached matched items if available
-          if (allFilteredItems && Array.isArray(allFilteredItems)) {
-            const matched = allFilteredItems
-            const total = Math.max(1, Math.ceil(matched.length / perPage))
-            setTotalPages(total)
-            setItems(matched.slice((page - 1) * perPage, page * perPage))
-            return
-          }
-
-          // fetch a large page to collect items to filter client-side
-          let url = `${API_BASE}/api/gpus?per_page=10000&page=1`
-          // Do NOT send price filters to server so we get the full range for client-side filtering
-          if (sortBy.startsWith('date')) {
-            const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
-            url += `&sort=date&order=${order}`
-          }
-
-          const res = await fetch(url)
-          const contentType = res.headers.get('content-type') || ''
-          if (!res.ok || !contentType.includes('application/json')) {
-            const text = await res.text()
-            console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
-            setItems([])
-            setTotalPages(1)
-            return
-          }
-          const json = await res.json()
-          const all = json.data || []
-          setRawAllItems(all)
-          // client-side price filter as final safeguard
-          const matched = all.filter(it => {
-            const cents = Number(it.current_price?.amount_cents || 0)
-            return cents >= (priceMin || 0) && cents <= (priceMax || Number.MAX_SAFE_INTEGER)
-          })
-          setAllFilteredItems(matched)
-          const total = Math.max(1, Math.ceil((matched.length || 0) / perPage))
-          setTotalPages(total)
-          setItems(matched.slice((page - 1) * perPage, page * perPage))
-
-          // seed slider bounds from server meta if provided
-          if (json.meta && (json.meta.price_min !== undefined || json.meta.price_max !== undefined)) {
-            if (globalMaxCents === null) {
-              setGlobalMinCents(json.meta.price_min ?? 0)
-              setGlobalMaxCents(json.meta.price_max ?? 0)
-              const nextMax = json.meta.price_max ?? maxCents
-              setPriceMax(Math.max(0, Math.ceil(nextMax || 0)))
-              setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil((nextMax || maxCents) / 100))])
-            }
-          }
-          return
+        let url = `${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`
+        
+        // Pass server-side filters
+        if (hasAppliedPriceFilter) {
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+        }
+        
+        // Manufacturers
+        if (selectedManufacturers.length > 0) {
+          const mParams = selectedManufacturers.map(m => `manufacturer[]=${encodeURIComponent(m)}`).join('&')
+          url += `&${mParams}`
         }
 
-        // default (no price filter): server-side pagination
-        let url = `${API_BASE}/api/gpus?per_page=${perPage}&page=${page}`
+        // Stock Status
+        const stockStatus: string[] = []
+        if (filterInStock) stockStatus.push('in_stock')
+        if (filterReserved) stockStatus.push('reserved')
+        if (filterOutOfStock) stockStatus.push('out_of_stock')
+        if (stockStatus.length > 0) {
+          const sParams = stockStatus.map(s => `stock_status[]=${encodeURIComponent(s)}`).join('&')
+          url += `&${sParams}`
+        }
+        
+        // Sorting
         if (sortBy.startsWith('date')) {
           const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
           url += `&sort=date&order=${order}`
+        } else if (sortBy.startsWith('price')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=price&order=${order}`
         }
+
         const res = await fetch(url)
         const contentType = res.headers.get('content-type') || ''
         if (!res.ok || !contentType.includes('application/json')) {
-          const text = await res.text()
-          console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
           setItems([])
           setTotalPages(1)
           return
         }
         const json = await res.json()
-        setAllFilteredItems(null)
         setItems(json.data || [])
+        // IMPORTANT: Server now handles filtering so totalPages is correct for the filtered set
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
 
@@ -276,7 +188,7 @@ export default function GpuListing(): JSX.Element {
       }
     }
     load()
-  }, [page, perPage, sortBy, router.isReady, hasAppliedPriceFilter, priceMin, priceMax, allFilteredItems])
+  }, [page, perPage, sortBy, router.isReady, hasAppliedPriceFilter, priceMin, priceMax, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, globalMaxCents, maxCents])
 
   function handlePriceInput(kind: 'min' | 'max') {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,24 +217,7 @@ export default function GpuListing(): JSX.Element {
     setHasAppliedPriceFilter(true)
   }
 
-  // Sort helper - keeps client-side sorting logic in one place
-  function sortItems(arr: GpuItem[], sortKey: string) {
-    const out = arr.slice()
-    if (sortKey === 'price_asc') {
-      out.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
-    } else if (sortKey === 'price_desc') {
-      out.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
-    } else if (sortKey === 'date_asc' || sortKey === 'date_desc') {
-      // if server returns date strings in `created_at` or similar, attempt to sort by that field
-      const dir = sortKey === 'date_asc' ? 1 : -1
-      out.sort((a, b) => {
-        const da = new Date((a as any).created_at || 0).getTime()
-        const db = new Date((b as any).created_at || 0).getTime()
-        return (da - db) * dir
-      })
-    }
-    return out
-  }
+
 
   function handlePriceSliderChange(_e: Event, value: number | number[]) {
     userTouchedPrice.current = true
@@ -348,212 +243,16 @@ export default function GpuListing(): JSX.Element {
       if (exists) return prev.filter(x => normalizeKey(x) !== normalizeKey(name))
       return [...prev, name]
     })
-    // clear any cached page-only dataset so the full catalog is fetched
-    // and client-side filtering can produce condensed pagination.
-    setRawAllItems(null)
-    setAllFilteredItems(null)
     setPage(1)
     setLastAction(`manufacturer:${name}`)
   }
 
   // brand filter removed per request
 
-  // Recompute the full filtered set (client-side) when any client-only filters change.
-  // This ensures pagination and manufacturer lists reflect the full filtered dataset.
-  useEffect(() => {
-    // if there are no client-side filters active, clear the cached full set
-    const hasMan = selectedManufacturers && selectedManufacturers.length > 0
-    const hasStock = filterInStock || filterReserved || filterOutOfStock
-    const needClientFilter = hasMan || hasStock || hasAppliedPriceFilter
-    if (!needClientFilter) {
-      setAllFilteredItems(null)
-      return
-    }
 
-    let cancelled = false
-    // Fast path: if we already have the full dataset cached locally, filter immediately
-    if (rawAllItems && Array.isArray(rawAllItems)) {
-      const all = rawAllItems
-      const matched = all.filter(it => {
-        // price
-        const cents = Number(it.current_price?.amount_cents || 0)
-        if (hasAppliedPriceFilter) {
-          if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
-        }
-        // manufacturer (use canonical value so brand-like manufacturers don't leak)
-        if (hasMan) {
-          const man = canonicalManufacturer(it)
-          const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
-          if (!ok) return false
-        }
-        // stock
-        if (hasStock) {
-          const raw = String(it.stock?.status || '').toLowerCase()
-          const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
-          if (status === 'in_stock' && !filterInStock) return false
-          if (status === 'reserved' && !filterReserved) return false
-          if (status === 'out_of_stock' && !filterOutOfStock) return false
-        }
-        return true
-      })
 
-      const sorted = sortItems(matched, sortBy)
-      if (!cancelled) {
-        setAllFilteredItems(sorted)
-        // reset to first page to ensure condensation on each tick/untick
-        setPage(1)
-        const total = Math.max(1, Math.ceil((sorted.length || 0) / perPage))
-        setTotalPages(total)
-        setItems(sorted.slice(0, perPage))
-      }
-      return () => { cancelled = true }
-    }
-
-    async function fetchAndFilter() {
-      setLoading(true)
-      try {
-        let url = `${API_BASE}/api/gpus?per_page=10000&page=1`
-        if (hasAppliedPriceFilter) {
-          if (priceMin !== null) url += `&price_min=${priceMin}`
-          if (priceMax !== null) url += `&price_max=${priceMax}`
-        }
-        if (sortBy.startsWith('date')) {
-          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
-          url += `&sort=date&order=${order}`
-        }
-
-        const res = await fetch(url)
-        const contentType = res.headers.get('content-type') || ''
-        if (!res.ok || !contentType.includes('application/json')) {
-          const text = await res.text()
-          console.error('fetch gpus failed (non-JSON response)', res.status, text.slice(0, 400))
-          if (!cancelled) {
-            setAllFilteredItems([])
-            setItems([])
-            setTotalPages(1)
-          }
-          return
-        }
-
-        const json = await res.json()
-        const all = json.data || []
-        setRawAllItems(all)
-
-          const matched = all.filter(it => {
-          // price
-          const cents = Number(it.current_price?.amount_cents || 0)
-          if (hasAppliedPriceFilter) {
-            if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
-          }
-            // manufacturer (use canonical value so brand-like manufacturers don't leak)
-            if (hasMan) {
-              const man = canonicalManufacturer(it)
-              const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
-              if (!ok) return false
-            }
-          // stock
-          if (hasStock) {
-            const raw = String(it.stock?.status || '').toLowerCase()
-            const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
-            if (status === 'in_stock' && !filterInStock) return false
-            if (status === 'reserved' && !filterReserved) return false
-            if (status === 'out_of_stock' && !filterOutOfStock) return false
-          }
-          return true
-        })
-
-        const sorted = sortItems(matched, sortBy)
-        if (!cancelled) {
-          setAllFilteredItems(sorted)
-          const total = Math.max(1, Math.ceil((sorted.length || 0) / perPage))
-          setTotalPages(total)
-          setItems(sorted.slice((page - 1) * perPage, page * perPage))
-        }
-      } catch (e) {
-        console.error('fetch/filter failed', e)
-        if (!cancelled) {
-          setAllFilteredItems([])
-          setItems([])
-          setTotalPages(1)
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    fetchAndFilter()
-    return () => { cancelled = true }
-  }, [selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter, priceMin, priceMax, sortBy, perPage])
-
-  const filtered = useMemo(() => {
-    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
-    // When client-side filters are active prefer to run filters over the
-    // full cached dataset (`allFilteredItems` or `rawAllItems`) so pages
-    // are condensed. When no client filters are active, fall back to the
-    // current `items` (server-driven page) to preserve server pagination.
-    const source: GpuItem[] = clientFilteringActive ? (rawAllItems ?? allFilteredItems ?? items) : items
-
-    return source.filter(it => {
-        // manufacturer filter (use canonicalized manufacturer)
-        if (selectedManufacturers.length > 0) {
-          const man = canonicalManufacturer(it)
-          const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
-          if (!ok) return false
-        }
-      // brand filter (board partner)
-      // brand filter removed
-      // price filtering: always apply using client state
-      if (true) {
-        const cents = Number(it.current_price?.amount_cents || 0)
-        // If the user has applied a filter, enforce the bounds strictly.
-        // Even if not applied, we respect the slider if we are in client-mode
-        // to avoid showing items outside the visible range if desired,
-        // but typically we only enforce bounds when Applied or if implicitly active.
-        if (hasAppliedPriceFilter && (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER))) return false
-      }
-
-      const raw = String(it.stock?.status || '').toLowerCase()
-      const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
-
-      const anyStockFilter = filterInStock || filterReserved || filterOutOfStock
-      if (!anyStockFilter) return true
-
-      if (status === 'in_stock' && filterInStock) return true
-      if (status === 'reserved' && filterReserved) return true
-      if (status === 'out_of_stock' && filterOutOfStock) return true
-      return false
-    })
-  }, [items, rawAllItems, allFilteredItems, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock, selectedManufacturers, hasAppliedPriceFilter])
-  
-
-  // apply client-side sorting for price options (server handles date sorting)
-  const sortedProducts = useMemo(() => {
-    const arr = filtered.slice()
-    if (sortBy === 'price_asc') {
-      arr.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
-    } else if (sortBy === 'price_desc') {
-      arr.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
-    }
-
-    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
-    if (clientFilteringActive) {
-      const start = (page - 1) * perPage
-      return arr.slice(start, start + perPage)
-    }
-
-    // when not doing client-side filtering, server already returned a
-    // paginated page in `items` so return the sorted page as-is
-    return arr
-  }, [filtered, sortBy, page, perPage, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter])
-
-  // Keep `totalPages` in sync when client-side filtering is active.
-  useEffect(() => {
-    const clientFilteringActive = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
-    if (!clientFilteringActive) return
-    setTotalPages(Math.max(1, Math.ceil(filtered.length / perPage)))
-    // ensure page is within bounds
-    setPage(prev => Math.min(prev, Math.max(1, Math.ceil(filtered.length / perPage))))
-  }, [filtered, perPage, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, hasAppliedPriceFilter])
+  const filtered = items
+  const sortedProducts = items
 
   useEffect(() => {
     if (!router.isReady) return
