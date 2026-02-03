@@ -117,16 +117,33 @@ export default function GpuListing(): JSX.Element {
   const manufacturers = useMemo(() => {
     const source = rawAllItems ?? (allFilteredItems && Array.isArray(allFilteredItems) ? allFilteredItems : items)
     const s = new Set<string>()
-    for (const it of source) {
-      const m = String(it.manufacturer || '').trim()
-      if (m) s.add(m)
+    const canonicalize = (it: GpuItem) => {
+      const m = String(it.manufacturer || '').trim().toLowerCase()
+      const name = String(it.title || it.name || '').toLowerCase()
+      if (m.includes('nvidia') || name.includes('nvidia') || name.includes('geforce') || name.includes('rtx')) return 'NVIDIA'
+      if (m.includes('amd') || m.includes('radeon') || name.includes('radeon') || /\brx\b/.test(name)) return 'AMD'
+      if (m.includes('intel') || name.includes('intel')) return 'INTEL'
+      return (String(it.manufacturer || '').trim())
     }
-    return Array.from(s).sort()
+    for (const it of source) {
+      const c = canonicalize(it)
+      if (c) s.add(c)
+    }
+    const excluded = new Set(['songryvga', 'srhonyra'])
+    return Array.from(s).filter(x => !excluded.has(String(x).trim().toLowerCase())).sort()
   }, [rawAllItems, allFilteredItems, items])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
   const normalizeKey = (s: string | null | undefined) => String(s || '').trim().toLowerCase()
   const selectedIncludes = (name: string) => selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(name))
+  const canonicalManufacturer = (it: GpuItem) => {
+    const m = String(it.manufacturer || '').trim().toLowerCase()
+    const name = String(it.title || it.name || '').toLowerCase()
+    if (m.includes('nvidia') || name.includes('nvidia') || name.includes('geforce') || name.includes('rtx')) return 'NVIDIA'
+    if (m.includes('amd') || m.includes('radeon') || name.includes('radeon') || /\brx\b/.test(name)) return 'AMD'
+    if (m.includes('intel') || name.includes('intel')) return 'INTEL'
+    return String(it.manufacturer || '').trim()
+  }
 
   const router = useRouter()
   const [lastAction, setLastAction] = useState<string>('')
@@ -157,7 +174,7 @@ export default function GpuListing(): JSX.Element {
       // If we already have a client-side filtered set, use it for pagination
       const needClientFilter = (selectedManufacturers && selectedManufacturers.length > 0) || filterInStock || filterReserved || filterOutOfStock || hasAppliedPriceFilter
       if (allFilteredItems && Array.isArray(allFilteredItems) && needClientFilter) {
-        const total = Math.max(1, Math.ceil((allFilteredItems.length || 0) / perPage))
+        const total = Math.max(1, Math.ceil(allFilteredItems.length / perPage))
         setTotalPages(total)
         setItems(allFilteredItems.slice((page - 1) * perPage, page * perPage))
         setLoading(false)
@@ -169,11 +186,11 @@ export default function GpuListing(): JSX.Element {
         // If price filter is applied, prefer to fetch a large slice and
         // perform client-side filtering to guarantee pages are compacted
         // to only matching items (so totalPages will shrink accordingly).
-        if (hasAppliedPriceFilter) {
+        if (needClientFilter) {
           // reuse cached matched items if available
           if (allFilteredItems && Array.isArray(allFilteredItems)) {
             const matched = allFilteredItems
-            const total = Math.max(1, Math.ceil((matched.length || 0) / perPage))
+            const total = Math.max(1, Math.ceil(matched.length / perPage))
             setTotalPages(total)
             setItems(matched.slice((page - 1) * perPage, page * perPage))
             return
@@ -240,9 +257,6 @@ export default function GpuListing(): JSX.Element {
         }
         const json = await res.json()
         setAllFilteredItems(null)
-        // store raw full page list when available (do not overwrite once cached)
-        const all = json.data || []
-        setRawAllItems(all)
         setItems(json.data || [])
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
@@ -343,6 +357,8 @@ export default function GpuListing(): JSX.Element {
     setLastAction(`manufacturer:${name}`)
   }
 
+  // brand filter removed per request
+
   // Recompute the full filtered set (client-side) when any client-only filters change.
   // This ensures pagination and manufacturer lists reflect the full filtered dataset.
   useEffect(() => {
@@ -365,9 +381,9 @@ export default function GpuListing(): JSX.Element {
         if (hasAppliedPriceFilter) {
           if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
         }
-        // manufacturer
+        // manufacturer (use canonical value so brand-like manufacturers don't leak)
         if (hasMan) {
-          const man = String(it.manufacturer || '').trim()
+          const man = canonicalManufacturer(it)
           const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
           if (!ok) return false
         }
@@ -430,9 +446,9 @@ export default function GpuListing(): JSX.Element {
           if (hasAppliedPriceFilter) {
             if (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER)) return false
           }
-          // manufacturer
+            // manufacturer (use canonical value so brand-like manufacturers don't leak)
             if (hasMan) {
-              const man = String(it.manufacturer || '').trim()
+              const man = canonicalManufacturer(it)
               const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
               if (!ok) return false
             }
@@ -476,15 +492,17 @@ export default function GpuListing(): JSX.Element {
     // full cached dataset (`allFilteredItems` or `rawAllItems`) so pages
     // are condensed. When no client filters are active, fall back to the
     // current `items` (server-driven page) to preserve server pagination.
-    const source: GpuItem[] = clientFilteringActive ? (allFilteredItems ?? rawAllItems ?? items) : items
+    const source: GpuItem[] = clientFilteringActive ? (rawAllItems ?? allFilteredItems ?? items) : items
 
     return source.filter(it => {
-      // manufacturer filter
-      if (selectedManufacturers.length > 0) {
-        const man = String(it.manufacturer || '').trim()
-        const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
-        if (!ok) return false
-      }
+        // manufacturer filter (use canonicalized manufacturer)
+        if (selectedManufacturers.length > 0) {
+          const man = canonicalManufacturer(it)
+          const ok = selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(man))
+          if (!ok) return false
+        }
+      // brand filter (board partner)
+      // brand filter removed
       // price filtering: if the user has applied the price filter we rely
       // on the server to return the correctly filtered result set so we
       // should not re-filter the current page (which would shrink pages).
@@ -655,6 +673,13 @@ export default function GpuListing(): JSX.Element {
           </div>
         </div>
 
+        {/* Temporary debug: counts to diagnose pagination/filtering */}
+        {mounted && (
+          <div style={{ padding: '6px 12px', background: '#eef6', borderRadius: 4, margin: '8px 0' }}>
+            <strong>COUNTS:</strong>&nbsp;rawAll={rawAllItems ? rawAllItems.length : 0} | allFiltered={allFilteredItems ? allFilteredItems.length : 0} | filtered={filtered ? filtered.length : 0} | manufacturers={manufacturers.length} | selectedManufacturers={selectedManufacturers.length}
+          </div>
+        )}
+
         <div className={pageStyles.container}>
           <Paper className={pageStyles.sidebar} elevation={1}>
             <Box p={1}>
@@ -698,6 +723,8 @@ export default function GpuListing(): JSX.Element {
                   <Button size="small" onClick={() => { userTouchedPrice.current = false; setPriceMin(0); setPriceMax(effectiveMaxCents); setPriceRangeRand([0, Math.ceil((effectiveMaxCents || 0) / 100)]); setPage(1); setHasAppliedPriceFilter(false); }}>Reset</Button>
                 </div>
               </div>
+
+              {/* Brand filter removed per request */}
 
               <div className={pageStyles.stockBlock}>
                 <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
