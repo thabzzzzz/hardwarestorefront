@@ -671,7 +671,7 @@ export default function GpuListing(): JSX.Element {
         {/* Temporary debug: counts to diagnose pagination/filtering */}
 
         <div className={pageStyles.container}>
-          <Paper className={pageStyles.sidebar} elevation={1}>
+          <Paper className={pageStyles.sidebar} elevation={0}>
             <Box p={1}>
               <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
 
