@@ -198,8 +198,7 @@ export default function GpuListing(): JSX.Element {
 
           // fetch a large page to collect items to filter client-side
           let url = `${API_BASE}/api/gpus?per_page=10000&page=1`
-          if (priceMin !== null) url += `&price_min=${priceMin}`
-          if (priceMax !== null) url += `&price_max=${priceMax}`
+          // Do NOT send price filters to server so we get the full range for client-side filtering
           if (sortBy.startsWith('date')) {
             const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
             url += `&sort=date&order=${order}`
@@ -503,12 +502,14 @@ export default function GpuListing(): JSX.Element {
         }
       // brand filter (board partner)
       // brand filter removed
-      // price filtering: if the user has applied the price filter we rely
-      // on the server to return the correctly filtered result set so we
-      // should not re-filter the current page (which would shrink pages).
-      if (!hasAppliedPriceFilter) {
+      // price filtering: always apply using client state
+      if (true) {
         const cents = Number(it.current_price?.amount_cents || 0)
-        if (cents < priceMin || cents > priceMax) return false
+        // If the user has applied a filter, enforce the bounds strictly.
+        // Even if not applied, we respect the slider if we are in client-mode
+        // to avoid showing items outside the visible range if desired,
+        // but typically we only enforce bounds when Applied or if implicitly active.
+        if (hasAppliedPriceFilter && (cents < (priceMin || 0) || cents > (priceMax || Number.MAX_SAFE_INTEGER))) return false
       }
 
       const raw = String(it.stock?.status || '').toLowerCase()
