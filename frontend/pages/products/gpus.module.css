@@ -39,6 +39,7 @@
   min-height: 400px;
   border: 1px solid #eee;
   padding: 12px;
+  border-radius: 12px;
 }
 .sidebarHeading {
   margin-top: 0;
@@ -54,7 +55,7 @@
   font-weight: 700;
   margin-bottom: 6px;
 }
-.filterHeading { margin-top: 0 }
+.filterHeading { margin-top: 0; font-weight: 700; }
 .priceBlock { margin-top: 16px; }
 .priceInputs { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 .stockBlock { margin-top: 20px }
