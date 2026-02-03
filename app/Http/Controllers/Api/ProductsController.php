@@ -84,6 +84,20 @@ class ProductsController extends Controller
                 ->select('product_variants.*')
                 // put null release_date values last, then order by the date
                 ->orderByRaw("products.release_date IS NULL, products.release_date {$order}");
+        } elseif ($sort === 'price') {
+            // Order by the latest price for each variant using a correlated subquery
+            // ensure we select base fields first so headers don't get clobbered
+            if (is_null($query->getQuery()->columns)) {
+                $query->select('product_variants.*');
+            }
+            $query->selectSub(function ($q) {
+                $q->from('prices')
+                    ->select('amount_cents')
+                    ->whereColumn('prices.variant_id', 'product_variants.id')
+                    ->orderByDesc('valid_from')
+                    ->limit(1);
+            }, 'sort_price');
+            $query->orderBy('sort_price', $order);
         }
 
         // Compute global min/max price for the current filtered set (before applying price_min/price_max)
@@ -116,6 +130,63 @@ class ProductsController extends Controller
             );
         }
 
+        // Manufacturer Filter (canonicalized)
+        if ($manufacturers = $request->query('manufacturer')) {
+            $manufacturers = is_array($manufacturers) ? $manufacturers : explode(',', $manufacturers);
+            $query->whereHas('product', function ($q) use ($manufacturers) {
+                $q->where(function ($sub) use ($manufacturers) {
+                    foreach ($manufacturers as $man) {
+                        $man = strtoupper(trim($man));
+                        $sub->orWhere(function ($s) use ($man) {
+                            if ($man === 'AMD') {
+                                $s->where('manufacturer', 'ilike', '%amd%')
+                                  ->orWhere('name', 'ilike', '%amd%')
+                                  ->orWhere('name', 'ilike', '%ryzen%')
+                                  ->orWhere('name', 'ilike', '%threadripper%')
+                                  ->orWhere('name', 'ilike', '%radeon%')
+                                  ->orWhereRaw("name ~* '\\brx\\b'");
+                            } elseif ($man === 'INTEL') {
+                                $s->where('manufacturer', 'ilike', '%intel%')
+                                  ->orWhere('name', 'ilike', '%intel%')
+                                  ->orWhere('name', 'ilike', '%core%');
+                            } elseif ($man === 'NVIDIA') {
+                                $s->where('manufacturer', 'ilike', '%nvidia%')
+                                  ->orWhere('name', 'ilike', '%nvidia%')
+                                  ->orWhere('name', 'ilike', '%geforce%')
+                                  ->orWhere('name', 'ilike', '%rtx%');
+                            } else {
+                                $s->where('manufacturer', 'ilike', "%{$man}%");
+                            }
+                        });
+                    }
+                });
+            });
+        }
+
+        // Stock Status Filter
+        if ($stockStatuses = $request->query('stock_status')) {
+            $stockStatuses = is_array($stockStatuses) ? $stockStatuses : explode(',', $stockStatuses);
+            $query->whereHas('stock', function ($q) use ($stockStatuses) {
+                $q->where(function ($sub) use ($stockStatuses) {
+                    // in_stock: available > 0 and not reserved/out_of_stock status
+                    if (in_array('in_stock', $stockStatuses)) {
+                        $sub->orWhere(function($s) {
+                            $s->where('qty_available', '>', 0)
+                              ->where('status', '!=', 'out_of_stock')
+                              ->where('status', '!=', 'reserved');
+                        });
+                    }
+                    if (in_array('out_of_stock', $stockStatuses)) {
+                        $sub->orWhere('status', 'out_of_stock')
+                            ->orWhere('qty_available', '<=', 0);
+                    }
+                    if (in_array('reserved', $stockStatuses)) {
+                        $sub->orWhere('status', 'reserved');
+                    }
+                });
+            });
+        }
+
         $page = $query->paginate($perPage);
 
         $data = $page->through(function ($variant) {
@@ -132,9 +203,10 @@ class ProductsController extends Controller
                 $boardPartnerName = $variant->product->brand;
             }
 
-            // normalize manufacturer/brand for GPUs: prefer canonical NVIDIA/AMD/INTEL
+            // normalize manufacturer/brand for GPUs and CPUs: prefer canonical NVIDIA/AMD/INTEL
             $manufacturer = $variant->product->manufacturer;
-            if (($variant->product->product_type ?? '') === 'gpus') {
+            $productType = $variant->product->product_type ?? '';
+            if ($productType === 'gpus') {
                 $m = strtolower(trim((string)($manufacturer ?? '')));
                 $pname = strtolower(trim((string)($variant->product->name ?? '')));
                 if (strpos($m, 'nvidia') !== false || strpos($pname, 'nvidia') !== false || strpos($pname, 'geforce') !== false || strpos($pname, 'rtx') !== false) {
@@ -146,9 +218,22 @@ class ProductsController extends Controller
                 } else {
                     $manufacturer = strtoupper(trim((string)$manufacturer));
                 }
+            } elseif ($productType === 'cpus') {
+                // CPUs should canonically be either AMD or INTEL in the UI
+                $m = strtolower(trim((string)($manufacturer ?? '')));
+                $pname = strtolower(trim((string)($variant->product->name ?? '')));
+                if (strpos($m, 'intel') !== false || strpos($pname, 'intel') !== false || strpos($pname, 'core i') !== false) {
+                    $manufacturer = 'INTEL';
+                } elseif (strpos($m, 'amd') !== false || strpos($pname, 'amd') !== false || strpos($pname, 'ryzen') !== false || strpos($pname, 'threadripper') !== false) {
+                    $manufacturer = 'AMD';
+                } else {
+                    $manufacturer = strtoupper(trim((string)$manufacturer));
+                }
             }
 
-            $brandField = ($variant->product->product_type ?? '') === 'gpus' ? $manufacturer : (isset($variant->product->vendor) && $variant->product->vendor ? $variant->product->vendor->name : $variant->product->brand);
+            $brandField = $productType === 'gpus'
+                ? $manufacturer
+                : (isset($variant->product->vendor) && $variant->product->vendor ? $variant->product->vendor->name : $variant->product->brand);
 
             return [
                 'variant_id' => $variant->id,

@@ -571,6 +571,9 @@ export default function GpuListing(): JSX.Element {
         if (sortBy.startsWith('date')) {
           const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
           url += `&sort=date&order=${order}`
+        } else if (sortBy.startsWith('price')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=price&order=${order}`
         }
         const res = await fetch(url)
         const contentType = res.headers.get('content-type') || ''
