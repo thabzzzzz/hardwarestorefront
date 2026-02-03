@@ -91,7 +91,7 @@ export default function GpuListing(): JSX.Element {
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
   const [sortBy, setSortBy] = useState<string>('price_asc')
 
-  const manufacturers = useMemo(() => ['AMD', 'INTEL', 'NVIDIA'], [])
+  const manufacturers = useMemo(() => ['AMD', 'NVIDIA'], [])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
 
   const normalizeKey = (s: string | null | undefined) => String(s || '').trim().toLowerCase()
