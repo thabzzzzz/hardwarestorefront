@@ -211,6 +211,8 @@ export default function Header(): JSX.Element {
                     <ul>
                     <li><a href="/products/gpus">Graphics Cards</a></li>
                     <li><a href="/products/processors">Processors / CPUs</a></li>
+                    <li><a href="/products/motherboards">Motherboards</a></li>
+                    <li><a href="/products/cases">Cases</a></li>
                     <li><a href="/products/ram">Memory / RAM</a></li>
                   </ul>
                 </div>
@@ -219,39 +221,28 @@ export default function Header(): JSX.Element {
                   <ul>
                     <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
                     <li><a href="/products/hdds">Internal Hard Drives</a></li>
-                    <li><a>External Storage</a></li>
                   </ul>
                 </div>
                 <div className={styles.category}>
                   <h4>Peripherals</h4>
                   <ul>
-                    <li><a>Monitors / Screens</a></li>
-                    <li><a>Keyboards</a></li>
-                    <li><a>Mice & Controllers</a></li>
+                    <li><a href="/products/monitors">Monitors / Screens</a></li>
+                    <li><a href="/products/keyboards">Keyboards</a></li>
+                    <li><a href="/products/mice">Mice & Controllers</a></li>
+                    <li><a href="/products/headsets">Headsets & Audio</a></li>
                   </ul>
                 </div>
                 <div className={styles.category}>
                   <h4>Networking</h4>
                   <ul>
-                    <li><a>Modems</a></li>
-                    <li><a>Routers</a></li>
-                    <li><a>Adapters</a></li>
+                    <li><a href="/products/routers">Routers</a></li>
                   </ul>
                 </div>
                 <div className={styles.category}>
                   <h4>Computer Accessories</h4>
                   <ul>
-                    <li><a>Water / Liquid Cooling</a></li>
-                    <li><a>Fans & CPU Coolers</a></li>
-                    <li><a>UPS / Power Protection</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Other</h4>
-                  <ul>
-                    <li><a>Software</a></li>
-                    <li><a>Webcams</a></li>
-                    <li><a>Cellphones</a></li>
+                    <li><a href="/products/case-fans">Fans & Coolers</a></li>
+                    <li><a href="/products/psus">PSUs / Power Supplies</a></li>
                   </ul>
                 </div>
               </div>
