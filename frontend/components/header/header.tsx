@@ -211,14 +211,14 @@ export default function Header(): JSX.Element {
                     <ul>
                     <li><a href="/products/gpus">Graphics Cards</a></li>
                     <li><a href="/products/processors">Processors / CPUs</a></li>
-                    <li><a>Memory / RAM</a></li>
+                    <li><a href="/products/ram">Memory / RAM</a></li>
                   </ul>
                 </div>
                 <div className={styles.category}>
                   <h4>Storage Devices</h4>
                   <ul>
-                    <li><a>Solid State Drives / SSDs</a></li>
-                    <li><a>Internal Hard Drives</a></li>
+                    <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
+                    <li><a href="/products/hdds">Internal Hard Drives</a></li>
                     <li><a>External Storage</a></li>
                   </ul>
                 </div>

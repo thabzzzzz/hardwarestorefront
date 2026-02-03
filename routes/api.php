@@ -7,6 +7,9 @@ use App\Http\Controllers\Api\HotDealsController;
 use App\Http\Controllers\Api\ProductController;
 
 Route::get('/gpus', [ProductsController::class, 'index'])->defaults('category_slug', 'gpus');
+Route::get('/ram', [ProductsController::class, 'index'])->defaults('category_slug', 'ram');
+Route::get('/ssds', [ProductsController::class, 'index'])->defaults('category_slug', 'ssds');
+Route::get('/hdds', [ProductsController::class, 'index'])->defaults('category_slug', 'hdds');
 Route::get('/cpus', [ProductsController::class, 'index'])->defaults('category_slug', 'cpus');
 Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/hot-deals', [HotDealsController::class, 'index']);
