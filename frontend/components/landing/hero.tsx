@@ -2,6 +2,8 @@ import styles from './hero.module.css'
 import React, { useEffect, useState } from 'react'
 import ProductCard from '../product/ProductCard'
 
+import Link from 'next/link'
+
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
   : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
@@ -12,7 +14,9 @@ export default function Hero(): JSX.Element {
   useEffect(() => {
     async function load() {
       try {
-        const res = await fetch(`${API_BASE}/api/products?featured=1&per_page=1`)
+        // Fetch specific Samsung SSD by searching for it
+        const qg = 'SAMSUNG 990 EVO PLUS SSD 1TB'
+        const res = await fetch(`${API_BASE}/api/products?per_page=1&q=${encodeURIComponent(qg)}`)
         const contentType = res.headers.get('content-type') || ''
         if (!res.ok || !contentType.includes('application/json')) {
           const text = await res.text()
@@ -57,7 +61,13 @@ export default function Hero(): JSX.Element {
                 boostClock={(featured as any).boost_clock}
                 microarchitecture={(featured as any).microarchitecture}
                 socket={(featured as any).socket}
-                footerSlot={<div className={styles.featureTag}>FEATURED DEAL</div>}
+                footerSlot={
+                  <div className={styles.featureTag}>
+                     <Link href={`/product/${featured.slug}`} style={{color: 'inherit', textDecoration: 'none'}}>
+                        FEATURED DEAL
+                     </Link>
+                  </div>
+                }
               />
             </div>
           ) : (
