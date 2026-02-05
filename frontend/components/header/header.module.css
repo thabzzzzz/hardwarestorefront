@@ -56,8 +56,9 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	color: inherit;
+	color: #9c27b0;
 	text-decoration: none;
+	font-weight: 600;
 }
 
 .wishlistIcon {
@@ -65,7 +66,7 @@
 	height: 18px;
 	flex: 0 0 18px;
 	fill: currentColor;
-	color: #e0245e; /* filled heart color */
+	color: currentColor;
 }
 
 /* Hover/focus animations for topbar links (Login, Blog, Wishlist) */
@@ -75,7 +76,10 @@
 }
 
 .wishlistLink:hover,
-.wishlistLink:focus-visible,
+.wishlistLink:focus-visible {
+	opacity: 0.8;
+}
+
 .disabledLink:hover,
 .disabledLink:focus-visible {
 	color: #1f7a8c; /* main theme color */
@@ -84,7 +88,6 @@
 .wishlistLink:hover .wishlistIcon,
 .wishlistLink:focus-visible .wishlistIcon {
 	transform: scale(1.06);
-	color: #1f7a8c; /* ensure icon follows text color */
 }
 
 .wishlistLink:active {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
@@ -7,6 +7,7 @@ import ProductGallery from '../../components/product/ProductGallery'
 import ProductSummary from '../../components/product/ProductSummary'
 import ProductSpecs from '../../components/product/ProductSpecs'
 import ProductActions from '../../components/product/ProductActions'
+import MinifiedActionBar from '../../components/product/MinifiedActionBar'
 import styles from '../../styles/home.module.css'
 import pageStyles from './[slug].module.css'
 
@@ -114,6 +115,26 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const { slug } = router.query
   const [product, setProduct] = useState<ProductPayload | null>(initialProduct || null)
   const [loading, setLoading] = useState(false)
+  const actionsRef = useRef<HTMLDivElement>(null)
+  const [showMinified, setShowMinified] = useState(false)
+
+  useEffect(() => {
+    const el = actionsRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(([entry]) => {
+      // If element is not intersecting and its top is above the viewport, 
+      // it means we have scrolled past it.
+      if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+        setShowMinified(true)
+      } else {
+        setShowMinified(false)
+      }
+    }, { threshold: 0 })
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [product, loading])
 
   const mapCategory = (cat: string | undefined | null) => {
     if (!cat) return null
@@ -286,17 +307,30 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
                   stock={product.stock}
                   specs={product.specs}
                 />
-                <ProductActions
-                  price={product.price || null}
-                  id={product.product_id || product.title}
-                  title={product.title}
-                  thumbnail={product.thumbnail || null}
-                  stock={product.stock || null}
-                />
+                <div ref={actionsRef}>
+                  <ProductActions
+                    price={product.price || null}
+                    id={product.product_id || product.title}
+                    title={product.title}
+                    thumbnail={product.thumbnail || null}
+                    stock={product.stock || null}
+                  />
+                </div>
               </div>
             </div>
 
             <ProductSpecs specs={product.specs || null} specTables={product.spec_tables || null} specFields={product.spec_fields || null} />
+            
+            <MinifiedActionBar 
+              visible={showMinified}
+              product={{
+                id: product.product_id || '',
+                title: product.title,
+                thumbnail: product.thumbnail || null,
+                price: product.price,
+                stock: product.stock
+              }}
+            />
           </>
         )}
 

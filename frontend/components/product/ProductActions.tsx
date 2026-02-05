@@ -101,7 +101,16 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           {busyAdd ? 'Adding...' : 'Add to Basket'}
         </Button>
 
-        <Button variant="outlined" className={styles.wishlistButtonLarge} onClick={handleWishlist} disabled={busyWish} aria-pressed={wishlist.isWished(id || '')} aria-busy={busyWish} title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}>
+        <Button 
+          variant="outlined" 
+          className={styles.wishlistButtonLarge} 
+          onClick={handleWishlist} 
+          disabled={busyWish} 
+          aria-pressed={wishlist.isWished(id || '')} 
+          aria-busy={busyWish} 
+          title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}
+          color="secondary"
+        >
           {wishlist.isWished(id || '') ? 'In Wishlist' : (busyWish ? '...' : 'Add to Wishlist')}
         </Button>
       </div>
