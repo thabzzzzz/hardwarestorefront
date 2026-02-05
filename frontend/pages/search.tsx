@@ -162,9 +162,13 @@ export default function SearchPage(): JSX.Element {
         if (!res.ok) throw new Error('Failed to fetch search results')
         const json = await res.json()
         setItems(json.data || [])
-        // meta: { current_page, last_page, total, price_min, price_max }
+        
+        // Correctly read pagination from root (standard Laravel paginate response)
+        const lastPage = json.last_page || 1
+        setTotalPages(lastPage)
+
+        // meta: { price_min, price_max }
         if (json.meta) {
-            setTotalPages(json.meta.last_page || 1)
             // If server returns global price bounds for this category/search
             if (typeof json.meta.price_min === 'number') setGlobalMinCents(json.meta.price_min)
             if (typeof json.meta.price_max === 'number') setGlobalMaxCents(json.meta.price_max)
