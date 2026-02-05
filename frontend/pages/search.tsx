@@ -1,90 +1,237 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
+import { useRouter } from 'next/router'
 import Header from '../components/header/header'
 import ProductCard from '../components/product/ProductCard'
 import styles from '../styles/home.module.css'
 import pageStyles from './search.module.css'
 
 import formatPriceFromCents from '../lib/formatPrice'
-import { useRouter } from 'next/router'
+import Paper from '@mui/material/node/Paper'
+import Box from '@mui/material/node/Box'
+import Typography from '@mui/material/node/Typography'
+import FormControl from '@mui/material/node/FormControl'
+import FormGroup from '@mui/material/node/FormGroup'
+import FormControlLabel from '@mui/material/node/FormControlLabel'
+import Checkbox from '@mui/material/node/Checkbox'
+import Button from '@mui/material/node/Button'
+import InputLabel from '@mui/material/node/InputLabel'
+import Select from '@mui/material/node/Select'
+import MenuItem from '@mui/material/node/MenuItem'
+import Pagination from '@mui/material/node/Pagination'
+import PaginationItem from '@mui/material/node/PaginationItem'
+import Slider from '@mui/material/node/Slider'
+import TextField from '@mui/material/node/TextField'
+
+type SearchItem = {
+  variant_id: string
+  title: string
+  sku?: string
+  current_price?: { amount_cents: number; currency: string } | null
+  thumbnail?: string | null
+  stock?: { qty_available: number; qty_reserved?: number; status: string } | null
+  slug?: string | null
+  manufacturer?: string | null
+  board_partner?: string | null
+  product_type?: string | null
+  cores?: number | string | null
+  boost_clock?: string | null
+  microarchitecture?: string | null
+  socket?: string | null
+  name?: string
+  brand?: string
+}
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
   : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
-function matches(item: any, q: string) {
-  const needle = q.trim().toLowerCase()
-  if (!needle) return true
-  const title = String(item.title || '').toLowerCase()
-  const name = String(item.name || '').toLowerCase()
-  const sku = String(item.sku || '').toLowerCase()
-  const manufacturer = String(item.manufacturer || '').toLowerCase()
-  return title.includes(needle) || name.includes(needle) || sku.includes(needle) || manufacturer.includes(needle)
-}
+export default function SearchPage(): JSX.Element {
+  const [items, setItems] = useState<SearchItem[]>([])
+  const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(12)
+  const [totalPages, setTotalPages] = useState(1)
 
-export default function SearchPage({ results, q, sort }: { results: any[]; q: string; sort?: string }) {
   const [priceMin, setPriceMin] = useState<number>(0)
   const maxCents = useMemo(() => {
     let m = 0
-    for (const it of results) {
+    for (const it of items) {
       const c = Number(it.current_price?.amount_cents || 0)
       if (c > m) m = c
     }
     return m
-  }, [results])
+  }, [items])
   const [priceMax, setPriceMax] = useState<number>(maxCents)
+  const [priceRangeRand, setPriceRangeRand] = useState<[number, number]>([0, Math.ceil(maxCents / 100)])
+  const [globalMinCents, setGlobalMinCents] = useState<number | null>(null)
+  const [globalMaxCents, setGlobalMaxCents] = useState<number | null>(null)
+  const [hasAppliedPriceFilter, setHasAppliedPriceFilter] = useState(false)
+  const userTouchedPrice = useRef(false)
+  const effectiveMaxCents = globalMaxCents ?? Math.max(maxCents, priceMax || 0)
+  const sliderMaxRand = Math.max(Math.ceil((effectiveMaxCents || 0) / 100), 1)
+  const sliderStep = 1
 
-  // re-sync max when results change
-  React.useEffect(() => { setPriceMax(maxCents) }, [maxCents])
+  // resync max when items change — but do NOT shrink the slider max
+  // once the user has interacted with it, and prefer server-provided
+  // global bounds when available.
+  useEffect(() => {
+    if (userTouchedPrice.current) return
+
+    const effectiveMax = globalMaxCents !== null ? globalMaxCents : maxCents
+    const nextMaxCents = Math.max(0, Math.ceil(effectiveMax || 0))
+    
+    setPriceMax(nextMaxCents)
+    setPriceRangeRand(prev => {
+        const currentMinRand = prev ? prev[0] : 0
+        const newMaxRand = Math.ceil(nextMaxCents / 100)
+        const finalMaxRand = Math.max(1, newMaxRand)
+        return [currentMinRand, finalMaxRand]
+    })
+  }, [maxCents, globalMaxCents])
 
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
+  const [sortBy, setSortBy] = useState<string>('price_asc')
+
   const router = useRouter()
-  const [sortBy, setSortBy] = useState<string>(sort || '')
+  // const [lastAction, setLastAction] = useState<string>('') // Not really needed for functional logic but good for debug
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  const initialPageSynced = useRef(false)
 
-  const manufacturers = useMemo(() => {
-    const s = new Set<string>()
-    for (const it of results) {
-      const m = String(it.manufacturer || '').trim()
-      if (m) s.add(m)
+  // On first ready, initialize `page` from the URL query if present.
+  useEffect(() => {
+    if (!router.isReady) return
+    if (initialPageSynced.current) return
+    initialPageSynced.current = true
+    const qp = router.query.page
+    if (!qp) return
+    const raw = Array.isArray(qp) ? qp[0] : qp
+    const n = Number(raw)
+    if (Number.isFinite(n) && n >= 1) {
+      setPage(Math.max(1, Math.floor(n)))
     }
-    return Array.from(s).sort()
-  }, [results])
-  const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
+  }, [router.isReady, router.query.page])
+  
+  // Also sync `q` into local state if needed? 
+  // We can just read router.query.q directly for the API call.
 
-  function toggleManufacturer(m: string) {
-    setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
+  useEffect(() => {
+    if (!router.isReady) return
+
+    async function load() {
+      setLoading(true)
+      try {
+        const q = router.query.q || ''
+        let url = `${API_BASE}/api/products?per_page=${perPage}&page=${page}`
+        
+        if (q) {
+           url += `&q=${encodeURIComponent(String(q))}`
+        }
+
+        // Pass server-side filters
+        if (hasAppliedPriceFilter) {
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+        }
+        
+        // Stock Status
+        const stockStatus: string[] = []
+        if (filterInStock) stockStatus.push('in_stock')
+        if (filterReserved) stockStatus.push('reserved')
+        if (filterOutOfStock) stockStatus.push('out_of_stock')
+        if (stockStatus.length > 0) {
+          const sParams = stockStatus.map(s => `stock_status[]=${encodeURIComponent(s)}`).join('&')
+          url += `&${sParams}`
+        }
+
+        if (sortBy) {
+          if (sortBy === 'price_asc') {
+            url += '&sort=price&order=asc'
+          } else if (sortBy === 'price_desc') {
+            url += '&sort=price&order=desc'
+          } else if (sortBy === 'date_desc') {
+            url += '&sort=date&order=desc'
+          } else if (sortBy === 'date_asc') {
+            url += '&sort=date&order=asc'
+          }
+        }
+
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('Failed to fetch search results')
+        const json = await res.json()
+        setItems(json.data || [])
+        // meta: { current_page, last_page, total, price_min, price_max }
+        if (json.meta) {
+            setTotalPages(json.meta.last_page || 1)
+            // If server returns global price bounds for this category/search
+            if (typeof json.meta.price_min === 'number') setGlobalMinCents(json.meta.price_min)
+            if (typeof json.meta.price_max === 'number') setGlobalMaxCents(json.meta.price_max)
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [
+    router.isReady, 
+    router.query.q, 
+    page, 
+    perPage, 
+    filterInStock, 
+    filterReserved, 
+    filterOutOfStock,
+    hasAppliedPriceFilter, // only re-fetch if filter is applied
+    // if we added debouncing for price, we would track that. 
+    // For now, let's assume `hasAppliedPriceFilter` toggles or we rely on a manual apply or debounce.
+    // In gpus.tsx, it triggers nicely. But wait, `priceMin/Max` changes on slider drag?
+    // In gpus.tsx, the slider updates `priceRangeRand` (state) and only triggers fetch if we debounce or user stops?
+    // Let's check gpus.tsx logic for slider interaction. 
+    // It seems gpus.tsx might not re-fetch immediately on slider drag unless there is a debounce or "Apply" mechanism I missed.
+    // Actually, gpus.tsx implementation I read:
+    // `useEffect` for `load` depends on `[..., priceMin, priceMax, ...]`. 
+    // So it fetches on every price change.
+    // BUT the slider usually updates a local state and `onCommitted` updates the filter state?
+    // Let's implement robust slider logic below.
+    sortBy
+  ])
+  
+  // IMPORTANT: The effect above depends on `sortBy`, `page`, etc.
+  // Ideally we should depend on `priceMin`/`priceMax` IF `hasAppliedPriceFilter` is true.
+  // Or we update `priceMin`/`priceMax` only when user commits slider change.
+
+  // handle slider change
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    const val = newValue as [number, number]
+    setPriceRangeRand(val)
+  }
+  
+  const handleSliderCommit = (event: Event | React.SyntheticEvent | undefined, newValue: number | number[]) => {
+      const [minRand, maxRand] = newValue as [number, number]
+      setPriceMin(minRand * 100)
+      setPriceMax(maxRand * 100)
+      setPriceRangeRand([minRand, maxRand])
+      setHasAppliedPriceFilter(true)
+      userTouchedPrice.current = true
+      setPage(1) // reset page on filter
   }
 
-  function onSortChange(v: string) {
-    setSortBy(v)
-    const query: any = { q }
-    if (v) query.sort = v
-    else delete query.sort
-    router.push({ pathname: '/search', query })
+  const handleStockInfoChange = (setter: React.Dispatch<React.SetStateAction<boolean>>, val: boolean) => {
+      setter(val)
+      setPage(1)
   }
 
-  const filtered = results.filter(it => {
-    // manufacturer filter
-    if (selectedManufacturers.length > 0) {
-      const man = String(it.manufacturer || '').trim()
-      if (!selectedManufacturers.includes(man)) return false
-    }
-    const cents = Number(it.current_price?.amount_cents || 0)
-    if (cents < priceMin || cents > priceMax) return false
+  const handleSortChange = (e: any) => {
+      setSortBy(e.target.value)
+      setPage(1)
+  }
 
-    // stock status normalization
-    const raw = String(it.stock?.status || '').toLowerCase()
-    const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
+  const q = String(router.query.q || '')
 
-    const anyStockFilter = filterInStock || filterReserved || filterOutOfStock
-    if (!anyStockFilter) return true
-
-    if (status === 'in_stock' && filterInStock) return true
-    if (status === 'reserved' && filterReserved) return true
-    if (status === 'out_of_stock' && filterOutOfStock) return true
-    return false
-  })
+  if (!mounted) return <></>
 
   return (
     <div className={styles.page}>
@@ -92,99 +239,163 @@ export default function SearchPage({ results, q, sort }: { results: any[]; q: st
       <main className={`${styles.main} ${pageStyles.main}`}>
         <nav className={pageStyles.breadcrumb}>Home / Search</nav>
         <h1 className={pageStyles.title}>Search results for "{q}"</h1>
+        
+        <div className={pageStyles.controlsRow}>
+             <div className={pageStyles.controlsLeft}>
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                    <InputLabel id="sort-by-label">Sort By</InputLabel>
+                    <Select
+                        labelId="sort-by-label"
+                        value={sortBy}
+                        label="Sort By"
+                        onChange={handleSortChange}
+                    >
+                        <MenuItem value="price_asc">Price: Low to High</MenuItem>
+                        <MenuItem value="price_desc">Price: High to Low</MenuItem>
+                        <MenuItem value="date_desc">Newest Arrivals</MenuItem>
+                        <MenuItem value="date_asc">Oldest</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl size="small" sx={{ minWidth: 100 }}>
+                    <InputLabel id="show-label">Show</InputLabel>
+                    <Select
+                        labelId="show-label"
+                        value={perPage}
+                        label="Show"
+                        onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+                    >
+                        <MenuItem value={12}>12</MenuItem>
+                        <MenuItem value={24}>24</MenuItem>
+                        <MenuItem value={48}>48</MenuItem>
+                        <MenuItem value={100}>100</MenuItem>
+                    </Select>
+                </FormControl>
+            </div>
+        </div>
+
         <div className={pageStyles.container}>
-          <aside className={pageStyles.sidebar}>
-            <h3 className={pageStyles.filterHeading}>Sort & Filter</h3>
-            <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 13, marginRight: 8 }}>Sort By</label>
-              <select value={sortBy} onChange={(e) => onSortChange(e.target.value)} className={pageStyles.smallSelectLabel}>
-                <option value="">Relevance</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="date_desc">Date: Newest</option>
-                <option value="date_asc">Date: Oldest</option>
-              </select>
-            </div>
-            <div className={pageStyles.maxPrice}>Price sliders temporarily disabled</div>
-            <div className={pageStyles.maxPrice}>Max price: {formatPriceFromCents(maxCents)}</div>
-            <div className={pageStyles.stockBlock}>
-              <div className={pageStyles.stockLabel}>Manufacturer</div>
-              {manufacturers.length === 0 ? (
-                <div className={pageStyles.checkboxLabel}>No manufacturers</div>
-              ) : (
-                <>
-                  {manufacturers.map(m => (
-                    <label key={m} className={pageStyles.checkboxLabel}>
-                      <input type="checkbox" checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} /> {m}
-                    </label>
-                  ))}
-                  <button type="button" onClick={() => setSelectedManufacturers([])} className={pageStyles.clearButton}>Clear</button>
-                </>
-              )}
-            </div>
-            <div className={pageStyles.stockBlock}>
-              <div className={pageStyles.stockLabel}>Stock</div>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} /> In stock
-              </label>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} /> Reserved
-              </label>
-              <label className={pageStyles.checkboxLabel}>
-                <input type="checkbox" checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} /> Out of stock
-              </label>
-            </div>
-          </aside>
+          <Paper className={pageStyles.sidebar} elevation={0}>
+            <Box p={1}>
+                <Typography variant="h6" className={pageStyles.filterHeading}>Filters</Typography>
+                
+                <div className={pageStyles.priceBlock}>
+                    <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
+                    <Slider
+                        getAriaLabel={() => 'Price range'}
+                        value={priceRangeRand}
+                        onChange={handleSliderChange}
+                        onChangeCommitted={handleSliderCommit}
+                        valueLabelDisplay="auto"
+                        min={0}
+                        max={sliderMaxRand} // Rand
+                    />
+                    <div className={pageStyles.priceInputs}>
+                        <TextField 
+                            size="small" 
+                            label="Min" 
+                            type="number" 
+                            value={priceRangeRand[0]} 
+                            onChange={(e) => {
+                                const v = Number(e.target.value)
+                                setPriceRangeRand([v, priceRangeRand[1]])
+                            }}
+                            onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
+                        />
+                        <TextField 
+                            size="small" 
+                            label="Max" 
+                            type="number" 
+                            value={priceRangeRand[1]} 
+                            onChange={(e) => {
+                                const v = Number(e.target.value)
+                                setPriceRangeRand([priceRangeRand[0], v])
+                            }}
+                            onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
+                        />
+                    </div>
+                </div>
+
+                <div className={pageStyles.stockBlock}>
+                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Availability</Typography>
+                <FormControl component="fieldset" variant="standard">
+                    <FormGroup>
+                        <FormControlLabel 
+                            control={<Checkbox checked={filterInStock} onChange={(e) => handleStockInfoChange(setFilterInStock, e.target.checked)} size="small" />} 
+                            label="In Stock" 
+                        />
+                        <FormControlLabel 
+                            control={<Checkbox checked={filterReserved} onChange={(e) => handleStockInfoChange(setFilterReserved, e.target.checked)} size="small" />} 
+                            label="Reserved" 
+                        />
+                        <FormControlLabel 
+                            control={<Checkbox checked={filterOutOfStock} onChange={(e) => handleStockInfoChange(setFilterOutOfStock, e.target.checked)} size="small" />} 
+                            label="Out of Stock" 
+                        />
+                    </FormGroup>
+                </FormControl>
+                </div>
+            </Box>
+          </Paper>
+          
           <section className={pageStyles.resultsSection}>
-            {filtered.length === 0 ? (
-              <div>No products found.</div>
-            ) : (
-              <div className={pageStyles.grid}>
-                {filtered.map(it => (
-                  <ProductCard
-                    key={it.variant_id || it.id || it.slug}
-                    name={it.name}
-                    title={it.title}
-                    vendor={it.brand}
-                    sku={it.sku}
-                    stock={it.stock || null}
-                    thumbnail={it.thumbnail}
-                    price={it.current_price || null}
-                    slug={it.slug}
-                    manufacturer={it.manufacturer}
-                    productType={it.product_type}
-                    cores={it.cores}
-                    boostClock={it.boost_clock}
-                    microarchitecture={it.microarchitecture}
-                    socket={it.socket}
-                  />
-                ))}
-              </div>
-            )}
+             {loading && items.length === 0 ? (
+                 <div className={pageStyles.grid}>
+                    {Array.from({length: 6}).map((_, i) => (
+                        <div key={i} className={pageStyles.skelCard}>
+                            <div className={`${pageStyles.skel}`} style={{height: 180, width: '100%'}}></div>
+                            <div className={`${pageStyles.skel}`} style={{height: 20, width: '80%'}}></div>
+                            <div className={`${pageStyles.skel}`} style={{height: 20, width: '40%'}}></div>
+                        </div>
+                    ))}
+                 </div>
+             ) : items.length === 0 ? (
+                 <Paper sx={{p: 4, textAlign: 'center'}}>
+                    <Typography variant="h6" color="text.secondary">No products found for "{q}" matching your filters.</Typography>
+                    <Button variant="outlined" sx={{mt:2}} onClick={() => {
+                        setPriceMin(0); setPriceMax(99999999);
+                        setFilterInStock(false); setFilterReserved(false); setFilterOutOfStock(false);
+                        setPriceRangeRand([0, 100000]); // heuristic reset
+                        setHasAppliedPriceFilter(false);
+                        router.reload(); // or just reset state
+                    }}>Clear Filters</Button>
+                 </Paper>
+             ) : (
+                <>
+                  <div className={pageStyles.grid}>
+                    {items.map(it => (
+                      <ProductCard
+                        key={it.variant_id}
+                        name={it.name}
+                        title={it.title}
+                        vendor={it.brand || it.manufacturer} // fallback
+                        sku={it.sku}
+                        stock={it.stock || null}
+                        thumbnail={it.thumbnail}
+                        price={it.current_price || null}
+                        slug={it.slug}
+                        manufacturer={it.manufacturer}
+                        productType={it.product_type}
+                        cores={it.cores}
+                        boostClock={it.boost_clock}
+                        microarchitecture={it.microarchitecture}
+                        socket={it.socket}
+                      />
+                    ))}
+                  </div>
+                  <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }}>
+                    <Pagination 
+                        count={totalPages} 
+                        page={page} 
+                        onChange={(e, v) => { setPage(v); window.scrollTo({top:0, behavior:'smooth'}) }} 
+                        color="primary" 
+                    />
+                  </div>
+                </>
+             )}
           </section>
         </div>
       </main>
     </div>
   )
-}
-
-export async function getServerSideProps(context: any) {
-  const q = String(context.query.q || '')
-  const sortParam = String(context.query.sort || '')
-  try {
-    let url = `${API_BASE}/api/products?per_page=1000`
-    if (sortParam.startsWith('date')) {
-      const order = sortParam.endsWith('_asc') ? 'asc' : 'desc'
-      url += `&sort=date&order=${order}`
-    }
-    const res = await fetch(url)
-    if (!res.ok) return { props: { results: [], q } }
-    const js = await res.json()
-    const list = js.data || []
-    const results = list.filter((it: any) => matches(it, q))
-    return { props: { results, q, sort: sortParam } }
-  } catch (e) {
-    console.error('search server fetch failed', e)
-    return { props: { results: [], q } }
-  }
 }
