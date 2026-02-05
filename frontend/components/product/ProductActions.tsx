@@ -97,8 +97,15 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           label="Qty"
         />
 
-        <Button variant="contained" className={styles.addButton} onClick={handleAddToCart} disabled={busyAdd} aria-busy={busyAdd}>
-          {busyAdd ? 'Adding...' : 'Add to Basket'}
+        <Button 
+          variant="contained" 
+          className={styles.addButton} 
+          onClick={handleAddToCart} 
+          disabled={busyAdd} 
+          aria-busy={busyAdd}
+          sx={{ textTransform: 'none', fontWeight: 700 }}
+        >
+          {busyAdd ? 'Adding...' : 'Add to cart'}
         </Button>
 
         <Button 
@@ -110,8 +117,9 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           aria-busy={busyWish} 
           title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}
           color="secondary"
+          sx={{ textTransform: 'none', fontWeight: 700 }}
         >
-          {wishlist.isWished(id || '') ? 'In Wishlist' : (busyWish ? '...' : 'Add to Wishlist')}
+          {wishlist.isWished(id || '') ? 'In wishlist' : (busyWish ? '...' : 'Add to wishlist')}
         </Button>
       </div>
     </Paper>

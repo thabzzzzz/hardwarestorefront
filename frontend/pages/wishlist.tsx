@@ -13,7 +13,7 @@ import TextField from '@mui/material/node/TextField/index.js'
 import Button from '@mui/material/node/Button/index.js'
 import FormControl from '@mui/material/node/FormControl/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()

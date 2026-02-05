@@ -12,6 +12,7 @@
 	background: #fff;
 	border: 1px solid #eee;
 	display: block;
+	border-radius: 12px;
 }
 
 .empty {

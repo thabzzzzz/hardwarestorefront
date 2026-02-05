@@ -139,13 +139,58 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const mapCategory = (cat: string | undefined | null) => {
     if (!cat) return null
     const s = String(cat).toLowerCase().trim()
-    if (s.includes('gpu') || s.includes('graphics') || s.includes('video')) return { label: 'Graphics Cards', href: '/products/gpus' }
-    if (s.includes('cpu') || s.includes('processor')) return { label: 'CPUs', href: '/products/processors' }
-    if (s.includes('motherboard')) return { label: 'Motherboards', href: '/products/motherboards' }
-    if (s.includes('memory') || s.includes('ram')) return { label: 'Memory', href: '/products/memory' }
-    // fallback: make a friendly label and link to a products listing by slug
+    
+    const map: Record<string, { section: string, label: string, href: string }> = {
+      // Computer Components
+      'gpus': { section: 'Computer Components', label: 'Graphics Cards', href: '/products/gpus' },
+      'graphics cards': { section: 'Computer Components', label: 'Graphics Cards', href: '/products/gpus' },
+      'cpus': { section: 'Computer Components', label: 'Processors', href: '/products/processors' },
+      'processors': { section: 'Computer Components', label: 'Processors', href: '/products/processors' },
+      'motherboards': { section: 'Computer Components', label: 'Motherboards', href: '/products/motherboards' },
+      'cases': { section: 'Computer Components', label: 'Cases', href: '/products/cases' },
+      'ram': { section: 'Computer Components', label: 'Memory', href: '/products/ram' },
+      'memory': { section: 'Computer Components', label: 'Memory', href: '/products/ram' },
+
+      // Storage Devices
+      'ssds': { section: 'Storage Devices', label: 'Solid State Drives', href: '/products/ssds' },
+      'hdds': { section: 'Storage Devices', label: 'Internal Hard Drives', href: '/products/hdds' },
+      
+      // Peripherals
+      'monitors': { section: 'Peripherals', label: 'Monitors', href: '/products/monitors' },
+      'mid': { section: 'Peripherals', label: 'Monitors', href: '/products/monitors' }, // typical junk mismatch if any
+      'keyboards': { section: 'Peripherals', label: 'Keyboards', href: '/products/keyboards' },
+      'mice': { section: 'Peripherals', label: 'Mice', href: '/products/mice' },
+      'headsets': { section: 'Peripherals', label: 'Headsets', href: '/products/headsets' },
+
+      // Networking
+      'routers': { section: 'Networking', label: 'Routers', href: '/products/routers' },
+
+      // Computer Accessories
+      'casefans': { section: 'Computer Accessories', label: 'Fans & Coolers', href: '/products/case-fans' },
+      'psus': { section: 'Computer Accessories', label: 'Power Supplies', href: '/products/psus' }
+    }
+
+    // Direct lookup
+    if (map[s]) return map[s]
+
+    // Fuzzy lookup
+    if (s.includes('gpu') || s.includes('graphics')) return map['gpus']
+    if (s.includes('cpu') || s.includes('processor')) return map['cpus']
+    if (s.includes('motherboard')) return map['motherboards']
+    if (s.includes('memory') || s.includes('ram')) return map['ram']
+    if (s.includes('ssd')) return map['ssds']
+    if (s.includes('hdd') || s.includes('hard drive')) return map['hdds']
+    if (s.includes('monitor') || s.includes('screen')) return map['monitors']
+    if (s.includes('keyboard')) return map['keyboards']
+    if (s.includes('mouse') || s.includes('mice')) return map['mice']
+    if (s.includes('headset') || s.includes('audio')) return map['headsets']
+    if (s.includes('router') || s.includes('networking')) return map['routers']
+    if (s.includes('fan') || s.includes('cooler')) return map['casefans']
+    if (s.includes('psu') || s.includes('power supply')) return map['psus']
+
+    // Fallback: Default to just Hardware -> Capitalized Slug
     const label = String(cat).replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-    return { label, href: `/products/${encodeURIComponent(String(cat))}` }
+    return { section: 'Hardware', label, href: `/products/${encodeURIComponent(String(cat))}` }
   }
 
   useEffect(() => {
@@ -280,11 +325,13 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
               ? prodAny.categories[0]
               : (prodAny.product_type || prodAny.type || prodAny.category || null)
             const mapped = mapCategory(catCandidate)
-            if (mapped) return `Home / Hardware / ${mapped.label} / ${slug}`
+            if (mapped) return `Home / Hardware / ${mapped.section === 'Hardware' ? '' : mapped.section + ' / '}${mapped.label} / ${product.title}`
+            
             // fallback: try to infer from slug (e.g., contains 'cpu') or product_type hints
             const inferred = mapCategory(prodAny.product_type || prodAny.type || prodAny.title || null)
-            if (inferred) return `Home / Hardware / ${inferred.label} / ${slug}`
-            return `Home / Hardware / Video Cards / ${slug}`
+            if (inferred) return `Home / Hardware / ${inferred.section === 'Hardware' ? '' : inferred.section + ' / '}${inferred.label} / ${product.title}`
+            
+            return `Home / Hardware / Video Cards / ${product.title}`
           })()}
         </nav>
 
