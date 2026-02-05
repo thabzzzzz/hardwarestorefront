@@ -144,18 +144,25 @@ class ProductController extends Controller
 
         // include parsed spec tables if available
         if (isset($variant->raw_spec_tables)) {
+            $raw = $variant->raw_spec_tables;
             $decoded = null;
-            try {
-                $decoded = json_decode($variant->raw_spec_tables, true);
-            } catch (\Exception $e) {
-                $decoded = null;
+
+            if (is_array($raw)) {
+                $decoded = $raw;
+            } elseif (is_string($raw)) {
+                try {
+                    $decoded = json_decode($raw, true);
+                } catch (\Throwable $e) {
+                    $decoded = null;
+                }
             }
+
             if (is_array($decoded)) {
                 $payload['spec_tables'] = $decoded;
             } else {
                 // still include raw string so front-end can attempt parsing
                 $payload['spec_tables'] = null;
-                $payload['spec_fields']['raw_spec_tables'] = $variant->raw_spec_tables;
+                $payload['spec_fields']['raw_spec_tables'] = $raw;
             }
         }
 
