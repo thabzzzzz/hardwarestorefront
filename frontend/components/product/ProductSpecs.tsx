@@ -30,8 +30,10 @@ function renderSpecTable(table: any, boldCutoffTerms?: string[] | null, useHeuri
     ))
   }
 
-  const header = Array.isArray(table[0]) ? table[0] : null
-  const rows = header ? table.slice(1) : table
+  // In product specs context, we generally treat all rows as body rows to avoid 
+  // misinterpreting the first key-value pair as a table header.
+  const header = null; // Forces all content to be rendered in TableBody
+  const rows = table;
 
   // make a working copy of rows and strip up to three leading bullet-like rows
   const processedRows = rows.slice()
