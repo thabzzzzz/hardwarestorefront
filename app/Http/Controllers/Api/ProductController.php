@@ -45,6 +45,10 @@ class ProductController extends Controller
             'table',
             'sold by',
             'products',
+            'additional information',
+            'warranty',
+            'recommend use',
+            'opus',
         ];
 
         // Process keys only in associative arrays or key-value tuples
