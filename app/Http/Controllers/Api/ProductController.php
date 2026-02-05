@@ -43,6 +43,8 @@ class ProductController extends Controller
             'ean',
             'gtin',
             'table',
+            'sold by',
+            'products',
         ];
 
         // Process keys only in associative arrays or key-value tuples
