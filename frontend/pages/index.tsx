@@ -66,15 +66,12 @@ export default function Home(): JSX.Element {
     )
   }, [])
 
-  const renderSection = (title: string, products: any[], linkUrl: string) => (
+  const renderSection = (title: string, products: any[]) => (
     <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold' }}>
           {title}
         </Typography>
-        <Link href={linkUrl} passHref style={{ textDecoration: 'none' }}>
-           <Button variant="outlined" color="primary">View More</Button>
-        </Link>
       </Box>
       <Grid container spacing={3}>
         {products.map((product) => (
@@ -120,9 +117,9 @@ export default function Home(): JSX.Element {
       <Header />
       <main className={styles.main}>
         <Hero />
-        {renderSection('Hot Deals', hotDeals, '/search?sort=price_asc')}
-        {renderSection('Popular Products', popular, '/search?sort=popularity')}
-        {renderSection('New Arrivals', newArrivals, '/search?sort=date_desc')}
+        {renderSection('Hot Deals', hotDeals)}
+        {renderSection('Popular Products', popular)}
+        {renderSection('New Arrivals', newArrivals)}
       </main>
     </div>
   )
