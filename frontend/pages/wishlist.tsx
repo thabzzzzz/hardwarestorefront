@@ -153,7 +153,7 @@ export default function WishlistPage(): JSX.Element {
                   <td className={styles.cellBold}>Total</td>
                   <td className={styles.cellBold}><Typography variant="body1" component="span" sx={{ fontWeight: 700 }}>{w.formatPrice(w.totalCents)}</Typography></td>
                   <td>
-                    <Button size="small" variant="outlined" color="error" onClick={() => w.clear()}>
+                    <Button size="small" variant="outlined" color="error" onClick={() => w.clear()} sx={{ fontWeight: 700 }}>
                       Clear wishlist
                     </Button>
                   </td>
