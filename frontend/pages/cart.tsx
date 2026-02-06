@@ -40,7 +40,7 @@ export default function CartPage(): JSX.Element {
               <tr className={styles.theadRow}>
                 <th className={styles.th}>Product</th>
                 <th className={`${styles.th} ${styles.colDate}`}>Date added</th>
-                <th className={`${styles.th} ${styles.colQty}`}>Qty <span className={styles.smallNote}>(limited by stock)</span></th>
+                <th className={`${styles.th} ${styles.colQty}`}>Qty</th>
                 <th className={`${styles.th} ${styles.colSubtotal}`}>Subtotal</th>
                 <th className={`${styles.th} ${styles.colActions}`}></th>
               </tr>
@@ -59,15 +59,16 @@ export default function CartPage(): JSX.Element {
                   </td>
                   <td className={`${styles.td} ${styles.dateCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
                   <td className={styles.td}>
-                    <input type="number" min={1} value={item.qty} onChange={(e) => onQtyChange(item.id, e.target.value)} className={styles.qtyInput} max={item.stock?.qty_available ?? undefined} />
+                    <input type="number" min={1} value={item.qty} onChange={(e) => onQtyChange(item.id, e.target.value)} className={styles.qtyInput} />
                     {errors[item.id] && <div className={styles.errorText}>{errors[item.id]}</div>}
                   </td>
-                  <td className={styles.td}>{cart.formatPrice(item.price?.amount_cents ?? 0)}</td>
+                  <td className={styles.td}>{cart.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</td>
                   <td className={styles.td}>
                     <button onClick={() => onRemove(item.id)} className={styles.removeButton}>Remove</button>
                   </td>
                 </tr>
               ))}
+
             </tbody>
             <tfoot>
               <tr>

@@ -85,12 +85,16 @@ export default function useCart() {
   function addOrUpdate(entry: Omit<CartEntry, 'qty'>, qty = 1): { ok: boolean; added: boolean; message?: string } {
     const id = entry.id
     const found = storeItems.find(i => i.id === id)
-    const avail = entry.stock?.qty_available ?? Infinity
-    const safeQty = Math.max(1, Math.min(qty, avail))
+    // Removed strict stock limiting
+    // const avail = entry.stock?.qty_available ?? Infinity
+    // const safeQty = Math.max(1, Math.min(qty, avail))
+    const safeQty = Math.max(1, qty)
+
     if (found) {
-      const next = storeItems.map(i => i.id === id ? { ...i, qty: Math.max(1, Math.min(safeQty, i.stock?.qty_available ?? safeQty)) } : i)
+      // Allow unlimited update
+      const next = storeItems.map(i => i.id === id ? { ...i, qty: safeQty } : i)
       persistAndNotify(next)
-      return { ok: true, added: false, message: 'Already in cart' }
+      return { ok: true, added: false, message: 'Updated cart quantity' }
     }
     const nextEntry: CartEntry = { ...entry, qty: safeQty, added_at: new Date().toISOString() }
     persistAndNotify([nextEntry, ...storeItems])
@@ -105,14 +109,12 @@ export default function useCart() {
   function updateQty(id: string, qty: number): { ok: boolean; message?: string } {
     const idx = storeItems.findIndex(i => i.id === id)
     if (idx === -1) return { ok: false, message: 'Item not in cart' }
-    const entry = storeItems[idx]
-    const avail = entry.stock?.qty_available ?? Infinity
+    // Removed strict stock limiting
+    // const entry = storeItems[idx]
+    // const avail = entry.stock?.qty_available ?? Infinity
     if (qty < 1) qty = 1
-    if (qty > avail) {
-      const corrected = storeItems.map(i => i.id === id ? { ...i, qty: Math.max(1, avail === Infinity ? i.qty : avail) } : i)
-      persistAndNotify(corrected)
-      return { ok: false, message: `Only ${avail} available` }
-    }
+    // if (qty > avail) { ... }
+    
     const next = storeItems.map(i => i.id === id ? { ...i, qty } : i)
     persistAndNotify(next)
     return { ok: true }
