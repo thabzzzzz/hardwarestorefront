@@ -198,71 +198,89 @@ export default function Header(): JSX.Element {
             </Link>
           </div>
           <nav className={styles.nav}>
-          <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-            <a>HARDWARE
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-              </svg>
-            </a>
-            <div className={styles.submenu}>
-              <div className={styles.submenuGrid}>
-                <div className={styles.category}>
-                  <h4>Computer Components</h4>
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Computer Components
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
                     <ul>
-                    <li><a href="/products/gpus">Graphics Cards</a></li>
-                    <li><a href="/products/processors">Processors / CPUs</a></li>
-                    <li><a href="/products/motherboards">Motherboards</a></li>
-                    <li><a href="/products/cases">Cases</a></li>
-                    <li><a href="/products/ram">Memory / RAM</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Storage Devices</h4>
-                  <ul>
-                    <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
-                    <li><a href="/products/hdds">Internal Hard Drives</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Peripherals</h4>
-                  <ul>
-                    <li><a href="/products/monitors">Monitors / Screens</a></li>
-                    <li><a href="/products/keyboards">Keyboards</a></li>
-                    <li><a href="/products/mice">Mice & Controllers</a></li>
-                    <li><a href="/products/headsets">Headsets & Audio</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Networking</h4>
-                  <ul>
-                    <li><a href="/products/routers">Routers</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Computer Accessories</h4>
-                  <ul>
-                    <li><a href="/products/case-fans">Fans & Coolers</a></li>
-                    <li><a href="/products/psus">PSUs / Power Supplies</a></li>
-                  </ul>
+                      <li><a href="/products/gpus">Graphics Cards</a></li>
+                      <li><a href="/products/processors">Processors / CPUs</a></li>
+                      <li><a href="/products/motherboards">Motherboards</a></li>
+                      <li><a href="/products/cases">Cases</a></li>
+                      <li><a href="/products/ram">Memory / RAM</a></li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <a>PCS & LAPTOPS
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
-          <a>PROMOS
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
-          <a>PC BUILDER
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Storage Devices
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
+                      <li><a href="/products/hdds">Internal Hard Drives</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Peripherals
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/monitors">Monitors / Screens</a></li>
+                      <li><a href="/products/keyboards">Keyboards</a></li>
+                      <li><a href="/products/mice">Mice & Controllers</a></li>
+                      <li><a href="/products/headsets">Headsets & Audio</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Networking
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/routers">Routers</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Accessories
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/case-fans">Fans & Coolers</a></li>
+                      <li><a href="/products/psus">PSUs / Power Supplies</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </nav>
           <div className={styles.brandDivider} aria-hidden="true" />
           <div className={styles.brandActions}>
@@ -311,10 +329,11 @@ export default function Header(): JSX.Element {
             <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
               <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)}>Close</button>
               <nav className={styles.mobileNav}>
-                <a>HARDWARE</a>
-                <a>PCS & LAPTOPS</a>
-                <a>PROMOS</a>
-                <a>PC BUILDER</a>
+                <Link href="/products">Computer Components</Link>
+                <Link href="/products">Storage Devices</Link>
+                <Link href="/products">Peripherals</Link>
+                <Link href="/products">Networking</Link>
+                <Link href="/products">Accessories</Link>
               </nav>
             </div>
           </div>

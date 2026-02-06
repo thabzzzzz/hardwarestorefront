@@ -156,7 +156,7 @@
 }
 
 .navItem {
-	position: static;
+	position: relative;
 }
 
 .hasSubmenu:hover .submenu,
@@ -178,9 +178,11 @@
 	background: #fff;
 	padding: 18px;
 	border: 1px solid #eee;
+	border-radius: 12px;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 	box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 	z-index: 1200;
-	width: 960px;
+	/* Removed fixed width 960px to allow per-menu auto width */
 	pointer-events: none;
 }
 
@@ -310,8 +312,23 @@
 
 /* Let MUI TextField render its own outlined style. Remove legacy native input styling
    but keep left padding so the absolute search icon doesn't overlap the text. */
-.searchBox .MuiOutlinedInput-root { width: 100%; border-radius: 10px; }
-.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { border-radius: 10px; }
+.searchBox .MuiOutlinedInput-root { 
+	width: 100%; 
+	border-radius: 12px;
+	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+	background: #fff; /* Ensure shadow is visible/no transparency issues */
+	transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.searchBox .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+	border-color: #1f7a8c;
+}
+.searchBox .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+	border-color: #1f7a8c;
+}
+.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { 
+	border-radius: 12px; 
+	transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
 .searchBox .MuiOutlinedInput-input { padding: 12px 12px 12px 44px; height: 44px; box-sizing: border-box; }
 
 /* Mobile search: keep same left padding as previous mobile input */

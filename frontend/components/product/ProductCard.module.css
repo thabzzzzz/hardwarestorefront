@@ -138,7 +138,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ff7a45;
+  color: #9c27b0;
   box-shadow: 0 6px 14px rgba(2,6,23,0.06);
   margin-left: 8px;
   cursor: pointer;
@@ -147,7 +147,7 @@
 .wishlistHeart svg { display: block; transition: fill .12s ease, stroke .12s ease }
 .wishlistHeart svg { fill: none; stroke: currentColor }
 
-.inWishlistHeart { color: #ff7a45 }
+.inWishlistHeart { color: #9c27b0 }
 .inWishlistHeart svg { fill: currentColor; stroke: none }
 
 .inWishlist { background: #ffffff; color: #1f7a8c; border-color: #1f7a8c }
