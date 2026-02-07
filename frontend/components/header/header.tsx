@@ -16,6 +16,7 @@ const API_BASE = typeof window === 'undefined'
 export default function Header(): JSX.Element {
   const topbarRef = useRef<HTMLDivElement | null>(null)
   const brandRef = useRef<HTMLDivElement | null>(null)
+  const profileRef = useRef<HTMLDivElement | null>(null)
   const [atTop, setAtTop] = useState<boolean>(true)
   const [topbarHeight, setTopbarHeight] = useState<number>(0)
   const [brandHeight, setBrandHeight] = useState<number>(0)
@@ -63,7 +64,7 @@ export default function Header(): JSX.Element {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
-  
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
   useEffect(() => {
     let openTimer: number | undefined
@@ -82,6 +83,21 @@ export default function Header(): JSX.Element {
       if (closeTimer) window.clearTimeout(closeTimer)
     }
   }, [mobileMenuOpen])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+
+    if (profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileOpen])
 
   function doSearchNavigate(q: string) {
     if (!q || String(q).trim().length === 0) return
@@ -136,12 +152,12 @@ export default function Header(): JSX.Element {
               <button aria-label="Open menu" className={styles.iconButton} onClick={() => setMobileMenuOpen(true)}>
                 <img src="/images/icons/burger-menu.svg" alt="Menu" />
               </button>
-              <div className={styles.profileWrap}>
+              <div className={styles.profileWrap} ref={profileRef}>
                 <button aria-haspopup="true" aria-expanded={profileOpen} className={styles.iconButton} onClick={() => setProfileOpen(v => !v)}>
                   <img src="/images/icons/profile.svg" alt="Profile" />
                 </button>
                 {profileOpen && (
-                  <div className={styles.profileMenu} onMouseLeave={() => setProfileOpen(false)}>
+                  <div className={styles.profileMenu}>
                     <a href="#" onClick={(e)=>e.preventDefault()}>Login</a>
                     <a href="#" onClick={(e)=>e.preventDefault()}>Blog</a>
                     <Link href="/wishlist">Wishlist</Link>
@@ -327,51 +343,88 @@ export default function Header(): JSX.Element {
         {mobileMenuVisible && (
           <div className={styles.mobileMenuOverlay} role="dialog" aria-modal="true" onClick={() => setMobileMenuOpen(false)}>
             <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)}>Close</button>
+              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
               <nav className={styles.mobileNav}>
-                <details className={styles.mobileGroup}>
-                  <summary>Computer Components</summary>
-                  <div className={styles.mobileSubnav}>
-                    <Link href="/products/gpus">Graphics Cards</Link>
-                    <Link href="/products/processors">Processors / CPUs</Link>
-                    <Link href="/products/motherboards">Motherboards</Link>
-                    <Link href="/products/cases">Cases</Link>
-                    <Link href="/products/ram">Memory / RAM</Link>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'comp' ? null : 'comp')}>
+                    Computer Components
+                    <span className={styles.arrow}>{expandedGroup === 'comp' ? '−' : '+'}</span>
                   </div>
-                </details>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'comp' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/gpus">Graphics Cards</Link>
+                        <Link href="/products/processors">Processors / CPUs</Link>
+                        <Link href="/products/motherboards">Motherboards</Link>
+                        <Link href="/products/cases">Cases</Link>
+                        <Link href="/products/ram">Memory / RAM</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <details className={styles.mobileGroup}>
-                  <summary>Storage Devices</summary>
-                  <div className={styles.mobileSubnav}>
-                    <Link href="/products/ssds">Solid State Drives / SSDs</Link>
-                    <Link href="/products/hdds">Internal Hard Drives</Link>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'storage' ? null : 'storage')}>
+                    Storage Devices
+                    <span className={styles.arrow}>{expandedGroup === 'storage' ? '−' : '+'}</span>
                   </div>
-                </details>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'storage' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/ssds">Solid State Drives / SSDs</Link>
+                        <Link href="/products/hdds">Internal Hard Drives</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <details className={styles.mobileGroup}>
-                  <summary>Peripherals</summary>
-                  <div className={styles.mobileSubnav}>
-                    <Link href="/products/monitors">Monitors / Screens</Link>
-                    <Link href="/products/keyboards">Keyboards</Link>
-                    <Link href="/products/mice">Mice & Controllers</Link>
-                    <Link href="/products/headsets">Headsets & Audio</Link>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'periph' ? null : 'periph')}>
+                    Peripherals
+                    <span className={styles.arrow}>{expandedGroup === 'periph' ? '−' : '+'}</span>
                   </div>
-                </details>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'periph' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/monitors">Monitors / Screens</Link>
+                        <Link href="/products/keyboards">Keyboards</Link>
+                        <Link href="/products/mice">Mice & Controllers</Link>
+                        <Link href="/products/headsets">Headsets & Audio</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <details className={styles.mobileGroup}>
-                  <summary>Networking</summary>
-                  <div className={styles.mobileSubnav}>
-                    <Link href="/products/routers">Routers</Link>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'net' ? null : 'net')}>
+                    Networking
+                    <span className={styles.arrow}>{expandedGroup === 'net' ? '−' : '+'}</span>
                   </div>
-                </details>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'net' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/routers">Routers</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-                <details className={styles.mobileGroup}>
-                  <summary>Accessories</summary>
-                  <div className={styles.mobileSubnav}>
-                    <Link href="/products/case-fans">Fans & Coolers</Link>
-                    <Link href="/products/psus">PSUs / Power Supplies</Link>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'acc' ? null : 'acc')}>
+                    Accessories
+                    <span className={styles.arrow}>{expandedGroup === 'acc' ? '−' : '+'}</span>
                   </div>
-                </details>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'acc' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/case-fans">Fans & Coolers</Link>
+                        <Link href="/products/psus">PSUs / Power Supplies</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 
                 <div style={{ marginTop: 16, borderTop: '1px solid #eee', paddingTop: 16 }}>
                    <Link href="/wishlist">My Wishlist ({wishlist.count})</Link>
