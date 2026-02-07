@@ -480,12 +480,10 @@
 	width: 100%;
 }
 
-.searchBoxMobile input {
+.searchBoxMobile .MuiOutlinedInput-root {
 	width: 100%;
-	padding: 10px 12px 10px 40px;
-	border: 1px solid #ddd;
-	/* match product card rounding on mobile */
 	border-radius: 12px;
+	background: #fff;
 }
 
 /* Mobile menu overlay */
