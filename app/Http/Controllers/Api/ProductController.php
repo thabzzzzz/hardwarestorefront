@@ -70,7 +70,7 @@ class ProductController extends Controller
                 // Use a signature of key + value hash to detect exact repeats
                 $valSig = is_scalar($v) ? (string)$v : json_encode($v);
                 $sig = strtolower($cleanKey) . '|' . md5($valSig);
-                
+
                 if (in_array($sig, $seenPairs)) {
                     continue;
                 }
@@ -234,7 +234,7 @@ class ProductController extends Controller
                 $setIf('Threads', $variant->threads ?? $variant->threads_int ?? null);
             }
         }
-        
+
         $seenPairs = [];
 
         // Clean up main key-value specs
