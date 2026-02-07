@@ -339,6 +339,11 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
 
         {!loading && product && (
           <>
+            <div className={pageStyles.mobileHeader}>
+              <div className={pageStyles.mobileBrand}>{product.brand}</div>
+              <h1 className={pageStyles.mobileTitle}>{product.title}</h1>
+            </div>
+
             <div className={pageStyles.contentRow}>
               <ProductGallery
                 imageUrl={product.thumbnail || null}

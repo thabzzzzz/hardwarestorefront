@@ -12,6 +12,12 @@
 	font-weight: 700;
 }
 
+@media (max-width: 600px) {
+	.price :global(.MuiTypography-root) {
+		font-size: 1.25rem !important;
+	}
+}
+
 .controls {
 	display: flex;
 	gap: 8px;

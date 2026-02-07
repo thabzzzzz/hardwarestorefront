@@ -4,6 +4,19 @@
 	align-items: flex-start;
 }
 
+@media (max-width: 600px) {
+	.container {
+		flex-direction: column;
+	}
+	/* Hide Title and BrandCol on mobile because they are shown above the image now */
+	.brandCol {
+		display: none;
+	}
+	.title {
+		display: none;
+	}
+}
+
 .left {
 	flex: 1;
 }
