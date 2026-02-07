@@ -329,11 +329,53 @@ export default function Header(): JSX.Element {
             <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
               <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)}>Close</button>
               <nav className={styles.mobileNav}>
-                <Link href="/products">Computer Components</Link>
-                <Link href="/products">Storage Devices</Link>
-                <Link href="/products">Peripherals</Link>
-                <Link href="/products">Networking</Link>
-                <Link href="/products">Accessories</Link>
+                <details className={styles.mobileGroup}>
+                  <summary>Computer Components</summary>
+                  <div className={styles.mobileSubnav}>
+                    <Link href="/products/gpus">Graphics Cards</Link>
+                    <Link href="/products/processors">Processors / CPUs</Link>
+                    <Link href="/products/motherboards">Motherboards</Link>
+                    <Link href="/products/cases">Cases</Link>
+                    <Link href="/products/ram">Memory / RAM</Link>
+                  </div>
+                </details>
+
+                <details className={styles.mobileGroup}>
+                  <summary>Storage Devices</summary>
+                  <div className={styles.mobileSubnav}>
+                    <Link href="/products/ssds">Solid State Drives / SSDs</Link>
+                    <Link href="/products/hdds">Internal Hard Drives</Link>
+                  </div>
+                </details>
+
+                <details className={styles.mobileGroup}>
+                  <summary>Peripherals</summary>
+                  <div className={styles.mobileSubnav}>
+                    <Link href="/products/monitors">Monitors / Screens</Link>
+                    <Link href="/products/keyboards">Keyboards</Link>
+                    <Link href="/products/mice">Mice & Controllers</Link>
+                    <Link href="/products/headsets">Headsets & Audio</Link>
+                  </div>
+                </details>
+
+                <details className={styles.mobileGroup}>
+                  <summary>Networking</summary>
+                  <div className={styles.mobileSubnav}>
+                    <Link href="/products/routers">Routers</Link>
+                  </div>
+                </details>
+
+                <details className={styles.mobileGroup}>
+                  <summary>Accessories</summary>
+                  <div className={styles.mobileSubnav}>
+                    <Link href="/products/case-fans">Fans & Coolers</Link>
+                    <Link href="/products/psus">PSUs / Power Supplies</Link>
+                  </div>
+                </details>
+                
+                <div style={{ marginTop: 16, borderTop: '1px solid #eee', paddingTop: 16 }}>
+                   <Link href="/wishlist">My Wishlist ({wishlist.count})</Link>
+                </div>
               </nav>
             </div>
           </div>

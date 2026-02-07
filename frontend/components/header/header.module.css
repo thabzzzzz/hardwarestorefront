@@ -526,13 +526,43 @@
 .mobileNav {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 0;
 }
 
 .mobileNav a {
 	padding: 8px 6px;
 	text-decoration: none;
 	color: #222;
+}
+
+.mobileGroup {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobileGroup summary {
+  padding: 12px 6px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+
+.mobileSubnav {
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  padding-bottom: 8px;
+  background: #fafafa;
+}
+
+.mobileSubnav a {
+  font-size: 14px;
+  color: #555;
+  padding: 8px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.mobileSubnav a:last-child {
+  border-bottom: none;
 }
 
 /* Responsive overrides: show mobile header and hide desktop elements on small screens */

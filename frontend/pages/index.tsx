@@ -75,7 +75,7 @@ export default function Home(): JSX.Element {
       </Box>
       <Grid container spacing={3}>
         {products.map((product) => (
-          <Grid item key={product.id || product.variant_id} xs={12} sm={6} md={3}>
+          <Grid item key={product.id || product.variant_id} xs={6} sm={6} md={3}>
             <ProductCard
               name={product.name}
               title={product.title}

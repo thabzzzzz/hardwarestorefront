@@ -110,3 +110,14 @@
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
+
+/* Mobile Scaffolding */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .main {
+    padding: 12px;
+  }
+}
