@@ -105,7 +105,7 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           aria-busy={busyAdd}
           sx={{ textTransform: 'none', fontWeight: 700 }}
         >
-          {busyAdd ? 'Adding...' : 'Add to cart'}
+          {busyAdd ? 'Adding...' : <><span className={styles.hideOnMobile}>Add to cart</span><span className={styles.showOnMobile}>Buy</span></>}
         </Button>
 
         <Button 
@@ -119,7 +119,7 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           color="secondary"
           sx={{ textTransform: 'none', fontWeight: 700 }}
         >
-          {wishlist.isWished(id || '') ? 'In wishlist' : (busyWish ? '...' : 'Add to wishlist')}
+          {wishlist.isWished(id || '') ? 'In wishlist' : (busyWish ? '...' : <><span className={styles.hideOnMobile}>Add to </span><span className={styles.mobileCapitalize}>wishlist</span></>)}
         </Button>
       </div>
     </Paper>

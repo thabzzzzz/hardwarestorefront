@@ -7,6 +7,19 @@
 	align-items: center;
 }
 
+@media (max-width: 600px) {
+	.container {
+		padding-top: 24px;
+	}
+	.price {
+		flex: 0 0 33%;
+	}
+	.controls {
+		flex: 1;
+		justify-content: flex-end;
+	}
+}
+
 .price {
 	font-size: 18px;
 	font-weight: 700;
@@ -33,6 +46,19 @@
 	margin-left: 6px;
 }
 
+.showOnMobile {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.qtyInput {
+		display: none;
+	}
+	.showOnMobile {
+		display: inline;
+	}
+}
+
 .addButton {
 	background: #1f7a8c;
 	color: #fff;
@@ -51,4 +77,18 @@
 .wishlistButtonLarge[disabled] {
 	opacity: 0.6;
 	cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+	.hideOnMobile {
+		display: none;
+	}
+	.addButton, .wishlistButtonLarge {
+		padding: 8px 12px !important;
+		min-width: 0 !important;
+		white-space: nowrap;
+	}
+	.mobileCapitalize {
+		text-transform: capitalize;
+	}
 }
