@@ -36,7 +36,7 @@ function renderSpecTable(table: any, boldCutoffTerms?: string[] | null, useHeuri
   const rows = table;
 
   // make a working copy of rows and strip up to three leading bullet-like rows
-  const processedRows = rows.slice()
+  let processedRows = rows.slice()
   let removedBullets = 0
   const bulletRe = /^\s*([\u2022\-\*\u00B7])\s*/
   while (removedBullets < 3 && processedRows.length > 0) {
@@ -47,6 +47,22 @@ function renderSpecTable(table: any, boldCutoffTerms?: string[] | null, useHeuri
       continue
     }
     break
+  }
+
+  // Detect Newegg-style comparison tables
+  // Example: Row 0: ["Products", "CURRENTLY VIEWING ...", "Other Product ..."]
+  // If found, we want to:
+  // 1. Filter out metadata rows (Products, Price, Rating, Sold By)
+  // 2. Clamp all rows to length 2 (Key, Value) to remove comparison columns
+  const isComparisonTable = processedRows.some((r: any) => {
+    if (!Array.isArray(r) || r.length < 2) return false
+    const key = String(r[0] ?? '').trim().toLowerCase()
+    const val = String(r[1] ?? '').trim().toLowerCase()
+    return key === 'products' && (val.includes('currently viewing') || val.includes('add to cart'))
+  })
+
+  if (isComparisonTable) {
+    return null
   }
 
   // detect simple key/value rows (each row is array-like with 2 elements)
