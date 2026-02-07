@@ -175,8 +175,14 @@
   justify-content: center;
 }
 
+.msgMobile { display: none; }
+.msgDesktop { display: inline; }
+
 /* Mobile Responsiveness Scaffolding */
 @media (max-width: 600px) {
+  .msgMobile { display: inline-flex; align-items: center; justify-content: center; }
+  .msgDesktop { display: none; }
+  
   .container {
     padding: 8px;
     min-height: auto;
@@ -220,14 +226,19 @@
   }
 
   .wishlistHeart {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     font-size: 1rem;
   }
 
   .muiAddButton {
-    font-size: 11px;
-    padding: 4px 8px;
     min-width: 0;
+    width: 48px !important;
+    height: 48px;
+    padding: 0 !important;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
