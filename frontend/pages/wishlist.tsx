@@ -96,7 +96,7 @@ export default function WishlistPage(): JSX.Element {
               </thead>
               <tbody>
                 {w.items.map(item => {
-                  const tagClass = item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : styles.tagNoneWrap
+                  const tagClass = item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : item.tag === 'upgrade' ? styles.tagUpgradeWrap : item.tag === 'new_build' ? styles.tagNewBuildWrap : styles.tagNoneWrap
                   const priorityClass = item.priority === 'high' ? styles.priorityHighWrap : item.priority === 'medium' ? styles.priorityMedWrap : styles.priorityLowWrap
 
                   return (
@@ -127,6 +127,8 @@ export default function WishlistPage(): JSX.Element {
                             <MenuItem value="none">None</MenuItem>
                             <MenuItem value="gift">Gift</MenuItem>
                             <MenuItem value="research">Research</MenuItem>
+                            <MenuItem value="upgrade">Upgrade</MenuItem>
+                            <MenuItem value="new_build">New Build</MenuItem>
                           </Select>
                         </FormControl>
                       </td>
@@ -190,7 +192,7 @@ export default function WishlistPage(): JSX.Element {
           {/* Mobile Card Layout */}
           <div className={`${styles.mobileList} ${styles.mobileOnly}`}>
              {w.items.map(item => {
-                const tagClass = item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : styles.tagNoneWrap
+                const tagClass = item.tag === 'gift' ? styles.tagGiftWrap : item.tag === 'research' ? styles.tagResearchWrap : item.tag === 'upgrade' ? styles.tagUpgradeWrap : item.tag === 'new_build' ? styles.tagNewBuildWrap : styles.tagNoneWrap
                 const priorityClass = item.priority === 'high' ? styles.priorityHighWrap : item.priority === 'medium' ? styles.priorityMedWrap : styles.priorityLowWrap
 
                 return (
@@ -230,6 +232,8 @@ export default function WishlistPage(): JSX.Element {
                                 <MenuItem value="none">None</MenuItem>
                                 <MenuItem value="gift">Gift</MenuItem>
                                 <MenuItem value="research">Research</MenuItem>
+                                <MenuItem value="upgrade">Upgrade</MenuItem>
+                                <MenuItem value="new_build">New Build</MenuItem>
                             </Select>
                         </FormControl>
 

@@ -34,6 +34,8 @@
 .priorityHighWrap { background: rgba(229, 83, 61, 0.14); color: #b33725; }
 .tagGiftWrap { background: rgba(139, 92, 246, 0.14); color: #6f42c1; }
 .tagResearchWrap { background: rgba(59, 130, 246, 0.14); color: #1d4ed8; }
+.tagUpgradeWrap { background: rgba(20, 184, 166, 0.14); color: #0d9488; }
+.tagNewBuildWrap { background: rgba(236, 72, 153, 0.14); color: #db2777; }
 .tagNoneWrap { background: #f7f7f7; color: #444; }
 .errorText { color: #c00; font-size: 12px; margin-top: 4px; }
 .cellBold { padding: 12px 6px; font-weight: 700; }
