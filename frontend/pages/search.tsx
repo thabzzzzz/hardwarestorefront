@@ -238,47 +238,6 @@ export default function SearchPage(): JSX.Element {
 
   if (!mounted) return <></>
 
-  return (
-    <div className={styles.page}>
-      <Header />
-      <main className={`${styles.main} ${pageStyles.main}`}>
-        <nav className={pageStyles.breadcrumb}>Home / Search</nav>
-        <h1 className={pageStyles.title}>Search results for "{q}"</h1>
-        
-        <div className={pageStyles.controlsRow}>
-             <div className={pageStyles.controlsLeft}>
-                <FormControl size="small" sx={{ minWidth: 160 }}>
-                    <InputLabel id="sort-by-label">Sort By</InputLabel>
-                    <Select
-                        labelId="sort-by-label"
-                        value={sortBy}
-                        label="Sort By"
-                        onChange={handleSortChange}
-                    >
-                        <MenuItem value="price_asc">Price: Low to High</MenuItem>
-                        <MenuItem value="price_desc">Price: High to Low</MenuItem>
-                        <MenuItem value="date_desc">Newest Arrivals</MenuItem>
-                        <MenuItem value="date_asc">Oldest</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <FormControl size="small" sx={{ minWidth: 100 }}>
-                    <InputLabel id="show-label">Show</InputLabel>
-                    <Select
-                        labelId="show-label"
-                        value={perPage}
-                        label="Show"
-                        onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
-                    >
-                        <MenuItem value={12}>12</MenuItem>
-                        <MenuItem value={24}>24</MenuItem>
-                        <MenuItem value={48}>48</MenuItem>
-                        <MenuItem value={100}>100</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
-        </div>
-
   const filterContent = (
     <Box p={1}>
         <Typography variant="h6" className={pageStyles.filterHeading}>Filters</Typography>
