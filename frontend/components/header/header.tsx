@@ -158,8 +158,6 @@ export default function Header(): JSX.Element {
                 </button>
                 {profileOpen && (
                   <div className={styles.profileMenu}>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Login</a>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Blog</a>
                     <Link href="/wishlist">Wishlist</Link>
                   </div>
                 )}
