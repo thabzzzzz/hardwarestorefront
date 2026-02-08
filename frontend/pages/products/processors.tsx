@@ -4,6 +4,7 @@ import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
 import pageStyles from './processors.module.css'
+import MobileFiltering from '../../components/filters/MobileFiltering'
 
 import formatPriceFromCents from '../../lib/formatPrice'
 import Paper from '@mui/material/node/Paper'
@@ -332,95 +333,154 @@ export default function ProcessorListing(): JSX.Element {
           </div>
         </div>
 
+  const filterContent = (
+    <Box p={1}>
+      <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
+
+      <div className={pageStyles.priceBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
+        <Slider
+          value={priceRangeRand}
+          onChange={handlePriceSliderChange}
+          onChangeCommitted={handlePriceSliderCommit}
+          valueLabelDisplay="auto"
+          step={sliderStep}
+          min={0}
+          max={sliderMaxRand}
+          disableSwap
+          valueLabelFormat={(v) => Math.round(v)}
+        />
+        <div className={pageStyles.priceInputs}>
+          <TextField
+            label="Min"
+            type="number"
+            size="small"
+            value={priceRangeRand[0]}
+            onChange={handlePriceInput('min')}
+            InputProps={{ inputProps: { min: 0, max: priceRangeRand[1], step: 1 } }}
+          />
+          <TextField
+            label="Max"
+            type="number"
+            size="small"
+            value={priceRangeRand[1] || ''}
+            onChange={handlePriceInput('max')}
+            InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
+          />
+        </div>
+        <div className={pageStyles.priceActions}>
+          <Button size="small" onClick={applyPriceFilter}>Apply</Button>
+          <Button
+            size="small"
+            onClick={() => {
+              userTouchedPrice.current = false
+              setPriceMin(0)
+              setPriceMax(effectiveMaxCents)
+              setPriceRangeRand([0, Math.ceil((effectiveMaxCents || 0) / 100)])
+              setPage(1)
+              setHasAppliedPriceFilter(false)
+            }}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+
+      <div className={pageStyles.stockBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
+        {manufacturers.length === 0 ? (
+          <div className={pageStyles.checkboxLabel}>No manufacturers</div>
+        ) : (
+          <>
+            <FormControl component="fieldset" variant="standard">
+              <FormGroup>
+                {manufacturers.map(m => (
+                  <FormControlLabel
+                    key={m}
+                    control={<Checkbox checked={selectedIncludes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
+                    label={m}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+            <Box mt={1}>
+              <Button size="small" onClick={() => setSelectedManufacturers([])}>Clear</Button>
+            </Box>
+          </>
+        )}
+      </div>
+
+      <div className={pageStyles.stockBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Stock</Typography>
+        <FormControl component="fieldset" variant="standard">
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
+            <FormControlLabel control={<Checkbox checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} size="small" />} label="Reserved" />
+            <FormControlLabel control={<Checkbox checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} size="small" />} label="Out of stock" />
+          </FormGroup>
+        </FormControl>
+      </div>
+    </Box>
+  )
+
+  return (
+    <div className={styles.container}>
+      <Header />
+      <main className={pageStyles.main}>
+        <div className={pageStyles.breadcrumb}>
+          Hardware Store {'>'} Components {'>'} Processors
+        </div>
+        <h1 className={pageStyles.title}>Processors</h1>
+        
+        <div className={pageStyles.controlsRow}>
+          <div className={pageStyles.controlsLeft}>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="sort-label">Sort</InputLabel>
+              <Select
+                labelId="sort-label"
+                value={sortBy}
+                label="Sort"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value={"price_asc"}>Price: Low to High</MenuItem>
+                <MenuItem value={"price_desc"}>Price: High to Low</MenuItem>
+                <MenuItem value={"date_desc"}>Date: Newest</MenuItem>
+                <MenuItem value={"date_asc"}>Date: Oldest</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="show-label">Show</InputLabel>
+              <Select
+                labelId="show-label"
+                value={perPage}
+                label="Show"
+                onChange={(e) => setPerPage(Number(e.target.value))}
+              >
+                <MenuItem value={12}>12</MenuItem>
+                <MenuItem value={24}>24</MenuItem>
+                <MenuItem value={48}>48</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className={pageStyles.pageNav}>
+            <Pagination
+              count={Math.max(1, totalPages)}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              size="small"
+              showFirstButton={false}
+              showLastButton={false}
+            />
+            <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
+          </div>
+        </div>
+
         <div className={pageStyles.container}>
           <Paper className={pageStyles.sidebar} elevation={1}>
-            <Box p={1}>
-              <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
-
-              <div className={pageStyles.priceBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
-                <Slider
-                  value={priceRangeRand}
-                  onChange={handlePriceSliderChange}
-                  onChangeCommitted={handlePriceSliderCommit}
-                  valueLabelDisplay="auto"
-                  step={sliderStep}
-                  min={0}
-                  max={sliderMaxRand}
-                  disableSwap
-                  valueLabelFormat={(v) => Math.round(v)}
-                />
-                <div className={pageStyles.priceInputs}>
-                  <TextField
-                    label="Min"
-                    type="number"
-                    size="small"
-                    value={priceRangeRand[0]}
-                    onChange={handlePriceInput('min')}
-                    InputProps={{ inputProps: { min: 0, max: priceRangeRand[1], step: 1 } }}
-                  />
-                  <TextField
-                    label="Max"
-                    type="number"
-                    size="small"
-                    value={priceRangeRand[1] || ''}
-                    onChange={handlePriceInput('max')}
-                    InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
-                  />
-                </div>
-                <div className={pageStyles.priceActions}>
-                  <Button size="small" onClick={applyPriceFilter}>Apply</Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      userTouchedPrice.current = false
-                      setPriceMin(0)
-                      setPriceMax(effectiveMaxCents)
-                      setPriceRangeRand([0, Math.ceil((effectiveMaxCents || 0) / 100)])
-                      setPage(1)
-                      setHasAppliedPriceFilter(false)
-                    }}
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
-
-              <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
-                {manufacturers.length === 0 ? (
-                  <div className={pageStyles.checkboxLabel}>No manufacturers</div>
-                ) : (
-                  <>
-                    <FormControl component="fieldset" variant="standard">
-                      <FormGroup>
-                        {manufacturers.map(m => (
-                          <FormControlLabel
-                            key={m}
-                            control={<Checkbox checked={selectedIncludes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
-                            label={m}
-                          />
-                        ))}
-                      </FormGroup>
-                    </FormControl>
-                    <Box mt={1}>
-                      <Button size="small" onClick={() => setSelectedManufacturers([])}>Clear</Button>
-                    </Box>
-                  </>
-                )}
-              </div>
-
-              <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Stock</Typography>
-                <FormControl component="fieldset" variant="standard">
-                  <FormGroup>
-                    <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
-                    <FormControlLabel control={<Checkbox checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} size="small" />} label="Reserved" />
-                    <FormControlLabel control={<Checkbox checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} size="small" />} label="Out of stock" />
-                  </FormGroup>
-                </FormControl>
-              </div>
-            </Box>
+            {filterContent}
           </Paper>
           <section className={pageStyles.resultsSection}>
             <div className={pageStyles.grid}>
@@ -454,9 +514,32 @@ export default function ProcessorListing(): JSX.Element {
             </div>
 
             {/* pagination moved to the small nav row under the breadcrumb */}
+            <div className={pageStyles.bottomPagination}>
+              <Pagination
+                count={Math.max(1, totalPages)}
+                page={page}
+                onChange={(_, value) => setPage(value)}
+                size="medium"
+                showFirstButton={false}
+                showLastButton={false}
+              />
+            </div>
           </section>
         </div>
       </main>
+      
+      <MobileFiltering
+        sortOptions={[
+          { value: 'price_asc', label: 'Price: Low to High' },
+          { value: 'price_desc', label: 'Price: High to Low' },
+          { value: 'date_desc', label: 'Date: Newest' },
+          { value: 'date_asc', label: 'Date: Oldest' },
+        ]}
+        currentSort={sortBy}
+        onSortChange={setSortBy}
+      >
+        {filterContent}
+      </MobileFiltering>
     </div>
   )
 }

@@ -111,3 +111,23 @@
   100% { transform: translateX(100%); }
 }
 
+/* Mobile Scaffolding */
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+  .controlsLeft {
+    display: none;
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .main {
+    padding: 12px;
+  }
+  .bottomPagination {
+    padding-bottom: 80px; /* Space for sticky bar */
+  }
+}
+

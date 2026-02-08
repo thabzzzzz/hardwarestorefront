@@ -4,6 +4,7 @@ import Header from '../components/header/header'
 import ProductCard from '../components/product/ProductCard'
 import styles from '../styles/home.module.css'
 import pageStyles from './search.module.css'
+import MobileFiltering from '../components/filters/MobileFiltering'
 
 import formatPriceFromCents from '../lib/formatPrice'
 import Paper from '@mui/material/node/Paper'
@@ -278,68 +279,113 @@ export default function SearchPage(): JSX.Element {
             </div>
         </div>
 
+  const filterContent = (
+    <Box p={1}>
+        <Typography variant="h6" className={pageStyles.filterHeading}>Filters</Typography>
+        
+        <div className={pageStyles.priceBlock}>
+            <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
+            <Slider
+                getAriaLabel={() => 'Price range'}
+                value={priceRangeRand}
+                onChange={handleSliderChange}
+                onChangeCommitted={handleSliderCommit}
+                valueLabelDisplay="auto"
+                min={0}
+                max={sliderMaxRand} // Rand
+            />
+            <div className={pageStyles.priceInputs}>
+                <TextField 
+                    size="small" 
+                    label="Min" 
+                    type="number" 
+                    value={priceRangeRand[0]} 
+                    onChange={(e) => {
+                        const v = Number(e.target.value)
+                        setPriceRangeRand([v, priceRangeRand[1]])
+                    }}
+                    onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
+                />
+                <TextField 
+                    size="small" 
+                    label="Max" 
+                    type="number" 
+                    value={priceRangeRand[1]} 
+                    onChange={(e) => {
+                        const v = Number(e.target.value)
+                        setPriceRangeRand([priceRangeRand[0], v])
+                    }}
+                    onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
+                />
+            </div>
+        </div>
+
+        <div className={pageStyles.stockBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Availability</Typography>
+        <FormControl component="fieldset" variant="standard">
+            <FormGroup>
+                <FormControlLabel 
+                    control={<Checkbox checked={filterInStock} onChange={(e) => handleStockInfoChange(setFilterInStock, e.target.checked)} size="small" />} 
+                    label="In Stock" 
+                />
+                <FormControlLabel 
+                    control={<Checkbox checked={filterReserved} onChange={(e) => handleStockInfoChange(setFilterReserved, e.target.checked)} size="small" />} 
+                    label="Reserved" 
+                />
+                <FormControlLabel 
+                    control={<Checkbox checked={filterOutOfStock} onChange={(e) => handleStockInfoChange(setFilterOutOfStock, e.target.checked)} size="small" />} 
+                    label="Out of Stock" 
+                />
+            </FormGroup>
+        </FormControl>
+        </div>
+    </Box>
+  )
+
+  return (
+    <div className={styles.container}>
+      <Header />
+      <main className={pageStyles.main}>
+        {q && <div className={pageStyles.breadcrumb}>Search results for: "{q}"</div>}
+        
+        <div className={pageStyles.controlsRow}>
+            <h1 className={pageStyles.title}>{items.length} Results</h1>
+            <div className={pageStyles.controlsLeft}>
+                <FormControl size="small" sx={{ minWidth: 140 }}>
+                    <InputLabel id="sort-by-label">Sort By</InputLabel>
+                    <Select
+                        labelId="sort-by-label"
+                        value={sortBy}
+                        label="Sort By"
+                        onChange={handleSortChange}
+                    >
+                        <MenuItem value="price_asc">Price: Low to High</MenuItem>
+                        <MenuItem value="price_desc">Price: High to Low</MenuItem>
+                        <MenuItem value="date_desc">Newest Arrivals</MenuItem>
+                        <MenuItem value="date_asc">Oldest</MenuItem>
+                    </Select>
+                </FormControl>
+
+                <FormControl size="small" sx={{ minWidth: 100 }}>
+                    <InputLabel id="show-label">Show</InputLabel>
+                    <Select
+                        labelId="show-label"
+                        value={perPage}
+                        label="Show"
+                        onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1); }}
+                    >
+                        <MenuItem value={12}>12</MenuItem>
+                        <MenuItem value={24}>24</MenuItem>
+                        <MenuItem value={48}>48</MenuItem>
+                        <MenuItem value={100}>100</MenuItem>
+                    </Select>
+                </FormControl>
+            </div>
+        </div>
+
         <div className={pageStyles.container}>
           <Paper className={pageStyles.sidebar} elevation={0}>
-            <Box p={1}>
-                <Typography variant="h6" className={pageStyles.filterHeading}>Filters</Typography>
-                
-                <div className={pageStyles.priceBlock}>
-                    <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
-                    <Slider
-                        getAriaLabel={() => 'Price range'}
-                        value={priceRangeRand}
-                        onChange={handleSliderChange}
-                        onChangeCommitted={handleSliderCommit}
-                        valueLabelDisplay="auto"
-                        min={0}
-                        max={sliderMaxRand} // Rand
-                    />
-                    <div className={pageStyles.priceInputs}>
-                        <TextField 
-                            size="small" 
-                            label="Min" 
-                            type="number" 
-                            value={priceRangeRand[0]} 
-                            onChange={(e) => {
-                                const v = Number(e.target.value)
-                                setPriceRangeRand([v, priceRangeRand[1]])
-                            }}
-                            onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
-                        />
-                        <TextField 
-                            size="small" 
-                            label="Max" 
-                            type="number" 
-                            value={priceRangeRand[1]} 
-                            onChange={(e) => {
-                                const v = Number(e.target.value)
-                                setPriceRangeRand([priceRangeRand[0], v])
-                            }}
-                            onBlur={() => handleSliderCommit(undefined, priceRangeRand)}
-                        />
-                    </div>
-                </div>
-
-                <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Availability</Typography>
-                <FormControl component="fieldset" variant="standard">
-                    <FormGroup>
-                        <FormControlLabel 
-                            control={<Checkbox checked={filterInStock} onChange={(e) => handleStockInfoChange(setFilterInStock, e.target.checked)} size="small" />} 
-                            label="In Stock" 
-                        />
-                        <FormControlLabel 
-                            control={<Checkbox checked={filterReserved} onChange={(e) => handleStockInfoChange(setFilterReserved, e.target.checked)} size="small" />} 
-                            label="Reserved" 
-                        />
-                        <FormControlLabel 
-                            control={<Checkbox checked={filterOutOfStock} onChange={(e) => handleStockInfoChange(setFilterOutOfStock, e.target.checked)} size="small" />} 
-                            label="Out of Stock" 
-                        />
-                    </FormGroup>
-                </FormControl>
-                </div>
-            </Box>
+            {filterContent}
           </Paper>
           
           <section className={pageStyles.resultsSection}>
@@ -387,7 +433,7 @@ export default function SearchPage(): JSX.Element {
                       />
                     ))}
                   </div>
-                  <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }}>
+                  <div className={pageStyles.bottomPagination} style={{ marginTop: 24, display: 'flex', justifyContent: 'center' }}>
                     <Pagination 
                         count={totalPages} 
                         page={page} 
@@ -400,6 +446,19 @@ export default function SearchPage(): JSX.Element {
           </section>
         </div>
       </main>
+      
+      <MobileFiltering
+        sortOptions={[
+            { value: "price_asc", label: "Price: Low to High" },
+            { value: "price_desc", label: "Price: High to Low" },
+            { value: "date_desc", label: "Newest Arrivals" },
+            { value: "date_asc", label: "Oldest" },
+        ]}
+        currentSort={sortBy}
+        onSortChange={setSortBy}
+      >
+        {filterContent}
+      </MobileFiltering>
     </div>
   )
 }
