@@ -11,6 +11,9 @@ import TextField from '@mui/material/node/TextField/index.js'
 import Button from '@mui/material/node/Button/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder.js'
+import AddIcon from '@mui/icons-material/Add.js'
+import RemoveIcon from '@mui/icons-material/Remove.js'
 
 export default function CartPage(): JSX.Element {
   const cart = useCart()
@@ -20,6 +23,16 @@ export default function CartPage(): JSX.Element {
     const qty = Number(value || 0)
     const res = cart.updateQty(id, qty)
     setErrors(prev => ({ ...prev, [id]: res.ok ? '' : (res.message || 'Invalid quantity') }))
+  }
+
+  function increment(id: string, current: number) {
+    onQtyChange(id, String(current + 1))
+  }
+
+  function decrement(id: string, current: number) {
+    if (current > 1) {
+      onQtyChange(id, String(current - 1))
+    }
   }
 
   function onRemove(id: string) {
@@ -33,10 +46,20 @@ export default function CartPage(): JSX.Element {
       </Head>
       <Header />
       <main className={styles.main}>
+        {/* Mobile Header */}
+        <div className={styles.mobileOnly}>
+           <div className={styles.heading}>
+              <Typography variant="h6" component="h1" sx={{ fontFamily: 'Helvetica, Roboto, Arial, sans-serif', fontWeight: 700, fontSize: '18px' }}>
+                Shopping Cart ({cart.count} items)
+              </Typography>
+           </div>
+        </div>
+
+        {/* Desktop Header */}
         <Typography
           variant="h4"
           component="h1"
-          className={styles.heading}
+          className={`${styles.heading} ${styles.desktopOnly}`}
           sx={{ fontFamily: 'Helvetica, Roboto, Arial, sans-serif', fontWeight: 700 }}
         >
           My Cart
@@ -50,7 +73,9 @@ export default function CartPage(): JSX.Element {
             </Box>
           </Paper>
         ) : (
-          <div className={styles.tableCard}>
+          <>
+          {/* Desktop Table View */}
+          <div className={`${styles.tableCard} ${styles.desktopOnly}`}>
             <table className={styles.table}>
               <thead>
                 <tr className={styles.headerRow}>
@@ -116,6 +141,62 @@ export default function CartPage(): JSX.Element {
               </tfoot>
             </table>
           </div>
+
+          {/* Mobile Card List View */}
+          <div className={`${styles.mobileList} ${styles.mobileOnly}`}>
+              {cart.items.map(item => (
+                <div key={item.id} className={styles.mobileCard}>
+                  <div className={styles.cardTop}>
+                     <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
+                     <div className={styles.cardContent}>
+                        <div className={styles.mobileTitleLink}>{item.title}</div>
+                        <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0))}</div>
+                     </div>
+                  </div>
+                  
+                  <div className={styles.cardActions}>
+                    <div className={styles.actionLinks}>
+                       <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)}>
+                          <DeleteOutlineIcon fontSize="small" />
+                       </IconButton>
+                    </div>
+                    
+                    <div className={styles.qtyControl}>
+                       <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)}>
+                          <RemoveIcon fontSize="small" />
+                       </button>
+                       <div className={styles.qtyVal}>{item.qty}</div>
+                       <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)}>
+                          <AddIcon fontSize="small" />
+                       </button>
+                    </div>
+                  </div>
+                  
+                  <div className={styles.mobileDate}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</div>
+                </div>
+              ))}
+              
+              <Box sx={{ p: 2 }}>
+                  <Button 
+                    variant="outlined" 
+                    color="error" 
+                    fullWidth 
+                    onClick={() => cart.clear()}
+                    sx={{ fontWeight: 700, bgcolor: 'white' }}
+                  >
+                    Clear Cart
+                  </Button>
+              </Box>
+
+              <div className={styles.footerCta}>
+                 <div className={styles.estTotalLine}>
+                    <span className={styles.totalLabel}>Est. Total</span>
+                    <span className={styles.totalAmt}>{cart.formatPrice(cart.totalCents)}</span>
+                 </div>
+                 <Button variant="contained" className={styles.checkoutBtn}>Secure Checkout</Button>
+              </div>
+          </div>
+          </>
         )}
       </main>
     </div>
