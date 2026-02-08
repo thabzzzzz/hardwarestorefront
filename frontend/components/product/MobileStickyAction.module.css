@@ -1,0 +1,70 @@
+.container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  /* Hide on desktop by default */
+  display: none;
+}
+
+/* Only show on mobile */
+@media (max-width: 600px) {
+  .container {
+    display: flex;
+  }
+}
+
+.visible {
+  transform: translateY(0);
+}
+
+.price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  flex: 0 0 33%;
+  color: #333;
+}
+
+.controls {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.addButton {
+  background: #1f7a8c !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  text-transform: capitalize !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+.wishlistButton {
+  background: transparent !important;
+  color: #E76F51 !important;
+  border: 1px solid rgba(231, 111, 81, 0.5) !important;
+  padding: 8px 12px !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  text-transform: capitalize !important;
+  font-weight: 700 !important;
+}
+
+.wishlistButton[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

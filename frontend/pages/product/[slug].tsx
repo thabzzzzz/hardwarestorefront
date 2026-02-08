@@ -8,6 +8,7 @@ import ProductSummary from '../../components/product/ProductSummary'
 import ProductSpecs from '../../components/product/ProductSpecs'
 import ProductActions from '../../components/product/ProductActions'
 import MinifiedActionBar from '../../components/product/MinifiedActionBar'
+import MobileStickyAction from '../../components/product/MobileStickyAction'
 import styles from '../../styles/home.module.css'
 import pageStyles from './[slug].module.css'
 
@@ -117,19 +118,24 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const [loading, setLoading] = useState(false)
   const actionsRef = useRef<HTMLDivElement>(null)
   const [showMinified, setShowMinified] = useState(false)
+  const [showMobileSticky, setShowMobileSticky] = useState(false)
 
   useEffect(() => {
     const el = actionsRef.current
     if (!el) return
 
     const observer = new IntersectionObserver(([entry]) => {
-      // If element is not intersecting and its top is above the viewport, 
-      // it means we have scrolled past it.
+      // Desktop: If element is scrolled past (not intersecting and top < 0)
       if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
         setShowMinified(true)
       } else {
         setShowMinified(false)
       }
+
+      // Mobile: Show if NOT intersecting (meaning either above or below viewport)
+      // "disappear once visible"
+      setShowMobileSticky(!entry.isIntersecting)
+
     }, { threshold: 0 })
 
     observer.observe(el)
@@ -375,6 +381,17 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
             
             <MinifiedActionBar 
               visible={showMinified}
+              product={{
+                id: product.product_id || '',
+                title: product.title,
+                thumbnail: product.thumbnail || null,
+                price: product.price,
+                stock: product.stock
+              }}
+            />
+            
+            <MobileStickyAction
+              visible={showMobileSticky}
               product={{
                 id: product.product_id || '',
                 title: product.title,
