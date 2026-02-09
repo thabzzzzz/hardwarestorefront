@@ -325,20 +325,20 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
       <Header />
       <main className={`${styles.main} ${pageStyles.main}`}>
         <nav className={pageStyles.breadcrumb}>
-          {(() => {
-            const prodAny = (product as any) || {}
+          {product ? (() => {
+            const prodAny = (product as any)
             const catCandidate = (Array.isArray(prodAny.categories) && prodAny.categories.length > 0)
               ? prodAny.categories[0]
               : (prodAny.product_type || prodAny.type || prodAny.category || null)
             const mapped = mapCategory(catCandidate)
             if (mapped) return `Home / Hardware / ${mapped.section === 'Hardware' ? '' : mapped.section + ' / '}${mapped.label} / ${product.title}`
-            
+
             // fallback: try to infer from slug (e.g., contains 'cpu') or product_type hints
             const inferred = mapCategory(prodAny.product_type || prodAny.type || prodAny.title || null)
             if (inferred) return `Home / Hardware / ${inferred.section === 'Hardware' ? '' : inferred.section + ' / '}${inferred.label} / ${product.title}`
-            
+
             return `Home / Hardware / Video Cards / ${product.title}`
-          })()}
+          })() : 'Home / Hardware / Product'}
         </nav>
 
         {loading && <div>Loading…</div>}
