@@ -53,6 +53,12 @@
   box-shadow: none !important;
 }
 
+.plusIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
 .wishlistButton {
   background: transparent !important;
   color: #E76F51 !important;

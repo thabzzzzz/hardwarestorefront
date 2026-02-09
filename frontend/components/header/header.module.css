@@ -148,7 +148,19 @@
 	gap: 6px;
 }
 
-.nav a svg {
+.navLabel {
+	color: #333;
+	font-size: 20px;
+	font-family: Helvetica, Roboto, Arial, sans-serif;
+	font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	cursor: default;
+}
+
+.nav a svg,
+.navLabel svg {
 	width: 12px;
 	height: 12px;
 	flex: 0 0 12px;

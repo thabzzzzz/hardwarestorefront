@@ -92,3 +92,10 @@
 		text-transform: capitalize;
 	}
 }
+
+	.plusIcon {
+		display: inline-flex;
+		align-items: center;
+		margin-right: 8px;
+		vertical-align: middle;
+	}

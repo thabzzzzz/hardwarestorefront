@@ -213,9 +213,9 @@ export default function Header(): JSX.Element {
           </div>
           <nav className={styles.nav}>
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <Link href="/products">Computer Components
+              <span className={styles.navLabel} aria-hidden="true">Computer Components
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </Link>
+              </span>
               <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
                 <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
                   <div className={styles.category}>
@@ -232,9 +232,9 @@ export default function Header(): JSX.Element {
             </div>
 
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <Link href="/products">Storage Devices
+              <span className={styles.navLabel} aria-hidden="true">Storage Devices
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </Link>
+              </span>
               <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
                 <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
                   <div className={styles.category}>
@@ -248,9 +248,9 @@ export default function Header(): JSX.Element {
             </div>
 
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <Link href="/products">Peripherals
+              <span className={styles.navLabel} aria-hidden="true">Peripherals
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </Link>
+              </span>
               <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
                 <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
                   <div className={styles.category}>
@@ -266,9 +266,9 @@ export default function Header(): JSX.Element {
             </div>
 
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <Link href="/products">Networking
+              <span className={styles.navLabel} aria-hidden="true">Networking
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </Link>
+              </span>
               <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
                 <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
                   <div className={styles.category}>
@@ -281,9 +281,9 @@ export default function Header(): JSX.Element {
             </div>
 
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <Link href="/products">Accessories
+              <span className={styles.navLabel} aria-hidden="true">Accessories
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </Link>
+              </span>
               <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
                 <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
                   <div className={styles.category}>

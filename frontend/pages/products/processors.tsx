@@ -380,7 +380,7 @@ export default function ProcessorListing(): JSX.Element {
         <title>Desktop Processors (CPUs) - WiredWorkshop</title>
       </Head>
       <Header />
-      <main className={pageStyles.main}>
+      <main className={`${styles.main} ${pageStyles.main}`}>
         <div className={pageStyles.breadcrumb}>
           Hardware Store {'>'} Components {'>'} Processors
         </div>

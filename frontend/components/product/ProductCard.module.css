@@ -167,6 +167,13 @@
   text-transform: none !important;
 }
 
+.plusIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 .link { text-decoration: none; color: inherit }
 
 .footerSlot {
