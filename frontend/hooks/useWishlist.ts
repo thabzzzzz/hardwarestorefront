@@ -12,7 +12,7 @@ export type WishlistEntry = {
   stock?: Stock | null
   qty: number
   added_at?: string
-  tag?: 'gift' | 'research' | 'none'
+  tag?: 'gift' | 'research' | 'none' | 'upgrade' | 'new_build'
   priority?: 'low' | 'medium' | 'high'
 }
 
