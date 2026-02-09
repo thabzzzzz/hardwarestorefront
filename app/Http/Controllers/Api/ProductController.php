@@ -254,6 +254,20 @@ class ProductController extends Controller
             $cleanThumb = null;
         }
 
+        // Logic to extract scraped thumbnail if no local one exists
+        $scrapedThumb = null;
+        if (isset($variant->image_urls)) {
+            $rawImgs = $variant->image_urls;
+            if (is_string($rawImgs)) {
+                $json = json_decode($rawImgs, true);
+                if (is_array($json)) $rawImgs = $json;
+            }
+            if (is_array($rawImgs) && count($rawImgs) > 0) {
+                $scrapedThumb = $rawImgs[0];
+                $scrapedThumb = trim($scrapedThumb, '"');
+            }
+        }
+
         $payload = [
             'slug' => $product->slug,
             'title' => $product->name,
@@ -262,8 +276,8 @@ class ProductController extends Controller
             'product_type' => $product->product_type,
             'categories' => $product->product_type ? [$product->product_type] : [],
             'product_id' => (string) $product->id,
-            // expose cleaned thumbnail first; fall back to previously-selected path
-            'thumbnail' => $cleanThumb ?? $thumbnail,
+            // expose cleaned thumbnail first; fall back to previously-selected path, then scraped
+            'thumbnail' => $cleanThumb ?? $thumbnail ?? $scrapedThumb,
             'stock' => $stock,
             'price' => $price,
             // Human-friendly key/value specs (synthesized if empty)

@@ -258,7 +258,39 @@ class ProductsController extends Controller
                 'current_price' => $price ? ['amount_cents' => $price->amount_cents, 'currency' => $price->currency] : null,
                 // prefer cleaned product-level thumbnail when available so listing cards
                 // use the same image as the product page
-                'thumbnail' => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnail ? $thumbnail->path : null),
+            $scrapedThumb = null;
+            if (isset($variant->image_urls)) {
+                $rawImgs = $variant->image_urls;
+                // handle double-encoded json if present or simple array
+                if (is_string($rawImgs)) {
+                    $json = json_decode($rawImgs, true);
+                    if (is_array($json)) $rawImgs = $json;
+                }
+                if (is_array($rawImgs) && count($rawImgs) > 0) {
+                    $scrapedThumb = $rawImgs[0];
+                    // Clean up potential double-quotes if scraped that way
+                    $scrapedThumb = trim($scrapedThumb, '"');
+                }
+            }
+
+            return [
+                'variant_id' => $variant->id,
+                'product_id' => $variant->product_id,
+                'name' => $variant->product->name,
+                'brand' => $brandField,
+                'board_partner' => $boardPartnerName,
+                'manufacturer' => $manufacturer,
+                'slug' => $variant->product->slug,
+                'sku' => $variant->sku,
+                'title' => $variant->title,
+                // CPU spec fields (nullable)
+                'cores' => $variant->product->cores,
+                'boost_clock' => $variant->product->boost_clock,
+                'microarchitecture' => $variant->product->microarchitecture,
+                'socket' => $variant->product->socket,
+                'current_price' => $price ? ['amount_cents' => $price->amount_cents, 'currency' => $price->currency] : null,
+                // Fallback: Product clean thumb -> Local thumb -> Scraped thumb
+                'thumbnail' => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnail ? $thumbnail->path : $scrapedThumb),
                 'short_specs' => array_slice((array)($variant->specs ?? []), 0, 6),
                 'stock' => $variant->stock ? ['qty_available' => $variant->stock->qty_available, 'status' => $variant->stock->status] : null,
                 'release_date' => $variant->product->release_date ?? null,
