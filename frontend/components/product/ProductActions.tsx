@@ -47,7 +47,7 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
         toast.success(`Check cart: Added ${qty} item(s)`)
       } else {
         console.info(res.message || 'Updated cart')
-        toast('Already in cart')
+        toast.success(res.message || 'Cart updated')
       }
     } catch (err) {
       console.error('Failed to add to cart', err)

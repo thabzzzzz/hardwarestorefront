@@ -45,7 +45,7 @@ export default function MobileStickyAction({ visible, product }: Props) {
       if (res.added) {
         toast.success(`Check cart: Added ${qty} item(s)`)
       } else {
-        toast('Already in cart')
+        toast.success(res.message || 'Cart updated')
       }
     } catch (err) {
       console.error('Failed to add to cart', err)

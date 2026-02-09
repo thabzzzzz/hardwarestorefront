@@ -84,18 +84,32 @@ export default function useCart() {
 
   function addOrUpdate(entry: Omit<CartEntry, 'qty'>, qty = 1): { ok: boolean; added: boolean; message?: string } {
     const id = entry.id
-    const found = storeItems.find(i => i.id === id)
+    // Try to find by canonical id first
+    let found = storeItems.find(i => i.id === id)
+    // Fallback: detect the same product by title or thumbnail if ids differ
+    if (!found) {
+      found = storeItems.find(i => (
+        (entry.title && i.title && i.title === entry.title) ||
+        (entry.thumbnail && i.thumbnail && i.thumbnail === entry.thumbnail)
+      ))
+    }
     // Removed strict stock limiting
     // const avail = entry.stock?.qty_available ?? Infinity
     // const safeQty = Math.max(1, Math.min(qty, avail))
     const safeQty = Math.max(1, qty)
 
     if (found) {
-      // Allow unlimited update
-      const next = storeItems.map(i => i.id === id ? { ...i, qty: safeQty } : i)
+      // If the item exists, increment its qty by the requested amount
+      const next = storeItems.map(i => {
+        if (i === found) {
+          return { ...i, qty: (i.qty || 0) + safeQty }
+        }
+        return i
+      })
       persistAndNotify(next)
-      return { ok: true, added: false, message: 'Updated cart quantity' }
+      return { ok: true, added: false, message: 'Cart updated' }
     }
+
     const nextEntry: CartEntry = { ...entry, qty: safeQty, added_at: new Date().toISOString() }
     persistAndNotify([nextEntry, ...storeItems])
     return { ok: true, added: true }

@@ -190,7 +190,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const res = cart.addOrUpdate(entry, 1)
               if (!res.added) {
                 console.info('Product already in cart')
-                toast('Already in cart')
+                toast.success(res.message || 'Cart updated')
               } else {
                 console.info('Added to cart')
                 toast.success('Added to cart')
