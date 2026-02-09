@@ -47,7 +47,7 @@ export default function WishlistPage(): JSX.Element {
   return (
     <div className={styles.root}>
       <Head>
-        <title>Wishlist - WiredWorkshop</title>
+        <title>My Wishlist - WiredWorkshop</title>
       </Head>
       <Header />
       <main className={styles.main}>

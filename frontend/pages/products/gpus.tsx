@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
@@ -399,6 +400,9 @@ export default function GpuListing(): JSX.Element {
 
   return (
     <div className={styles.page}>
+      <Head>
+        <title>Graphics Cards (GPUs) - WiredWorkshop</title>
+      </Head>
       <Header />
       <main className={`${styles.main} ${pageStyles.main}`}>
         <nav className={pageStyles.breadcrumb}>Home / Hardware / Graphics Cards</nav>

@@ -101,7 +101,7 @@ export default function Home(): JSX.Element {
   return (
     <div className={styles.page}>
       <Head>
-        <title>WiredWorkshop</title>
+        <title>WiredWorkshop | Premium PC Hardware & Components</title>
         <meta name="description" content="WiredWorkshop — a personal storefront hobby project showcasing hardware products. For demo and learning purposes only." />
         <meta name="author" content="Personal project" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

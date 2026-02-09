@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
@@ -425,6 +426,9 @@ export default function ProcessorListing(): JSX.Element {
 
   return (
     <div className={styles.container}>
+      <Head>
+        <title>Desktop Processors (CPUs) - WiredWorkshop</title>
+      </Head>
       <Header />
       <main className={pageStyles.main}>
         <div className={pageStyles.breadcrumb}>

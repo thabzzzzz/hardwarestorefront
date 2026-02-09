@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Header from '../components/header/header'
 import ProductCard from '../components/product/ProductCard'
 import styles from '../styles/home.module.css'
@@ -100,6 +101,10 @@ export default function SearchPage(): JSX.Element {
   const [mounted, setMounted] = useState(false)
   useEffect(() => { setMounted(true) }, [])
   const initialPageSynced = useRef(false)
+
+  const queryTerm = (Array.isArray(router.query.q) ? router.query.q[0] : router.query.q) || ''
+  const displayQuery = queryTerm.length > 20 ? queryTerm.substring(0, 20) + '...' : queryTerm
+  const title = displayQuery ? `Search: ${displayQuery} - WiredWorkshop` : 'Search - WiredWorkshop'
 
   // On first ready, initialize `page` from the URL query if present.
   useEffect(() => {
@@ -303,8 +308,12 @@ export default function SearchPage(): JSX.Element {
 
   return (
     <div className={styles.container}>
+      <Head>
+        <title>{title}</title>
+        {/* meta robots noindex? */}
+      </Head>
       <Header />
-      <main className={pageStyles.main}>
+      <main className={`${styles.main} ${pageStyles.main}`}>
         {q && <div className={pageStyles.breadcrumb}>Search results for: "{q}"</div>}
         
         <div className={pageStyles.controlsRow}>

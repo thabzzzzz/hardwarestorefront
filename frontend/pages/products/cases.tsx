@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
@@ -317,6 +318,9 @@ export default function CasesListing(): JSX.Element {
 
   return (
     <div className={styles.page}>
+      <Head>
+        <title>PC Cases & Towers - WiredWorkshop</title>
+      </Head>
       <Header />
       <main className={`${styles.main} ${pageStyles.main}`}>
         <nav className={pageStyles.breadcrumb}>Home / Hardware / Computer Components / Cases</nav>
