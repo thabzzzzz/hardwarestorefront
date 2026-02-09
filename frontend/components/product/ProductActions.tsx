@@ -3,6 +3,8 @@ import formatPriceFromCents from '../../lib/formatPrice'
 import styles from './ProductActions.module.css'
 import useCart from '../../hooks/useCart'
 import useWishlist from '../../hooks/useWishlist'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder.js'
+import FavoriteIcon from '@mui/icons-material/Favorite.js'
 import Button from '@mui/material/node/Button/index.js'
 import TextField from '@mui/material/node/TextField/index.js'
 import Paper from '@mui/material/node/Paper/index.js'
@@ -123,9 +125,9 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
           aria-busy={busyWish} 
           title={wishlist.isWished(id || '') ? 'Remove from wishlist' : 'Add to wishlist'}
           color="secondary"
-          sx={{ textTransform: 'none', fontWeight: 700 }}
+          sx={{ textTransform: 'none', fontWeight: 700, minWidth: '44px', padding: '8px' }}
         >
-          {wishlist.isWished(id || '') ? 'In wishlist' : (busyWish ? '...' : <><span className={styles.hideOnMobile}>Add to </span><span className={styles.mobileCapitalize}>wishlist</span></>)}
+          {busyWish ? '...' : (wishlist.isWished(id || '') ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />)}
         </Button>
       </div>
     </Paper>

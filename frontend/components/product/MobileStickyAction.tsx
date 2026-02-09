@@ -3,6 +3,8 @@ import styles from './MobileStickyAction.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useCart from '../../hooks/useCart'
 import useWishlist from '../../hooks/useWishlist'
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder.js'
+import FavoriteIcon from '@mui/icons-material/Favorite.js'
 import Button from '@mui/material/node/Button/index.js'
 import { toast } from '../../lib/toast'
 
@@ -101,8 +103,10 @@ export default function MobileStickyAction({ visible, product }: Props) {
           onClick={handleWishlist}
           className={styles.wishlistButton}
           disabled={busyWish}
+          title={wishlist.isWished(id) ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={wishlist.isWished(id)}
         >
-          {wishlist.isWished(id) ? 'Saved' : 'Wishlist'}
+          {busyWish ? '...' : (wishlist.isWished(id) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />)}
         </Button>
       </div>
     </div>
