@@ -1,0 +1,672 @@
+product_type,candidate,canonical_name,notes
+# The file is a scaffolding: `canonical_name` prefilled for high-confidence candidates.,,,AUTO_SKIP
+# Edit `canonical_name` values where ambiguous; leave blank to review manually.,,,AUTO_SKIP
+# Format: product_type,candidate,canonical_name,notes
+# High-confidence prefilled mappings (edit as needed),,,AUTO_SKIP
+cpus,amd,AMD,AUTO
+cpus,intel,Intel,AUTO
+gpus,gigabyte,Gigabyte,AUTO
+gpus,msi,MSI,AUTO
+gpus,asrock,ASRock,AUTO
+gpus,asus,ASUS,AUTO
+gpus,xfx,XFX,AUTO
+gpus,powercolor,PowerColor,AUTO
+gpus,sapphire tech,Sapphire,AUTO
+ssds,samsung,Samsung,AUTO
+ssds,kingspec,KingSpec,AUTO
+ssds,team group,Team Group,AUTO
+ssds,sk hynix,SK hynix,AUTO
+ssds,sandisk,SanDisk,AUTO
+ram,g.skill,G.Skill,AUTO
+ram,patriot memory,Patriot Memory,AUTO
+ram,corsair,Corsair,AUTO
+ram,team group,Team Group,AUTO
+ram,crucial,Crucial,AUTO
+psus,corsair,Corsair,AUTO
+psus,sama,SAMA,AUTO
+psus,asrock,ASRock,AUTO
+psus,vetroo,Vetroo,AUTO
+psus,raidmax,Raidmax,AUTO
+casefans,nzxt,NZXT,AUTO
+casefans,be quiet,be quiet!,AUTO
+casefans,fractal design,Fractal Design,AUTO
+casefans,lian li,Lian Li,AUTO
+casefans,jonsbo,Jonsbo,AUTO
+casefans,rosewill,Rosewill,AUTO
+motherboards,msi,MSI,AUTO
+motherboards,asrock,ASRock,AUTO
+motherboards,asus,ASUS,AUTO
+motherboards,gigabyte,Gigabyte,AUTO
+monitors,msi,MSI,AUTO
+monitors,asus,ASUS,AUTO
+monitors,samsung,Samsung,AUTO
+routers,tp-link,TP-Link,AUTO
+routers,wavlink,Wavlink,AUTO
+routers,ubiquiti networks,Ubiquiti Networks,AUTO
+routers,netgear inc.,Netgear,AUTO
+mice,logitech,Logitech,AUTO
+mice,razer,Razer,AUTO
+mice,redragon,Redragon,AUTO
+keyboards,redragon,Redragon,AUTO
+keyboards,msi,MSI,AUTO
+keyboards,epomaker,Epomaker,AUTO
+keyboards,corsair,Corsair,AUTO
+headsets,hyperx,HyperX,AUTO
+headsets,logitech,Logitech,AUTO
+headsets,steelseries,SteelSeries,AUTO
+# Leave remaining candidates blank for manual review (use `scripts/vendor_candidates_top50.csv`),,,AUTO_SKIP
+casefans,nzxt,NZXT,AUTO
+casefans,be quiet,be quiet!,AUTO
+casefans,fractal design,Fractal Design,AUTO
+casefans,pano-mounts,,AUTO_SKIP
+casefans,bailink,,AUTO_SKIP
+casefans,lian li,Lian Li,AUTO
+casefans,valkyrie,,AUTO_SKIP
+casefans,corn electronics,,AUTO_SKIP
+casefans,utlgameng,,AUTO_SKIP
+casefans,gperhuan,,AUTO_SKIP
+casefans,super flower,,AUTO_SKIP
+casefans,case fan,,AUTO_SKIP
+casefans,120mm,,AUTO_SKIP
+casefans,black,,AUTO_SKIP
+casefans,fluid dynamic bearing,,AUTO_SKIP
+casefans,140mm,,AUTO_SKIP
+casefans,newegg,,AUTO_SKIP
+casefans,rifle,,AUTO_SKIP
+casefans,1 fan,,AUTO_SKIP
+casefans,rgb,,AUTO_SKIP
+casefans,33.88 dba,,AUTO_SKIP
+casefans,28 dba,,AUTO_SKIP
+casefans,jonsbo,Jonsbo,AUTO
+casefans,78.86 cfm,,AUTO_SKIP
+casefans,25mm,,AUTO_SKIP
+casefans,4-pin pwm,,AUTO_SKIP
+casefans,1600 rpm,,AUTO_SKIP
+casefans,1800 rpm,,AUTO_SKIP
+casefans,500-1800  180 rpm,,AUTO_SKIP
+casefans,350 - 1800 rpm,,AUTO_SKIP
+casefans,argb,,AUTO_SKIP
+casefans,white,,AUTO_SKIP
+casefans,hydraulic,,AUTO_SKIP
+casefans,non-led,,AUTO_SKIP
+casefans,case,,AUTO_SKIP
+casefans,35,,AUTO_SKIP
+casefans,rosewill,Rosewill,AUTO
+casefans,10,,AUTO_SKIP
+casefans,10 - 15 dba,,AUTO_SKIP
+casefans,74.39 cfm126.6 mh,,AUTO_SKIP
+casefans,11.90,,AUTO_SKIP
+casefans,1200 rpm,,AUTO_SKIP
+casefans,1200rpm10,,AUTO_SKIP
+casefans,120 mm,,AUTO_SKIP
+casefans,120 x 120 x 26mm,,AUTO_SKIP
+casefans,19 decibels,,AUTO_SKIP
+casefans,20.99,,AUTO_SKIP
+casefans,21.9 dba at max rpm,,AUTO_SKIP
+casefans,25,,AUTO_SKIP
+casefans,25.5 dba at max rpm,,AUTO_SKIP
+cases,raidmax,Raidmax,AUTO
+cases,montech,,AUTO_SKIP
+cases,desktop computer,,AUTO_SKIP
+cases,diypc,,AUTO_SKIP
+cases,lian li,Lian Li,AUTO
+cases,fractal design,Fractal Design,AUTO
+cases,antec,,AUTO_SKIP
+cases,phanteks,,AUTO_SKIP
+cases,zalman,,AUTO_SKIP
+cases,cs-i801twfls240wt,,AUTO_SKIP
+cases,tempered glass,,AUTO_SKIP
+cases,mid_tower,,AUTO_SKIP
+cases,pccooler,,AUTO_SKIP
+cases,corsair,Corsair,AUTO
+cases,cougar,,AUTO_SKIP
+cases,jonsbo,Jonsbo,AUTO
+cases,jonsplus,,AUTO_SKIP
+cases,mxz,,AUTO_SKIP
+cases,no,,AUTO_SKIP
+cases,rgb,,AUTO_SKIP
+cases,tempered glass panel,,AUTO_SKIP
+cases,18.3 inches,,AUTO_SKIP
+cases,dust filter,,AUTO_SKIP
+cases,17 l x 9 w x 16 h inches,,AUTO_SKIP
+cases,gaming,,AUTO_SKIP
+cases,rgb lighting,,AUTO_SKIP
+cases,11,,AUTO_SKIP
+cases,june 24 2025,,AUTO_SKIP
+cases,led control button,,AUTO_SKIP
+cases,legacy-template-id,,AUTO_SKIP
+cases,15.8 in x 8.3 in x 18.3 in,,AUTO_SKIP
+cases,15.8 inches,,AUTO_SKIP
+cases,14 pounds,,AUTO_SKIP
+cases,1,,AUTO_SKIP
+cases,water cooling,,AUTO_SKIP
+cases,0,,AUTO_SKIP
+cases,12 pounds,,AUTO_SKIP
+cases,12 lb,,AUTO_SKIP
+cases,april 20 2025,,AUTO_SKIP
+cases,built-in fan,,AUTO_SKIP
+cases,cn,,AUTO_SKIP
+cases,raidmax tech,,AUTO_SKIP
+cases,white,,AUTO_SKIP
+cases,99.99,,AUTO_SKIP
+cases,"currently viewing,,AUTO_SKIP
+raidmax i801 panoramic tempered glass mid tower atx pc case with 3 pre-installed argb fans white combo with 240mm aio liquid cooler modern gaming chassis with wide interior and efficient cooling,,,AUTO_SKIP
+add to cart",1,,AUTO_SKIP
+cases,8.3 inches,,AUTO_SKIP
+cpus,amd,AMD,AUTO
+cpus,intel,Intel,AUTO
+cpus,socket am5,,AUTO_SKIP
+cpus,desktop,,AUTO_SKIP
+cpus,amd radeon graphics,,AUTO_SKIP
+cpus,65w,,AUTO_SKIP
+cpus,64-bit,,AUTO_SKIP
+cpus,8-core,,AUTO_SKIP
+cpus,2,,AUTO_SKIP
+cpus,cooling device not included - processor only,,AUTO_SKIP
+cpus,5.0,,AUTO_SKIP
+cpus,windows 11,,AUTO_SKIP
+cpus,120w,,AUTO_SKIP
+cpus,socket am4,,AUTO_SKIP
+cpus,yes,,AUTO_SKIP
+cpus,2200 mhz,,AUTO_SKIP
+cpus,6-core,,AUTO_SKIP
+cpus,32mb,,AUTO_SKIP
+cpus,none integrated graphics,,AUTO_SKIP
+cpus,senytech global,,AUTO_SKIP
+cpus,16-threads,,AUTO_SKIP
+cpus,amd a620  amd b650  amd b650e  amd b850  amd x670  amd x670e  amd x870  amd x870e,,AUTO_SKIP
+cpus,7nm,,AUTO_SKIP
+cpus,512kb,,AUTO_SKIP
+cpus,16-core,,AUTO_SKIP
+cpus,supported,,AUTO_SKIP
+cpus,3.8 ghz,,AUTO_SKIP
+cpus,granite ridge,,AUTO_SKIP
+cpus,5.0  4.0  3.0,,AUTO_SKIP
+cpus,discrete graphics card required,,AUTO_SKIP
+cpus,170w,,AUTO_SKIP
+cpus,128mb,,AUTO_SKIP
+cpus,192 gb,,AUTO_SKIP
+cpus,zen 4 - tsmc 5nm finfet,,AUTO_SKIP
+cpus,16mb,,AUTO_SKIP
+cpus,4.3 ghz,,AUTO_SKIP
+cpus,newegg,,AUTO_SKIP
+cpus,vermeer zen 3,,AUTO_SKIP
+cpus,ddr5 5200,,AUTO_SKIP
+cpus,ddr4 3200,,AUTO_SKIP
+cpus,granite ridge zen 5,,AUTO_SKIP
+cpus,zen 51,,AUTO_SKIP
+cpus,8mb,,AUTO_SKIP
+cpus,4.2 ghz,,AUTO_SKIP
+cpus,4.0  3.0,,AUTO_SKIP
+cpus,not included,,AUTO_SKIP
+cpus,128 gb,,AUTO_SKIP
+cpus,12-threads,,AUTO_SKIP
+cpus,amd expo technology amd ryzen technologies,,AUTO_SKIP
+cpus,precision boost overdrive3,,AUTO_SKIP
+gpus,gigabyte,Gigabyte,AUTO
+gpus,songryvga,,AUTO_SKIP
+gpus,msi,MSI,AUTO
+gpus,asrock,ASRock,AUTO
+gpus,asus,ASUS,AUTO
+gpus,yeston,,AUTO_SKIP
+gpus,srhonyra,,AUTO_SKIP
+gpus,zer lon,,AUTO_SKIP
+gpus,xfx,XFX,AUTO
+gpus,powercolor,PowerColor,AUTO
+gpus,sapphire tech,Sapphire,AUTO
+gpus,yes,,AUTO_SKIP
+gpus,16gb,,AUTO_SKIP
+gpus,atx,,AUTO_SKIP
+gpus,256-bit,,AUTO_SKIP
+gpus,directx 12 ultimate,,AUTO_SKIP
+gpus,no,,AUTO_SKIP
+gpus,opengl 4.6,,AUTO_SKIP
+gpus,7680 x 4320,,AUTO_SKIP
+gpus,gddr7,,AUTO_SKIP
+gpus,gddr6,,AUTO_SKIP
+gpus,pci express 5.0 x16,,AUTO_SKIP
+gpus,nvidia,,AUTO_SKIP
+gpus,4,,AUTO_SKIP
+gpus,directx 12,,AUTO_SKIP
+gpus,pci express 5.0,,AUTO_SKIP
+gpus,amd,AMD,AUTO
+gpus,newegg,,AUTO_SKIP
+gpus,pci express 3.0 x16,,AUTO_SKIP
+gpus,1 x hdmi 2.1b,,AUTO_SKIP
+gpus,128-bit,,AUTO_SKIP
+gpus,triple fans,,AUTO_SKIP
+gpus,nvidia geforce rtx 50 series,,AUTO_SKIP
+gpus,192-bit,,AUTO_SKIP
+gpus,gddr5,,AUTO_SKIP
+gpus,gaming,,AUTO_SKIP
+gpus,amd radeon rx 9000 series,,AUTO_SKIP
+gpus,4gb,,AUTO_SKIP
+gpus,1 x 16-pin,,AUTO_SKIP
+gpus,black,,AUTO_SKIP
+gpus,low profile ready,,AUTO_SKIP
+gpus,radeon rx 9070 xt,,AUTO_SKIP
+gpus,3 x displayport 2.1b,,AUTO_SKIP
+gpus,double fans,,AUTO_SKIP
+gpus,3 x displayport 2.1a,,AUTO_SKIP
+gpus,rdna 4,,AUTO_SKIP
+gpus,gddr3,,AUTO_SKIP
+gpus,geforce rtx 5080,,AUTO_SKIP
+gpus,gtx 1660 super,,AUTO_SKIP
+gpus,19201080,,AUTO_SKIP
+hdds,avolusion,,AUTO_SKIP
+hdds,seagate,,AUTO_SKIP
+hdds,western digital,,AUTO_SKIP
+hdds,maxdigitaldata,,AUTO_SKIP
+hdds,synology inc.,,AUTO_SKIP
+hdds,7200 rpm,,AUTO_SKIP
+hdds,usb 3.0,,AUTO_SKIP
+hdds,6tb,,AUTO_SKIP
+hdds,119.99,,AUTO_SKIP
+hdds,"currently viewing,,AUTO_SKIP
+avolusion pro-t5 series 6tb usb 3.0 external gaming hard drive  ps5 game console  white - 2 year warranty,,,AUTO_SKIP
+add to cart",1,,AUTO_SKIP
+hdds,goharddrive,,AUTO_SKIP
+hdds,june 10 2024,,AUTO_SKIP
+hdds,september 26 2023,,AUTO_SKIP
+headsets,hyperx,HyperX,AUTO
+headsets,logitech,Logitech,AUTO
+headsets,steelseries,SteelSeries,AUTO
+headsets,hp,,AUTO_SKIP
+headsets,turtle beachvoyetra,,AUTO_SKIP
+headsets,black,,AUTO_SKIP
+headsets,circumaural,,AUTO_SKIP
+headsets,usb,,AUTO_SKIP
+headsets,-,,AUTO_SKIP
+headsets,jabra enterprise products,,AUTO_SKIP
+headsets,corsair,Corsair,AUTO
+headsets,plug type a usa canada mexico japan,,AUTO_SKIP
+headsets,fiio,,AUTO_SKIP
+headsets,no,,AUTO_SKIP
+headsets,fractal design,Fractal Design,AUTO
+headsets,20hz-20khz,,AUTO_SKIP
+headsets,wired,,AUTO_SKIP
+headsets,10hz-21khz,,AUTO_SKIP
+headsets,newegg,,AUTO_SKIP
+headsets,stereo,,AUTO_SKIP
+headsets,2.4 ghz lightspeed,,AUTO_SKIP
+headsets,rf,,AUTO_SKIP
+headsets,razer,Razer,AUTO
+headsets,20hz-22khz,,AUTO_SKIP
+headsets,3.93ft headset cable 4.26ft usb dongle cable,,AUTO_SKIP
+headsets,soft memory foam earpads,,AUTO_SKIP
+headsets,dual connection quickswitch 2.4 ghz  bluetooth,,AUTO_SKIP
+headsets,passive,,AUTO_SKIP
+headsets,official hp store,,AUTO_SKIP
+headsets,wireless,,AUTO_SKIP
+headsets,100hz-10khz,,AUTO_SKIP
+headsets,charging cable length 1.8 m 6.56 ft,,AUTO_SKIP
+headsets,2,,AUTO_SKIP
+headsets,4p4f0aa,,AUTO_SKIP
+headsets,16 ohm,,AUTO_SKIP
+headsets,172.99,,AUTO_SKIP
+headsets,20.0 hours,,AUTO_SKIP
+headsets,229.99,,AUTO_SKIP
+headsets,2.4ghz range 40 ft12m,,AUTO_SKIP
+headsets,2.4ghz wireless  bluetooth 5.2,,AUTO_SKIP
+headsets,29 in gaming headsets,,AUTO_SKIP
+headsets,33 ohm,,AUTO_SKIP
+headsets,345 g 12.16 oz,,AUTO_SKIP
+headsets,34 in gaming headsets,,AUTO_SKIP
+headsets,7g8f4aa,,AUTO_SKIP
+headsets,7 in gaming headsets,,AUTO_SKIP
+headsets,80 hours,,AUTO_SKIP
+headsets,87.8 db spl  1 mw & 1 cm,,AUTO_SKIP
+headsets,93dbspl  1khz1mw,,AUTO_SKIP
+headsets,981-000906,,AUTO_SKIP
+keyboards,redragon,Redragon,AUTO
+keyboards,msi,MSI,AUTO
+keyboards,epomaker,Epomaker,AUTO
+keyboards,zornher,,AUTO_SKIP
+keyboards,corsair,Corsair,AUTO
+keyboards,razer,Razer,AUTO
+keyboards,intendvision,,AUTO_SKIP
+keyboards,bfkk,,AUTO_SKIP
+keyboards,black,,AUTO_SKIP
+keyboards,yes,,AUTO_SKIP
+keyboards,no,,AUTO_SKIP
+keyboards,gaming,,AUTO_SKIP
+keyboards,gperhuan,,AUTO_SKIP
+keyboards,104,,AUTO_SKIP
+keyboards,logitech,Logitech,AUTO
+keyboards,wired,,AUTO_SKIP
+keyboards,x,,AUTO_SKIP
+keyboards,newegg,,AUTO_SKIP
+keyboards,standard,,AUTO_SKIP
+keyboards,full-size,,AUTO_SKIP
+keyboards,bluetooth,,AUTO_SKIP
+keyboards,1,,AUTO_SKIP
+keyboards,k556 pro,,AUTO_SKIP
+keyboards,2,,AUTO_SKIP
+keyboards,redragon direct,,AUTO_SKIP
+keyboards,mechanical,,AUTO_SKIP
+keyboards,hyperx,HyperX,AUTO
+keyboards,windows 10 and above,,AUTO_SKIP
+keyboards,optical,,AUTO_SKIP
+keyboards,bluetooth2.4ghzusb-c wired,,AUTO_SKIP
+keyboards,pbt plastic. cherry profile,,AUTO_SKIP
+keyboards,pc,,AUTO_SKIP
+keyboards,plastic,,AUTO_SKIP
+keyboards,f108 pro,,AUTO_SKIP
+keyboards,red switch,,AUTO_SKIP
+keyboards,7,,AUTO_SKIP
+keyboards,rgb keycap not shine-through,,AUTO_SKIP
+keyboards,59.99,,AUTO_SKIP
+keyboards,s11-43cew01-hh9,,AUTO_SKIP
+keyboards,sea moonlight,,AUTO_SKIP
+keyboards,laptop,,AUTO_SKIP
+keyboards,8000mah,,AUTO_SKIP
+keyboards,south-facing,,AUTO_SKIP
+keyboards,steel gray,,AUTO_SKIP
+keyboards,lithium_ion,,AUTO_SKIP
+keyboards,mac,,AUTO_SKIP
+keyboards,magegee,,AUTO_SKIP
+keyboards,tropro,,AUTO_SKIP
+keyboards,true,,AUTO_SKIP
+keyboards,usb,,AUTO_SKIP
+mice,logitech,Logitech,AUTO
+mice,razer,Razer,AUTO
+mice,redragon,Redragon,AUTO
+mice,msi,MSI,AUTO
+mice,asus,ASUS,AUTO
+mice,fantech,,AUTO_SKIP
+mice,gravastar,,AUTO_SKIP
+mice,corsair,Corsair,AUTO
+mice,corn electronics,,AUTO_SKIP
+mice,black,,AUTO_SKIP
+mice,hp,,AUTO_SKIP
+mice,optical,,AUTO_SKIP
+mice,1 x wheel,,AUTO_SKIP
+mice,newegg,,AUTO_SKIP
+mice,wired,,AUTO_SKIP
+mice,right hand,,AUTO_SKIP
+mice,both hands,,AUTO_SKIP
+mice,5,,AUTO_SKIP
+mice,all,,AUTO_SKIP
+mice,white,,AUTO_SKIP
+mice,usb,,AUTO_SKIP
+mice,wireless,,AUTO_SKIP
+mice,rf,,AUTO_SKIP
+mice,6,,AUTO_SKIP
+mice,100,,AUTO_SKIP
+mice,tech edge,,AUTO_SKIP
+mice,usb port,,AUTO_SKIP
+mice,9,,AUTO_SKIP
+mice,11,,AUTO_SKIP
+mice,laser,,AUTO_SKIP
+mice,lightspeed wireless,,AUTO_SKIP
+mice,26000 dpi,,AUTO_SKIP
+mice,windows xp vista mac os x 10.x,,AUTO_SKIP
+mice,25600 dpi,,AUTO_SKIP
+mice,wired  wireless,,AUTO_SKIP
+mice,7,,AUTO_SKIP
+mice,120,,AUTO_SKIP
+mice,12,,AUTO_SKIP
+mice,focus pro 30k optical sensor,,AUTO_SKIP
+mice,rf wireless,,AUTO_SKIP
+mice,palm  claw,,AUTO_SKIP
+mice,bluetooth wireless,,AUTO_SKIP
+mice,wireless mice,,AUTO_SKIP
+mice,usb 2.0,,AUTO_SKIP
+mice,usb 2.0 type c  rf 2.4,,AUTO_SKIP
+mice,usb & bluetooth,,AUTO_SKIP
+mice,105.43,,AUTO_SKIP
+mice,116,,AUTO_SKIP
+mice,119.00,,AUTO_SKIP
+mice,119.99,,AUTO_SKIP
+monitors,msi,MSI,AUTO
+monitors,asus,ASUS,AUTO
+monitors,asrock phantom gaming,,AUTO_SKIP
+monitors,z-edge,,AUTO_SKIP
+monitors,samsung,Samsung,AUTO
+monitors,sealan,,AUTO_SKIP
+monitors,crua,,AUTO_SKIP
+monitors,acer america,,AUTO_SKIP
+monitors,uperfect,,AUTO_SKIP
+monitors,gigabyte,Gigabyte,AUTO
+motherboards,msi,MSI,AUTO
+motherboards,asrock,ASRock,AUTO
+motherboards,asus,ASUS,AUTO
+motherboards,gigabyte,Gigabyte,AUTO
+motherboards,z890 gaming plus wifi,,AUTO_SKIP
+motherboards,atx,,AUTO_SKIP
+motherboards,intel z890,,AUTO_SKIP
+motherboards,lga 1851,,AUTO_SKIP
+motherboards,wifi 7,,AUTO_SKIP
+motherboards,yes,,AUTO_SKIP
+motherboards,realtek alc897,,AUTO_SKIP
+motherboards,supported,,AUTO_SKIP
+motherboards,october 10 2024,,AUTO_SKIP
+motherboards,180,,AUTO_SKIP
+motherboards,1 x audio jack  1 x displayport  1 x flash bios button  1 x hdmi  1 x lan rj45  1 x ps2 keyboardmouse combo  1 x thunderbolt 4  1 x usb 3.1 gen 2 type-a  1 x usb 3.1 gen 2 type-c  2 x usb 2.01.1  2 x usb 3.0,,AUTO_SKIP
+motherboards,1x pcie 1x slot,,AUTO_SKIP
+motherboards,1 x pci express 5.0 x16,,AUTO_SKIP
+motherboards,209.99,,AUTO_SKIP
+motherboards,256gb,,AUTO_SKIP
+motherboards,2 x key m cpu  1 x key m pcie  1 x key m pciesata  1 x key e wifibt,,AUTO_SKIP
+motherboards,3 in intel motherboards,,AUTO_SKIP
+motherboards,4x288pin ddr5,,AUTO_SKIP
+motherboards,4 x sata 6gbs,,AUTO_SKIP
+motherboards,5gbps,,AUTO_SKIP
+motherboards,7.1 channels,,AUTO_SKIP
+motherboards,"currently viewing,,AUTO_SKIP
+msi z890 gaming plus wifi lga 1851 intel z890 atx motherboard,,,AUTO_SKIP
+add to cart",1,,AUTO_SKIP
+motherboards,ddr5 4800  ddr5 5000  ddr5 5200  ddr5 5400  ddr5 5600  ddr5 5800  ddr5 6000  ddr5 6200  ddr5 6400  ddr5 6600  ddr5 6800  ddr5 7000  ddr5 7200  ddr5 7400  ddr5 7600  ddr5 7800  ddr5 7900  ddr5 7950  ddr5 8000  ddr5 8200  ddr5 8266  ddr5 8400  ddr5 8600  ddr5 8666  ddr5 8800  ddr5 8933  ddr5 9000  ddr5 9066  ddr5 9200,,AUTO_SKIP
+motherboards,dual channel,,AUTO_SKIP
+motherboards,intel core ultra processors series 2,,AUTO_SKIP
+motherboards,killer e5000b-cg,,AUTO_SKIP
+motherboards,memory support 9200 - 6400 oc mts  6400 - 4800 jedec mtsmax. overclocking frequency 1dpc 1r max speed up to 9200 mts 1dpc 2r max speed up to 7200 mts 2dpc 1r max speed up to 4800 mts 2dpc 2r max speed up to 4800 mtssupports intel por speed and jedec speedsupports memory overclocking and intel xmp 3.0supports dual-controller dual-channel modesupports non-ecc un-buffered memorysupports cudimm,,AUTO_SKIP
+motherboards,newegg,,AUTO_SKIP
+other,nzxt,NZXT,AUTO
+psus,corsair,Corsair,AUTO
+psus,sama,SAMA,AUTO
+psus,asrock,ASRock,AUTO
+psus,vetroo,Vetroo,AUTO
+psus,raidmax,Raidmax,AUTO
+psus,super flower,,AUTO_SKIP
+psus,segotep,,AUTO_SKIP
+psus,cougar,,AUTO_SKIP
+psus,yes,,AUTO_SKIP
+psus,full modular,,AUTO_SKIP
+psus,80 plus gold certified,,AUTO_SKIP
+psus,atx 3.1 compatible,,AUTO_SKIP
+psus,msi,MSI,AUTO
+psus,100 - 240 v,,AUTO_SKIP
+psus,1 x 120 mm,,AUTO_SKIP
+psus,black,,AUTO_SKIP
+psus,atx,,AUTO_SKIP
+psus,850 w,,AUTO_SKIP
+psus,newegg,,AUTO_SKIP
+psus,650 w,,AUTO_SKIP
+psus,pro series,,AUTO_SKIP
+psus,rmx series,,AUTO_SKIP
+psus,cybenetics gold,,AUTO_SKIP
+psus,thermaltake,,AUTO_SKIP
+psus,750 w,,AUTO_SKIP
+psus,atx 3.0 compatible,,AUTO_SKIP
+psus,no,,AUTO_SKIP
+psus,active pfc,,AUTO_SKIP
+psus,1000 w,,AUTO_SKIP
+psus,140 mm,,AUTO_SKIP
+psus,active,,AUTO_SKIP
+psus,1326,,AUTO_SKIP
+psus,atx 12v v3.1,,AUTO_SKIP
+psus,90,,AUTO_SKIP
+psus,5.9 x 5.5 x 3.4 inches,,AUTO_SKIP
+psus,47 - 63 hz,,AUTO_SKIP
+psus,204 pin,,AUTO_SKIP
+psus,204pin,,AUTO_SKIP
+psus,1,,AUTO_SKIP
+psus,100000 hours,,AUTO_SKIP
+psus,4,,AUTO_SKIP
+psus,14015086mm,,AUTO_SKIP
+psus,single,,AUTO_SKIP
+psus,100-240v,,AUTO_SKIP
+psus,150 mm,,AUTO_SKIP
+psus,11ms,,AUTO_SKIP
+psus,2 44pin,,AUTO_SKIP
+psus,24pin,,AUTO_SKIP
+psus,262pin,,AUTO_SKIP
+psus,1 204pin,,AUTO_SKIP
+ram,g.skill,G.Skill,AUTO
+ram,patriot memory,Patriot Memory,AUTO
+ram,corsair,Corsair,AUTO
+ram,v-color,,AUTO_SKIP
+ram,crucial,Crucial,AUTO
+ram,team group,Team Group,AUTO
+ram,timetec,,AUTO_SKIP
+ram,a-tech,,AUTO_SKIP
+ram,288-pin pc ram,,AUTO_SKIP
+ram,32gb 2 x 16gb,,AUTO_SKIP
+ram,newegg,,AUTO_SKIP
+ram,ddr5 6000 pc5 48000,,AUTO_SKIP
+ram,dual channel kit,,AUTO_SKIP
+ram,rgb,,AUTO_SKIP
+ram,16gb 2 x 8gb,,AUTO_SKIP
+ram,yes,,AUTO_SKIP
+ram,black,,AUTO_SKIP
+ram,trident z5 rgb series,,AUTO_SKIP
+ram,unbuffered,,AUTO_SKIP
+ram,ddr5 6400 pc5 51200,,AUTO_SKIP
+ram,patriot,,AUTO_SKIP
+ram,no,,AUTO_SKIP
+ram,cl36,,AUTO_SKIP
+ram,1.35v,,AUTO_SKIP
+ram,intel xmp 3.0  amd expo,,AUTO_SKIP
+ram,intel xmp 3.0,,AUTO_SKIP
+ram,1.25v,,AUTO_SKIP
+ram,cl32,,AUTO_SKIP
+ram,extreme performance ddr5 memory designed for gaming and pc enthusiastscustomizable rgb lighting supportintel xmp 3.0 supportdo not mix memory kits. memory kits are sold in matched kits that are designed to run together as a set. mixing memory kits will result in stability issues or system failure.memory kits will boot at the spd speed at default bios settings with compatible hardware.for memory kits with xmp enable xmp profile in bios to reach the rated potential xmp overclock speed of the memory kit subject to the use of compatible hardware.reaching the rated xmp overclock speed and system stability will depend on the compatibility and capability of the motherboard and cpu used.usage in any manner inconsistent with manufacturer specifications warnings designs or recommendations will result lower speeds system instability or damage to the system or its components.,,AUTO_SKIP
+ram,none,,AUTO_SKIP
+ram,matte black,,AUTO_SKIP
+ram,32-39-39-102,,AUTO_SKIP
+ram,165,,AUTO_SKIP
+ram,16gb,,AUTO_SKIP
+ram,1.40v,,AUTO_SKIP
+ram,ddr5 5200 pc5 41600,,AUTO_SKIP
+ram,ddr4 3200 pc4 25600,,AUTO_SKIP
+ram,viper venom,,AUTO_SKIP
+ram,viper venom rgb,,AUTO_SKIP
+ram,aluminum,,AUTO_SKIP
+ram,64gb 2 x 32gb,,AUTO_SKIP
+ram,manta xsky,,AUTO_SKIP
+ram,f5-7600j3646g16gx2-tz5rs,,AUTO_SKIP
+ram,silver,,AUTO_SKIP
+ram,cp2k16g60c36u5b,,AUTO_SKIP
+ram,f5-6400j3239g32gx2-tz5rk,,AUTO_SKIP
+ram,amd 600 series  amd 800 series  intel 600 series  intel 700 series,,AUTO_SKIP
+ram,36-36-36-76,,AUTO_SKIP
+ram,unbuffered  unregistered,,AUTO_SKIP
+ram,1.20v,,AUTO_SKIP
+routers,wavlink,Wavlink,AUTO
+routers,tp-link,TP-Link,AUTO
+routers,asus,ASUS,AUTO
+routers,netgear inc.,Netgear,AUTO
+routers,yes,,AUTO_SKIP
+routers,gigastone corporation,,AUTO_SKIP
+routers,no,,AUTO_SKIP
+routers,2.4 ghz  5 ghz,,AUTO_SKIP
+routers,wi-fi 6,,AUTO_SKIP
+routers,wi-fi 7,,AUTO_SKIP
+routers,ieee 802.11ax,,AUTO_SKIP
+routers,ieee 802.11bgnaacaxbe,,AUTO_SKIP
+routers,1 x wan1000mbps,,AUTO_SKIP
+routers,ieee 802.11a  ieee 802.11ac  ieee 802.11b  ieee 802.11g  ieee 802.11n,,AUTO_SKIP
+routers,1 x 101001000m,,AUTO_SKIP
+routers,ubiquiti networks,Ubiquiti Networks,AUTO
+routers,5dbi omni directional antennas,,AUTO_SKIP
+routers,ax11000  up to 11gbps,,AUTO_SKIP
+routers,wpa3,,AUTO_SKIP
+routers,1 x reset6spair2s,,AUTO_SKIP
+routers,1 x dc in 1 x 2.5g wan1010010002500mbps 1 x 2.5g lan1010010002500mbps 3 x lan101001000mbps 1 x usb 3.0,,AUTO_SKIP
+routers,2x2 in 5ghz 2x2 in 2.4ghz,,AUTO_SKIP
+routers,"2 x external5g antennas,,AUTO_SKIP
+,,,AUTO_SKIP
+2 x external2.4 antennas",1,,AUTO_SKIP
+,,,AUTO_SKIP
+volume and dbm and formfactor""}",,,AUTO_SKIP
+routers,38 in wireless routers,,AUTO_SKIP
+routers,3 x lan1000mbps,,AUTO_SKIP
+routers,4 high-performance antennas,,AUTO_SKIP
+routers,4 x lan1000mbps,,AUTO_SKIP
+routers,512mb nand flash and 2gb ram,,AUTO_SKIP
+routers,64128152-bit wep wpa wpa2,,AUTO_SKIP
+routers,84 in wireless routers,,AUTO_SKIP
+routers,8 x 5dbi omni directional antennas,,AUTO_SKIP
+routers,90ig0720-mx1a00,,AUTO_SKIP
+routers,90ig08w0-ma1a0v,,AUTO_SKIP
+routers,9 in wireless routers,,AUTO_SKIP
+routers,archer be230,,AUTO_SKIP
+routers,august 14 2022,,AUTO_SKIP
+routers,august 23 2024,,AUTO_SKIP
+routers,ax3000,,AUTO_SKIP
+routers,- band frequency 2.4ghz  688mbps  5ghz  2882mbps total  3600mbps.- ethernet ports 3 x 101001000mbps lan 1 x 101001000mbps wan.- 5dbi high-gain antennas.- wpa2-psk wpa1-pskwpa2-mix wpa3-saewpa2-psk wpawpa2-enterprise.- wavlink everything mesh guest wifi parental wifi.- 4096-qam ofdma uldl mu-mimo multi-rus mlo.,,AUTO_SKIP
+routers,- band frequency 2.4ghz  688mbps  5ghz  4323mbps total 5100mbps.- ethernet ports 4 x 101001000mbps lan 1 x 10010002500mbps wan.- 5dbi high-gain antennas.- wpa2-psk wpa1-pskwpa2-mix wpa3-saewpa2-psk wpawpa2-enterprise.- wavlink everything mesh guest wifi parental control.- 4096-qam ofdma uldl mu-mimo,,AUTO_SKIP
+routers,be3600 5 ghz 2882 mbps 802.11be 2.4 ghz 688 mbps 802.11be,,AUTO_SKIP
+routers,broadband internet service dslcablefibersatelliteone dslcablefibersatellite modem that has an rj45 connectorandroid phones iphones or computers with ethernet or wifi connection,,AUTO_SKIP
+routers,dc12v 1.5a 18w,,AUTO_SKIP
+routers,december 28 2025,,AUTO_SKIP
+routers,dhcp serverigmp snoopingiptvlan link aggregationmanually assign ip address maximum manually assign ip address rule  128wake on lan wol,,AUTO_SKIP
+routers,dual-bandallocate devices to different bands for optimal performance22 mu-mimosimultaneously communicates with multiple mu-mimo clientsofdmasimultaneously communicates with multiple clientsairtime fairnessimproves network efficiency by limiting excessive occupationdfsaccess an extra band to reduce congestion4 streamsconnect your devices to more bandwidth,,AUTO_SKIP
+routers,external antenna x 3 internal antenna x 1,,AUTO_SKIP
+routers,february 26 2021,,AUTO_SKIP
+routers,february 27 2025,,AUTO_SKIP
+routers,040 32 104,,AUTO_SKIP
+ssds,samsung,Samsung,AUTO
+ssds,kingspec,KingSpec,AUTO
+ssds,team group,Team Group,AUTO
+ssds,sk hynix,SK hynix,AUTO
+ssds,sandisk,SanDisk,AUTO
+ssds,patriot memory,Patriot Memory,AUTO
+ssds,m.2 2280,,AUTO_SKIP
+ssds,internal solid state drive ssd,,AUTO_SKIP
+ssds,consumer,,AUTO_SKIP
+ssds,2tb,,AUTO_SKIP
+ssds,1tb,,AUTO_SKIP
+ssds,0c  70c,,AUTO_SKIP
+ssds,pci-express 4.0 x4,,AUTO_SKIP
+ssds,newegg,,AUTO_SKIP
+ssds,without heatsink,,AUTO_SKIP
+ssds,nvme 2.0,,AUTO_SKIP
+ssds,3d nand,,AUTO_SKIP
+ssds,4tb,,AUTO_SKIP
+ssds,990 pro,,AUTO_SKIP
+ssds,v7 v-nand 3bit mlc,,AUTO_SKIP
+ssds,pci-express 4.0 x4  pci-express 5.0 x2,,AUTO_SKIP
+ssds,990 evo plus,,AUTO_SKIP
+ssds,up to 6900 mbps,,AUTO_SKIP
+ssds,22mm,,AUTO_SKIP
+ssds,80mm,,AUTO_SKIP
+ssds,5-95,,AUTO_SKIP
+ssds,crucial,Crucial,AUTO
+ssds,1500000 hours,,AUTO_SKIP
+ssds,pci-express gen 4.0 x4 nvme 2.0,,AUTO_SKIP
+ssds,up to 7450 mbps,,AUTO_SKIP
+ssds,-40c  85c,,AUTO_SKIP
+ssds,nvme,,AUTO_SKIP
+ssds,kingspec official store,,AUTO_SKIP
+ssds,pcie gen 4.0 x4 nvme 2.0,,AUTO_SKIP
+ssds,867,,AUTO_SKIP
+ssds,nvme 1.4,,AUTO_SKIP
+ssds,1000000 hours,,AUTO_SKIP
+ssds,internal ssd,,AUTO_SKIP
+ssds,tm8fp6256g0c101,,AUTO_SKIP
+ssds,30g,,AUTO_SKIP
+ssds,1200tb,,AUTO_SKIP
+ssds,typical 60mw  typical 5mw,,AUTO_SKIP
+ssds,pcie 4.0 x4  5.0 x2 nvme  2.0,,AUTO_SKIP
+ssds,600tb,,AUTO_SKIP
+ssds,1500g0.5ms,,AUTO_SKIP
+ssds,pcie gen 4.0 x4 pcie gen 5.0 x2 nvme 2.0,,AUTO_SKIP
+ssds,2400tb,,AUTO_SKIP
+ssds,395,,AUTO_SKIP
+ssds,p400lp1kgm28h,,AUTO_SKIP
+ssds,up to 7250 mbps,,AUTO_SKIP
+,,,AUTO_SKIP
+
+

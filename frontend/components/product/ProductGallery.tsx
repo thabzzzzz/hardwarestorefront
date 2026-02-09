@@ -1,62 +1,51 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styles from './ProductGallery.module.css'
 
 type Props = {
   imageUrl?: string | null
+  images?: Array<string | { url: string; alt?: string }> | null
   alt?: string
 }
 
-export default function ProductGallery({ imageUrl, alt }: Props) {
-  const [candidates, setCandidates] = useState<string[]>([])
-  const [idx, setIdx] = useState(0)
+export default function ProductGallery({ imageUrl, images, alt }: Props) {
+  const [broken, setBroken] = useState(false)
+
+  const candidates = useMemo(() => {
+    // prefer first image from `images` array; support string or {url,alt}
+    let srcCandidate: any = null
+    if (images && images.length > 0) {
+      const first = images[0]
+      srcCandidate = (typeof first === 'string') ? first : (first && (first as any).url ? (first as any).url : null)
+    } else {
+      srcCandidate = imageUrl
+    }
+    if (!srcCandidate) return []
+
+    // prefer the cleaned original URL only (avoid cycling through size variants)
+    return [srcCandidate]
+  }, [imageUrl, images])
 
   useEffect(() => {
-    setIdx(0)
-    if (!imageUrl) {
-      setCandidates([])
-      return
-    }
-
-    try {
-      // build candidate URLs by replacing the final tag with preferred sizes
-      const url = imageUrl
-      const parts = url.split('/')
-      const filename = parts.pop() || ''
-      const dir = parts.join('/')
-      const dot = filename.lastIndexOf('.')
-      const name = dot > 0 ? filename.substring(0, dot) : filename
-      const ext = dot > 0 ? filename.substring(dot + 1) : 'jpg'
-
-      const dash = name.lastIndexOf('-')
-      const base = dash > 0 ? name.substring(0, dash) : name
-
-      const tags = ['1200w', '800w', '400w', 'orig', 'thumb']
-      const list = tags.map(t => `${dir}/${base}-${t}.${ext}`)
-
-      // ensure we include the original provided url as last resort
-      if (!list.includes(imageUrl)) list.push(imageUrl)
-
-      setCandidates(list)
-    } catch (e) {
-      setCandidates([imageUrl])
-    }
-  }, [imageUrl])
-
-  useEffect(() => {
-    // reset index when candidates change
-    setIdx(0)
+    setBroken(false)
   }, [candidates.join('|')])
 
   const handleError = () => {
-    setIdx(i => Math.min(i + 1, Math.max(0, candidates.length - 1)))
+    // mark broken and stop attempting alternative URLs to avoid flicker
+    setBroken(true)
   }
 
-  const src = candidates.length > 0 ? candidates[Math.min(idx, candidates.length - 1)] : null
+  const src = candidates.length > 0 && !broken ? candidates[0] : null
+  // alt preference: explicit prop, then images[0].alt if available
+  let imgAlt = alt || ''
+  if ((!imgAlt || imgAlt.length === 0) && images && images.length > 0) {
+    const first = images[0]
+    if (typeof first !== 'string' && first && (first as any).alt) imgAlt = (first as any).alt
+  }
 
   return (
     <div className={styles.wrapper}>
       {src ? (
-        <img src={src} alt={alt || ''} onError={handleError} className={styles.image} />
+        <img src={src} alt={imgAlt || ''} onError={handleError} className={styles.image} />
       ) : (
         <div className={styles.empty}>No image</div>
       )}

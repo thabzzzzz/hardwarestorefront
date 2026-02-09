@@ -3,7 +3,9 @@ import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import { CacheProvider, EmotionCache } from '@emotion/react'
 import createEmotionCache from '../lib/createEmotionCache'
+// Use the node-specific entry for MUI styles to avoid directory import issues on the server
 import { ThemeProvider } from '@mui/material/node/styles'
+// Use node-specific entry to avoid directory import errors on the server
 import CssBaseline from '@mui/material/node/CssBaseline'
 import theme from '../lib/muiTheme'
 

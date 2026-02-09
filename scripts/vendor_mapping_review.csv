@@ -1,0 +1,108 @@
+product_type,candidate,canonical_name,notes
+casefans,newegg,,AUTO_SKIP
+casefans,4-pin pwm,,AUTO_SKIP
+casefans,19 decibels,,AUTO_SKIP
+cases,14 pounds,,AUTO_SKIP
+cases,12 pounds,,AUTO_SKIP
+cpus,socket am5,,AUTO_SKIP
+cpus,8-core,,AUTO_SKIP
+cpus,windows 11,,AUTO_SKIP
+cpus,socket am4,,AUTO_SKIP
+cpus,6-core,,AUTO_SKIP
+cpus,16-threads,,AUTO_SKIP
+cpus,16-core,,AUTO_SKIP
+cpus,3.8 ghz,,AUTO_SKIP
+cpus,zen 4 - tsmc 5nm finfet,,AUTO_SKIP
+cpus,4.3 ghz,,AUTO_SKIP
+cpus,newegg,,AUTO_SKIP
+cpus,vermeer zen 3,,AUTO_SKIP
+cpus,granite ridge zen 5,,AUTO_SKIP
+cpus,4.2 ghz,,AUTO_SKIP
+cpus,12-threads,,AUTO_SKIP
+cpus,precision boost overdrive3,,AUTO_SKIP
+gpus,directx 12 ultimate,,AUTO_SKIP
+gpus,opengl 4.6,,AUTO_SKIP
+gpus,gddr7,,AUTO_SKIP
+gpus,gddr6,,AUTO_SKIP
+gpus,pci express 5.0 x16,,AUTO_SKIP
+gpus,directx 12,,AUTO_SKIP
+gpus,pci express 5.0,,AUTO_SKIP
+gpus,newegg,,AUTO_SKIP
+gpus,pci express 3.0 x16,,AUTO_SKIP
+gpus,1 x hdmi 2.1b,,AUTO_SKIP
+gpus,nvidia geforce rtx 50 series,,AUTO_SKIP
+gpus,gddr5,,AUTO_SKIP
+gpus,amd radeon rx 9000 series,,AUTO_SKIP
+gpus,1 x 16-pin,,AUTO_SKIP
+gpus,radeon rx 9070 xt,,AUTO_SKIP
+gpus,3 x displayport 2.1b,,AUTO_SKIP
+gpus,3 x displayport 2.1a,,AUTO_SKIP
+gpus,rdna 4,,AUTO_SKIP
+gpus,gddr3,,AUTO_SKIP
+gpus,geforce rtx 5080,,AUTO_SKIP
+gpus,gtx 1660 super,,AUTO_SKIP
+hdds,usb 3.0,,AUTO_SKIP
+headsets,newegg,,AUTO_SKIP
+headsets,2.4 ghz lightspeed,,AUTO_SKIP
+headsets,dual connection quickswitch 2.4 ghz  bluetooth,,AUTO_SKIP
+headsets,20.0 hours,,AUTO_SKIP
+headsets,2.4ghz range 40 ft12m,,AUTO_SKIP
+headsets,2.4ghz wireless  bluetooth 5.2,,AUTO_SKIP
+headsets,80 hours,,AUTO_SKIP
+headsets,93dbspl  1khz1mw,,AUTO_SKIP
+keyboards,newegg,,AUTO_SKIP
+keyboards,windows 10 and above,,AUTO_SKIP
+keyboards,bluetooth2.4ghzusb-c wired,,AUTO_SKIP
+keyboards,red switch,,AUTO_SKIP
+mice,1 x wheel,,AUTO_SKIP
+mice,newegg,,AUTO_SKIP
+mice,focus pro 30k optical sensor,,AUTO_SKIP
+mice,usb 2.0,,AUTO_SKIP
+mice,usb 2.0 type c  rf 2.4,,AUTO_SKIP
+motherboards,intel z890,,AUTO_SKIP
+motherboards,wifi 7,,AUTO_SKIP
+motherboards,realtek alc897,,AUTO_SKIP
+motherboards,1x pcie 1x slot,,AUTO_SKIP
+motherboards,1 x pci express 5.0 x16,,AUTO_SKIP
+motherboards,3 in intel motherboards,,AUTO_SKIP
+motherboards,4 x sata 6gbs,,AUTO_SKIP
+motherboards,5gbps,,AUTO_SKIP
+motherboards,7.1 channels,,AUTO_SKIP
+motherboards,intel core ultra processors series 2,,AUTO_SKIP
+motherboards,killer e5000b-cg,,AUTO_SKIP
+motherboards,newegg,,AUTO_SKIP
+psus,80 plus gold certified,,AUTO_SKIP
+psus,newegg,,AUTO_SKIP
+psus,pro series,,AUTO_SKIP
+psus,rmx series,,AUTO_SKIP
+psus,cybenetics gold,,AUTO_SKIP
+ram,288-pin pc ram,,AUTO_SKIP
+ram,newegg,,AUTO_SKIP
+ram,intel xmp 3.0  amd expo,,AUTO_SKIP
+ram,intel xmp 3.0,,AUTO_SKIP
+ram,silver,,AUTO_SKIP
+routers,2.4 ghz  5 ghz,,AUTO_SKIP
+routers,wi-fi 6,,AUTO_SKIP
+routers,wi-fi 7,,AUTO_SKIP
+routers,ieee 802.11bgnaacaxbe,,AUTO_SKIP
+routers,5dbi omni directional antennas,,AUTO_SKIP
+routers,wpa3,,AUTO_SKIP
+routers,1 x reset6spair2s,,AUTO_SKIP
+routers,2x2 in 5ghz 2x2 in 2.4ghz,,AUTO_SKIP
+routers,"2 x external5g antennas,,AUTO_SKIP
+routers,38 in wireless routers,,AUTO_SKIP
+routers,4 high-performance antennas,,AUTO_SKIP
+routers,84 in wireless routers,,AUTO_SKIP
+routers,8 x 5dbi omni directional antennas,,AUTO_SKIP
+routers,9 in wireless routers,,AUTO_SKIP
+routers,archer be230,,AUTO_SKIP
+ssds,pci-express 4.0 x4,,AUTO_SKIP
+ssds,newegg,,AUTO_SKIP
+ssds,3d nand,,AUTO_SKIP
+ssds,v7 v-nand 3bit mlc,,AUTO_SKIP
+ssds,pci-express 4.0 x4  pci-express 5.0 x2,,AUTO_SKIP
+ssds,990 evo plus,,AUTO_SKIP
+ssds,up to 6900 mbps,,AUTO_SKIP
+ssds,up to 7450 mbps,,AUTO_SKIP
+ssds,typical 60mw  typical 5mw,,AUTO_SKIP
+ssds,up to 7250 mbps,,AUTO_SKIP

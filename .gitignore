@@ -61,3 +61,8 @@ docker-compose.dev.yml
 
 # Local-only backups and moved compose files
 .local-dev/
+
+# Temp scraping/debug artifacts
+tmp/
+tools/
+scripts/

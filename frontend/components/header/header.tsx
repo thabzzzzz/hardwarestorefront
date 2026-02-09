@@ -5,9 +5,9 @@ import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { useRouter } from 'next/router'
-import TextField from '@mui/material/node/TextField'
-import InputAdornment from '@mui/material/node/InputAdornment'
-import IconButton from '@mui/material/node/IconButton'
+import TextField from '@mui/material/node/TextField/index.js'
+import InputAdornment from '@mui/material/node/InputAdornment/index.js'
+import IconButton from '@mui/material/node/IconButton/index.js'
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
@@ -16,6 +16,7 @@ const API_BASE = typeof window === 'undefined'
 export default function Header(): JSX.Element {
   const topbarRef = useRef<HTMLDivElement | null>(null)
   const brandRef = useRef<HTMLDivElement | null>(null)
+  const profileRef = useRef<HTMLDivElement | null>(null)
   const [atTop, setAtTop] = useState<boolean>(true)
   const [topbarHeight, setTopbarHeight] = useState<number>(0)
   const [brandHeight, setBrandHeight] = useState<number>(0)
@@ -63,6 +64,7 @@ export default function Header(): JSX.Element {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
   useEffect(() => {
     let openTimer: number | undefined
@@ -81,6 +83,21 @@ export default function Header(): JSX.Element {
       if (closeTimer) window.clearTimeout(closeTimer)
     }
   }, [mobileMenuOpen])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+
+    if (profileOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileOpen])
 
   function doSearchNavigate(q: string) {
     if (!q || String(q).trim().length === 0) return
@@ -135,14 +152,12 @@ export default function Header(): JSX.Element {
               <button aria-label="Open menu" className={styles.iconButton} onClick={() => setMobileMenuOpen(true)}>
                 <img src="/images/icons/burger-menu.svg" alt="Menu" />
               </button>
-              <div className={styles.profileWrap}>
+              <div className={styles.profileWrap} ref={profileRef}>
                 <button aria-haspopup="true" aria-expanded={profileOpen} className={styles.iconButton} onClick={() => setProfileOpen(v => !v)}>
                   <img src="/images/icons/profile.svg" alt="Profile" />
                 </button>
                 {profileOpen && (
-                  <div className={styles.profileMenu} onMouseLeave={() => setProfileOpen(false)}>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Login</a>
-                    <a href="#" onClick={(e)=>e.preventDefault()}>Blog</a>
+                  <div className={styles.profileMenu}>
                     <Link href="/wishlist">Wishlist</Link>
                   </div>
                 )}
@@ -197,80 +212,89 @@ export default function Header(): JSX.Element {
             </Link>
           </div>
           <nav className={styles.nav}>
-          <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-            <a>HARDWARE
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-              </svg>
-            </a>
-            <div className={styles.submenu}>
-              <div className={styles.submenuGrid}>
-                <div className={styles.category}>
-                  <h4>Computer Components</h4>
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Computer Components
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
                     <ul>
-                    <li><a href="/products/gpus">Graphics Cards</a></li>
-                    <li><a href="/products/processors">Processors / CPUs</a></li>
-                    <li><a>Memory / RAM</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Storage Devices</h4>
-                  <ul>
-                    <li><a>Solid State Drives / SSDs</a></li>
-                    <li><a>Internal Hard Drives</a></li>
-                    <li><a>External Storage</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Peripherals</h4>
-                  <ul>
-                    <li><a>Monitors / Screens</a></li>
-                    <li><a>Keyboards</a></li>
-                    <li><a>Mice & Controllers</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Networking</h4>
-                  <ul>
-                    <li><a>Modems</a></li>
-                    <li><a>Routers</a></li>
-                    <li><a>Adapters</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Computer Accessories</h4>
-                  <ul>
-                    <li><a>Water / Liquid Cooling</a></li>
-                    <li><a>Fans & CPU Coolers</a></li>
-                    <li><a>UPS / Power Protection</a></li>
-                  </ul>
-                </div>
-                <div className={styles.category}>
-                  <h4>Other</h4>
-                  <ul>
-                    <li><a>Software</a></li>
-                    <li><a>Webcams</a></li>
-                    <li><a>Cellphones</a></li>
-                  </ul>
+                      <li><a href="/products/gpus">Graphics Cards</a></li>
+                      <li><a href="/products/processors">Processors / CPUs</a></li>
+                      <li><a href="/products/motherboards">Motherboards</a></li>
+                      <li><a href="/products/cases">Cases</a></li>
+                      <li><a href="/products/ram">Memory / RAM</a></li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          <a>PCS & LAPTOPS
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
-          <a>PROMOS
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
-          <a>PC BUILDER
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-            </svg>
-          </a>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Storage Devices
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
+                      <li><a href="/products/hdds">Internal Hard Drives</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Peripherals
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/monitors">Monitors / Screens</a></li>
+                      <li><a href="/products/keyboards">Keyboards</a></li>
+                      <li><a href="/products/mice">Mice & Controllers</a></li>
+                      <li><a href="/products/headsets">Headsets & Audio</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Networking
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/routers">Routers</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
+              <Link href="/products">Accessories
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
+              </Link>
+              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
+                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
+                  <div className={styles.category}>
+                    <ul>
+                      <li><a href="/products/case-fans">Fans & Coolers</a></li>
+                      <li><a href="/products/psus">PSUs / Power Supplies</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           </nav>
           <div className={styles.brandDivider} aria-hidden="true" />
           <div className={styles.brandActions}>
@@ -317,12 +341,92 @@ export default function Header(): JSX.Element {
         {mobileMenuVisible && (
           <div className={styles.mobileMenuOverlay} role="dialog" aria-modal="true" onClick={() => setMobileMenuOpen(false)}>
             <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)}>Close</button>
+              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
               <nav className={styles.mobileNav}>
-                <a>HARDWARE</a>
-                <a>PCS & LAPTOPS</a>
-                <a>PROMOS</a>
-                <a>PC BUILDER</a>
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'comp' ? null : 'comp')}>
+                    Computer Components
+                    <span className={styles.arrow}>{expandedGroup === 'comp' ? '−' : '+'}</span>
+                  </div>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'comp' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/gpus">Graphics Cards</Link>
+                        <Link href="/products/processors">Processors / CPUs</Link>
+                        <Link href="/products/motherboards">Motherboards</Link>
+                        <Link href="/products/cases">Cases</Link>
+                        <Link href="/products/ram">Memory / RAM</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'storage' ? null : 'storage')}>
+                    Storage Devices
+                    <span className={styles.arrow}>{expandedGroup === 'storage' ? '−' : '+'}</span>
+                  </div>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'storage' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/ssds">Solid State Drives / SSDs</Link>
+                        <Link href="/products/hdds">Internal Hard Drives</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'periph' ? null : 'periph')}>
+                    Peripherals
+                    <span className={styles.arrow}>{expandedGroup === 'periph' ? '−' : '+'}</span>
+                  </div>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'periph' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/monitors">Monitors / Screens</Link>
+                        <Link href="/products/keyboards">Keyboards</Link>
+                        <Link href="/products/mice">Mice & Controllers</Link>
+                        <Link href="/products/headsets">Headsets & Audio</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'net' ? null : 'net')}>
+                    Networking
+                    <span className={styles.arrow}>{expandedGroup === 'net' ? '−' : '+'}</span>
+                  </div>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'net' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/routers">Routers</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.mobileGroup}>
+                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'acc' ? null : 'acc')}>
+                    Accessories
+                    <span className={styles.arrow}>{expandedGroup === 'acc' ? '−' : '+'}</span>
+                  </div>
+                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'acc' ? styles.open : ''}`}>
+                    <div className={styles.accordionInner}>
+                      <div className={styles.mobileSubnav}>
+                        <Link href="/products/case-fans">Fans & Coolers</Link>
+                        <Link href="/products/psus">PSUs / Power Supplies</Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ marginTop: 16, borderTop: '1px solid #eee', paddingTop: 16 }}>
+                   <Link href="/wishlist">My Wishlist ({wishlist.count})</Link>
+                </div>
               </nav>
             </div>
           </div>

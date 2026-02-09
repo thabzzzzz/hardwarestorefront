@@ -37,9 +37,18 @@
 .sidebar {
   width: 280px;
   min-height: 400px;
-  border: 1px solid #eee;
+  border: 1px solid #e6e9ee;
   padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
+
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+}
+
 .sidebarHeading {
   margin-top: 0;
 }
@@ -54,7 +63,7 @@
   font-weight: 700;
   margin-bottom: 6px;
 }
-.filterHeading { margin-top: 0 }
+.filterHeading { margin-top: 0; font-weight: 700; }
 .priceBlock { margin-top: 16px; }
 .priceInputs { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 .stockBlock { margin-top: 20px }
@@ -107,4 +116,31 @@
 
 @keyframes shimmer {
   100% { transform: translateX(100%); }
+}
+
+/* Mobile Scaffolding */
+@media (max-width: 600px) {
+  .sidebar {
+    display: none; 
+  }
+  .controlsRow {
+    display: none;
+  }
+  .bottomPagination {
+    display: flex !important;
+    margin-bottom: 80px; /* Space for sticky bar */
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .main {
+    padding: 12px;
+  }
+}
+
+.bottomPagination {
+  display: none; /* Hidden on desktop */
+  margin-top: 24px;
+  justify-content: center;
 }

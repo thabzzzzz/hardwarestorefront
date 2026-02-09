@@ -60,6 +60,9 @@
 /* Price input row */
 .priceInputs { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
 
+.priceBlock { margin-top: 16px; }
+.priceActions { margin-top: 8px; display: flex; gap: 8px; }
+
 /* Skeleton placeholders for product cards while loading */
 .skelCard {
   display: flex;
@@ -93,4 +96,31 @@
 
 @keyframes shimmer {
   100% { transform: translateX(100%); }
+}
+
+/* Mobile Scaffolding */
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+  .controlsRow {
+    display: none;
+  }
+  .bottomPagination {
+    display: flex !important;
+    margin-bottom: 80px; /* Space for sticky bar */
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .main {
+    padding: 12px;
+  }
+}
+
+.bottomPagination {
+  display: none; /* Hidden on desktop */
+  margin-top: 24px;
+  justify-content: center;
 }

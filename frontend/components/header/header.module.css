@@ -1,6 +1,8 @@
 .header {
 	border-bottom: 1px solid #eee;
 	position: relative;
+	/* ensure header (and its fixed brandRow) stays above page content */
+	z-index: 2000;
 }
 @font-face {
 	font-family: 'LexendLight';
@@ -17,6 +19,12 @@
 	background: #fafafa;
 	color: #666;
 	font-size: 12px;
+	/* make topbar full-bleed to viewport edges */
+	position: relative;
+	left: 50%;
+	width: 100vw;
+	margin-left: -50vw;
+	box-sizing: border-box;
 }
 
 .topbarRight {
@@ -48,8 +56,9 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	color: inherit;
+	color: #E76F51;
 	text-decoration: none;
+	font-weight: 600;
 }
 
 .wishlistIcon {
@@ -57,7 +66,7 @@
 	height: 18px;
 	flex: 0 0 18px;
 	fill: currentColor;
-	color: #e0245e; /* filled heart color */
+	color: currentColor;
 }
 
 /* Hover/focus animations for topbar links (Login, Blog, Wishlist) */
@@ -67,7 +76,10 @@
 }
 
 .wishlistLink:hover,
-.wishlistLink:focus-visible,
+.wishlistLink:focus-visible {
+	opacity: 0.8;
+}
+
 .disabledLink:hover,
 .disabledLink:focus-visible {
 	color: #1f7a8c; /* main theme color */
@@ -76,7 +88,6 @@
 .wishlistLink:hover .wishlistIcon,
 .wishlistLink:focus-visible .wishlistIcon {
 	transform: scale(1.06);
-	color: #1f7a8c; /* ensure icon follows text color */
 }
 
 .wishlistLink:active {
@@ -128,8 +139,10 @@
 .nav a {
 	color: #333;
 	font-size: 20px;
-	font-family: 'Lexend', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-	font-weight: 500;
+	/* prefer Helvetica for main nav links */
+	font-family: Helvetica, Roboto, Arial, sans-serif;
+	/* stronger weight for better emphasis */
+	font-weight: 700;
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -143,7 +156,7 @@
 }
 
 .navItem {
-	position: static;
+	position: relative;
 }
 
 .hasSubmenu:hover .submenu,
@@ -165,9 +178,11 @@
 	background: #fff;
 	padding: 18px;
 	border: 1px solid #eee;
+	border-radius: 12px;
+	box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 	box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 	z-index: 1200;
-	width: 960px;
+	/* Removed fixed width 960px to allow per-menu auto width */
 	pointer-events: none;
 }
 
@@ -195,7 +210,7 @@
 	padding: 6px 0;
 	color: #666;
 	text-decoration: none;
-	font-family: 'LexendLight', system-ui, -apple-system, 'Segoe UI', Roboto;
+	font-family: inherit;
 	font-weight: 300;
 	font-size: 16px;
 	transition: color .18s ease;
@@ -297,8 +312,23 @@
 
 /* Let MUI TextField render its own outlined style. Remove legacy native input styling
    but keep left padding so the absolute search icon doesn't overlap the text. */
-.searchBox .MuiOutlinedInput-root { width: 100%; border-radius: 10px; }
-.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { border-radius: 10px; }
+.searchBox .MuiOutlinedInput-root { 
+	width: 100%; 
+	border-radius: 12px;
+	box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+	background: #fff; /* Ensure shadow is visible/no transparency issues */
+	transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.searchBox .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+	border-color: #1f7a8c;
+}
+.searchBox .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+	border-color: #1f7a8c;
+}
+.searchBox .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline { 
+	border-radius: 12px; 
+	transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+}
 .searchBox .MuiOutlinedInput-input { padding: 12px 12px 12px 44px; height: 44px; box-sizing: border-box; }
 
 /* Mobile search: keep same left padding as previous mobile input */
@@ -450,12 +480,10 @@
 	width: 100%;
 }
 
-.searchBoxMobile input {
+.searchBoxMobile .MuiOutlinedInput-root {
 	width: 100%;
-	padding: 10px 12px 10px 40px;
-	border: 1px solid #ddd;
-	/* match product card rounding on mobile */
 	border-radius: 12px;
+	background: #fff;
 }
 
 /* Mobile menu overlay */
@@ -491,18 +519,75 @@
 	border: 0;
 	padding: 8px;
 	margin-bottom: 8px;
+	color: #1f7a8c;
+	cursor: pointer;
+	display: block;
+	margin-right: auto;
 }
 
 .mobileNav {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 0;
 }
 
 .mobileNav a {
 	padding: 8px 6px;
 	text-decoration: none;
 	color: #222;
+}
+
+.mobileGroup {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobileSummary {
+  padding: 12px 6px;
+  font-weight: 700;
+  font-family: Helvetica, Roboto, Arial, sans-serif;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.arrow {
+  color: #999;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.accordionWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.accordionWrapper.open {
+  grid-template-rows: 1fr;
+}
+
+.accordionInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mobileSubnav {
+  display: flex;
+  flex-direction: column;
+  padding-left: 16px;
+  padding-bottom: 8px;
+}
+
+.mobileSubnav a {
+  font-size: 14px;
+  color: #555;
+  padding: 8px 0;
+  border-bottom: none;
+}
+
+.mobileSubnav a:last-child {
+  border-bottom: none;
 }
 
 /* Responsive overrides: show mobile header and hide desktop elements on small screens */

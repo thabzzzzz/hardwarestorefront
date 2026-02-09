@@ -1,8 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
+import { useRouter } from 'next/router'
+import Head from 'next/head'
 import Header from '../../components/header/header'
 import ProductCard from '../../components/product/ProductCard'
 import styles from '../../styles/home.module.css'
 import pageStyles from './processors.module.css'
+import MobileFiltering from '../../components/filters/MobileFiltering'
 
 import formatPriceFromCents from '../../lib/formatPrice'
 import Paper from '@mui/material/node/Paper'
@@ -16,6 +19,7 @@ import Button from '@mui/material/node/Button'
 import InputLabel from '@mui/material/node/InputLabel'
 import Select from '@mui/material/node/Select'
 import MenuItem from '@mui/material/node/MenuItem'
+import Pagination from '@mui/material/node/Pagination'
 import Slider from '@mui/material/node/Slider'
 import TextField from '@mui/material/node/TextField'
 
@@ -56,63 +60,106 @@ export default function ProcessorListing(): JSX.Element {
     return m
   }, [items])
   const [priceMax, setPriceMax] = useState<number>(maxCents)
-
   const [priceRangeRand, setPriceRangeRand] = useState<[number, number]>([0, Math.ceil(maxCents / 100)])
+  const [globalMinCents, setGlobalMinCents] = useState<number | null>(null)
+  const [globalMaxCents, setGlobalMaxCents] = useState<number | null>(null)
+  const [hasAppliedPriceFilter, setHasAppliedPriceFilter] = useState(false)
 
-  // resync max when items change
+  const userTouchedPrice = useRef(false)
+
+  // -- Router & Page Sync --
+  const router = useRouter()
+  const [lastAction, setLastAction] = useState<string>('')
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+  const initialPageSynced = useRef(false)
+
+  // On first ready, initialize `page` from the URL query if present.
+  useEffect(() => {
+    if (!router.isReady) return
+    if (initialPageSynced.current) return
+    initialPageSynced.current = true
+    const qp = router.query.page
+    if (!qp) return
+    const raw = Array.isArray(qp) ? qp[0] : qp
+    const n = Number(raw)
+    if (Number.isFinite(n) && n >= 1) {
+      setPage(Math.max(1, Math.floor(n)))
+      setLastAction(`url:page:${n}`)
+    }
+  }, [router.isReady, router.query.page])
+
+  // Ensure we cache the full catalog (safe since catalog size is modest)
+  // Logic moved to fetchAndFilter in line with GPU page pattern
+  
+  const effectiveMaxCents = globalMaxCents ?? Math.max(maxCents, priceMax || 0)
+  const sliderMaxRand = Math.max(Math.ceil((effectiveMaxCents || 0) / 100), 1)
+  const sliderStep = 1
+
+  // resync max when items change — but do NOT shrink the slider max once the
+  // user has interacted with it, and prefer server-provided global bounds
+  // when available.
   useEffect(() => {
     const nextMaxCents = Math.max(0, Math.ceil(maxCents || 0))
-    setPriceMax(nextMaxCents)
-    setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil(nextMaxCents / 100))])
-  }, [maxCents])
+    if (globalMaxCents !== null) return
+    if (userTouchedPrice.current) return
+
+    setPriceMax(prev => Math.max(prev || 0, nextMaxCents))
+    setPriceRangeRand(prev => {
+      const minRand = Math.max(0, Math.round(priceMin / 100))
+      const newMaxRand = Math.max(1, Math.ceil(nextMaxCents / 100))
+      return [minRand, Math.max(prev?.[1] || 0, newMaxRand)]
+    })
+  }, [maxCents, globalMaxCents, priceMin])
 
   const [filterInStock, setFilterInStock] = useState(false)
   const [filterReserved, setFilterReserved] = useState(false)
   const [filterOutOfStock, setFilterOutOfStock] = useState(false)
   const [sortBy, setSortBy] = useState<string>('price_asc')
 
-  const manufacturers = useMemo(() => {
-    const s = new Set<string>()
-    for (const it of items) {
-      const m = String(it.manufacturer || '').trim()
-      if (m) s.add(m)
-    }
-    return Array.from(s).sort()
-  }, [items])
+  const manufacturers = useMemo(() => ['AMD', 'INTEL'], [])
   const [selectedManufacturers, setSelectedManufacturers] = useState<string[]>([])
-
-  function toggleManufacturer(m: string) {
-    setSelectedManufacturers(prev => prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m])
+  const normalizeKey = (s: string | null | undefined) => String(s || '').trim().toLowerCase()
+  const selectedIncludes = (name: string) => selectedManufacturers.some(sm => normalizeKey(sm) === normalizeKey(name))
+  const canonicalManufacturer = (it: ProcessorItem) => {
+    const m = String(it.manufacturer || '').trim().toLowerCase()
+    const name = String(it.title || (it as any).name || '').toLowerCase()
+    if (m.includes('intel') || name.includes('intel') || name.includes('core i')) return 'INTEL'
+    if (m.includes('amd') || name.includes('amd') || name.includes('ryzen') || name.includes('threadripper')) return 'AMD'
+    return String(it.manufacturer || '').trim().toUpperCase()
   }
 
-  const sliderMaxRand = Math.max(Math.ceil((maxCents || 0) / 100), 1)
-  const sliderStep = 1
-
-  useEffect(() => {
-    const boundedMin = Math.max(0, Math.min(Math.round(priceMin / 100), sliderMaxRand))
-    const boundedMax = Math.max(boundedMin, Math.min(Math.round((priceMax || sliderMaxRand * 100) / 100), sliderMaxRand))
-    setPriceRangeRand([boundedMin, boundedMax])
-  }, [priceMin, priceMax, sliderMaxRand])
+  function toggleManufacturer(name: string) {
+    setSelectedManufacturers(prev => {
+      const exists = prev.some(p => normalizeKey(p) === normalizeKey(name))
+      if (exists) return prev.filter(x => normalizeKey(x) !== normalizeKey(name))
+      return [...prev, name]
+    })
+    setPage(1)
+    setLastAction(`manufacturer:${name}`)
+  }
 
   function handlePriceSliderChange(_event: Event, value: number | number[]) {
-    if (Array.isArray(value)) {
-      const [min, max] = value
-      const boundedMin = Math.max(0, Math.min(Math.round(min), sliderMaxRand))
-      const boundedMax = Math.max(boundedMin, Math.min(Math.round(max), sliderMaxRand))
-      setPriceRangeRand([boundedMin, boundedMax])
-    }
+    userTouchedPrice.current = true
+    const next: [number, number] = Array.isArray(value) ? [Number(value[0]), Number(value[1])] : [0, Number(value)]
+    setPriceRangeRand(next)
   }
 
-  function handlePriceSliderCommit() {
-    const [min, max] = priceRangeRand
-    setPriceMin(min * 100)
-    setPriceMax(max * 100)
+  function handlePriceSliderCommit(_event: Event, value: number | number[]) {
+    userTouchedPrice.current = true
+    const next: [number, number] = Array.isArray(value) ? [Number(value[0]), Number(value[1])] : [0, Number(value)]
+    setPriceRangeRand(next)
+    setPriceMin(next[0] * 100)
+    setPriceMax(next[1] * 100)
+    setPage(1)
+    setHasAppliedPriceFilter(true)
   }
 
   function handlePriceInput(kind: 'min' | 'max') {
     return (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = Number(e.target.value)
       const safe = Number.isFinite(raw) ? Math.round(raw) : 0
+      userTouchedPrice.current = true
       if (kind === 'min') {
         const bounded = Math.max(0, Math.min(safe, Math.round((priceMax ?? sliderMaxRand * 100) / 100)))
         setPriceMin(bounded * 100)
@@ -123,59 +170,81 @@ export default function ProcessorListing(): JSX.Element {
     }
   }
 
-  const filtered = useMemo(() => {
-    return items.filter(it => {
-      // manufacturer filter
-      if (selectedManufacturers.length > 0) {
-        const man = String(it.manufacturer || '').trim()
-        if (!selectedManufacturers.includes(man)) return false
-      }
-      const cents = Number(it.current_price?.amount_cents || 0)
-      if (cents < priceMin || cents > priceMax) return false
+  function applyPriceFilter() {
+    const [min, max] = priceRangeRand
+    setLastAction(`apply:${min}-${max}`)
+    setPriceMin(min * 100)
+    setPriceMax(max * 100)
+    setPage(1)
+    setHasAppliedPriceFilter(true)
+  }
 
-      const raw = String(it.stock?.status || '').toLowerCase()
-      const status = raw === 'out_of_stock' ? 'out_of_stock' : (raw === 'reserved' ? 'reserved' : 'in_stock')
-
-      const anyStockFilter = filterInStock || filterReserved || filterOutOfStock
-      if (!anyStockFilter) return true
-
-      if (status === 'in_stock' && filterInStock) return true
-      if (status === 'reserved' && filterReserved) return true
-      if (status === 'out_of_stock' && filterOutOfStock) return true
-      return false
-    })
-  }, [items, priceMin, priceMax, filterInStock, filterReserved, filterOutOfStock, selectedManufacturers])
-
-
-  // apply client-side sorting for price options (server handles date sorting)
-  const sortedProducts = useMemo(() => {
-    const arr = filtered.slice()
-    if (sortBy === 'price_asc') {
-      arr.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
-    } else if (sortBy === 'price_desc') {
-      arr.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
+  // Sort helper - keeps client-side sorting logic in one place
+  function sortItems(arr: ProcessorItem[], sortKey: string) {
+    const out = arr.slice()
+    if (sortKey === 'price_asc') {
+      out.sort((a, b) => (Number(a.current_price?.amount_cents || 0) - Number(b.current_price?.amount_cents || 0)))
+    } else if (sortKey === 'price_desc') {
+      out.sort((a, b) => (Number(b.current_price?.amount_cents || 0) - Number(a.current_price?.amount_cents || 0)))
+    } else if (sortKey === 'date_asc' || sortKey === 'date_desc') {
+      const dir = sortKey === 'date_asc' ? 1 : -1
+      out.sort((a, b) => {
+        const da = new Date((a as any).created_at || 0).getTime()
+        const db = new Date((b as any).created_at || 0).getTime()
+        return (da - db) * dir
+      })
     }
-    return arr
-  }, [filtered, sortBy])
+    return out
+  }
+
+
+
+  // Server handles all filtering and sorting now
+  const filtered = items
+  const sortedProducts = items
 
   useEffect(() => {
+    if (!router.isReady) return
+
     async function load() {
       setLoading(true)
       try {
         let url = `${API_BASE}/api/cpus?per_page=${perPage}&page=${page}`
+        
+        // Pass server-side filters
+        if (hasAppliedPriceFilter) {
+          if (priceMin !== null) url += `&price_min=${priceMin}`
+          if (priceMax !== null) url += `&price_max=${priceMax}`
+        }
+        
+        // Manufacturers
+        if (selectedManufacturers.length > 0) {
+          const mParams = selectedManufacturers.map(m => `manufacturer[]=${encodeURIComponent(m)}`).join('&')
+          url += `&${mParams}`
+        }
+
+        // Stock Status
+        const stockStatus: string[] = []
+        if (filterInStock) stockStatus.push('in_stock')
+        if (filterReserved) stockStatus.push('reserved')
+        if (filterOutOfStock) stockStatus.push('out_of_stock')
+        if (stockStatus.length > 0) {
+          const sParams = stockStatus.map(s => `stock_status[]=${encodeURIComponent(s)}`).join('&')
+          url += `&${sParams}`
+        }
+
+        // Sorting
         if (sortBy.startsWith('date')) {
           const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
           url += `&sort=date&order=${order}`
+        } else if (sortBy.startsWith('price')) {
+          const order = sortBy.endsWith('_asc') ? 'asc' : 'desc'
+          url += `&sort=price&order=${order}`
         }
+        
         const res = await fetch(url)
-
-        // guard against non-JSON responses (404 HTML, etc.) which cause JSON.parse errors
         const contentType = res.headers.get('content-type') || ''
         if (!res.ok || !contentType.includes('application/json')) {
-          const text = await res.text()
-          console.error('fetch cpus failed (non-JSON response)', res.status, text.slice(0, 400))
-          // do not fall back to local JSON; that produces invented products.
-          // Show empty list and surface the error in console for debugging.
           setItems([])
           setTotalPages(1)
           return
@@ -183,8 +252,20 @@ export default function ProcessorListing(): JSX.Element {
 
         const json = await res.json()
         setItems(json.data || [])
+        // IMPORTANT: Server now handles filtering so totalPages is correct for the filtered set
         const total = json.last_page || Math.ceil((json.total || 0) / perPage)
         setTotalPages(total)
+
+        // use server-provided global price metadata to seed the slider bounds
+        if (json.meta && (json.meta.price_min !== undefined || json.meta.price_max !== undefined)) {
+          if (globalMaxCents === null) {
+            setGlobalMinCents(json.meta.price_min ?? 0)
+            setGlobalMaxCents(json.meta.price_max ?? 0)
+            const nextMax = json.meta.price_max ?? maxCents
+            setPriceMax(Math.max(0, Math.ceil(nextMax || 0)))
+            setPriceRangeRand([Math.max(0, Math.round(priceMin / 100)), Math.max(0, Math.ceil((nextMax || maxCents) / 100))])
+          }
+        }
       } catch (e) {
         console.error('fetch cpus failed', e)
       } finally {
@@ -192,15 +273,13 @@ export default function ProcessorListing(): JSX.Element {
       }
     }
     load()
-  }, [page, perPage, sortBy, priceMin, priceMax])
+  }, [page, perPage, sortBy, router.isReady, hasAppliedPriceFilter, priceMin, priceMax, selectedManufacturers, filterInStock, filterReserved, filterOutOfStock, globalMaxCents, maxCents])
 
-  // Reset to first page when sort changes
   useEffect(() => {
     setPage(1)
   }, [sortBy])
 
-  // Reset to first page when price filters change
-  useEffect(() => { setPage(1) }, [priceMin, priceMax])
+
 
   return (
     <div className={styles.page}>
@@ -211,106 +290,201 @@ export default function ProcessorListing(): JSX.Element {
 
         <div className={pageStyles.controlsRow}>
           <div className={pageStyles.controlsLeft}>
-            <label className={pageStyles.smallSelectLabel}>Sort By
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className={pageStyles.smallSelectLabel}>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="date_desc">Date: Newest</option>
-                <option value="date_asc">Date: Oldest</option>
-              </select>
-            </label>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="sort-by-label">Sort By</InputLabel>
+              <Select
+                labelId="sort-by-label"
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(String(e.target.value))}
+              >
+                <MenuItem value={"price_asc"}>Price: Low to High</MenuItem>
+                <MenuItem value={"price_desc"}>Price: High to Low</MenuItem>
+                <MenuItem value={"date_desc"}>Date: Newest</MenuItem>
+                <MenuItem value={"date_asc"}>Date: Oldest</MenuItem>
+              </Select>
+            </FormControl>
 
-            <label className={pageStyles.smallSelectLabel}>Show
-              <select disabled value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className={pageStyles.smallSelectLabel}>
-                <option value={12}>12</option>
-                <option value={24}>24</option>
-                <option value={48}>48</option>
-                <option value={100}>100</option>
-              </select>
-            </label>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="show-label">Show</InputLabel>
+              <Select
+                labelId="show-label"
+                value={perPage}
+                label="Show"
+                onChange={(e) => setPerPage(Number(e.target.value))}
+              >
+                <MenuItem value={12}>12</MenuItem>
+                <MenuItem value={24}>24</MenuItem>
+                <MenuItem value={48}>48</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
           </div>
 
           <div className={pageStyles.pageNav}>
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>Previous</button>
+            <Pagination
+              count={Math.max(1, totalPages)}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              size="small"
+              showFirstButton={false}
+              showLastButton={false}
+            />
             <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>Next</button>
+          </div>
+        </div>
+
+  const filterContent = (
+    <Box p={1}>
+      <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
+
+      <div className={pageStyles.priceBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
+        <Slider
+          value={priceRangeRand}
+          onChange={handlePriceSliderChange}
+          onChangeCommitted={handlePriceSliderCommit}
+          valueLabelDisplay="auto"
+          step={sliderStep}
+          min={0}
+          max={sliderMaxRand}
+          disableSwap
+          valueLabelFormat={(v) => Math.round(v)}
+        />
+        <div className={pageStyles.priceInputs}>
+          <TextField
+            label="Min"
+            type="number"
+            size="small"
+            value={priceRangeRand[0]}
+            onChange={handlePriceInput('min')}
+            InputProps={{ inputProps: { min: 0, max: priceRangeRand[1], step: 1 } }}
+          />
+          <TextField
+            label="Max"
+            type="number"
+            size="small"
+            value={priceRangeRand[1] || ''}
+            onChange={handlePriceInput('max')}
+            InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
+          />
+        </div>
+        <div className={pageStyles.priceActions}>
+          <Button size="small" onClick={applyPriceFilter}>Apply</Button>
+          <Button
+            size="small"
+            onClick={() => {
+              userTouchedPrice.current = false
+              setPriceMin(0)
+              setPriceMax(effectiveMaxCents)
+              setPriceRangeRand([0, Math.ceil((effectiveMaxCents || 0) / 100)])
+              setPage(1)
+              setHasAppliedPriceFilter(false)
+            }}
+          >
+            Reset
+          </Button>
+        </div>
+      </div>
+
+      <div className={pageStyles.stockBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
+        {manufacturers.length === 0 ? (
+          <div className={pageStyles.checkboxLabel}>No manufacturers</div>
+        ) : (
+          <>
+            <FormControl component="fieldset" variant="standard">
+              <FormGroup>
+                {manufacturers.map(m => (
+                  <FormControlLabel
+                    key={m}
+                    control={<Checkbox checked={selectedIncludes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
+                    label={m}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+            <Box mt={1}>
+              <Button size="small" onClick={() => setSelectedManufacturers([])}>Clear</Button>
+            </Box>
+          </>
+        )}
+      </div>
+
+      <div className={pageStyles.stockBlock}>
+        <Typography variant="subtitle1" className={pageStyles.stockLabel}>Stock</Typography>
+        <FormControl component="fieldset" variant="standard">
+          <FormGroup>
+            <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
+            <FormControlLabel control={<Checkbox checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} size="small" />} label="Reserved" />
+            <FormControlLabel control={<Checkbox checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} size="small" />} label="Out of stock" />
+          </FormGroup>
+        </FormControl>
+      </div>
+    </Box>
+  )
+
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Desktop Processors (CPUs) - WiredWorkshop</title>
+      </Head>
+      <Header />
+      <main className={pageStyles.main}>
+        <div className={pageStyles.breadcrumb}>
+          Hardware Store {'>'} Components {'>'} Processors
+        </div>
+        <h1 className={pageStyles.title}>Processors</h1>
+        
+        <div className={pageStyles.controlsRow}>
+          <div className={pageStyles.controlsLeft}>
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="sort-label">Sort</InputLabel>
+              <Select
+                labelId="sort-label"
+                value={sortBy}
+                label="Sort"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value={"price_asc"}>Price: Low to High</MenuItem>
+                <MenuItem value={"price_desc"}>Price: High to Low</MenuItem>
+                <MenuItem value={"date_desc"}>Date: Newest</MenuItem>
+                <MenuItem value={"date_asc"}>Date: Oldest</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" className={pageStyles.smallSelectLabel}>
+              <InputLabel id="show-label">Show</InputLabel>
+              <Select
+                labelId="show-label"
+                value={perPage}
+                label="Show"
+                onChange={(e) => setPerPage(Number(e.target.value))}
+              >
+                <MenuItem value={12}>12</MenuItem>
+                <MenuItem value={24}>24</MenuItem>
+                <MenuItem value={48}>48</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+
+          <div className={pageStyles.pageNav}>
+            <Pagination
+              count={Math.max(1, totalPages)}
+              page={page}
+              onChange={(_, value) => setPage(value)}
+              size="small"
+              showFirstButton={false}
+              showLastButton={false}
+            />
+            <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
           </div>
         </div>
 
         <div className={pageStyles.container}>
           <Paper className={pageStyles.sidebar} elevation={1}>
-            <Box p={1}>
-              <Typography variant="h6" className={pageStyles.filterHeading}>Sort & Filter</Typography>
-
-              <div className={pageStyles.priceBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Price Range</Typography>
-                <Slider
-                  value={priceRangeRand}
-                  onChange={handlePriceSliderChange}
-                  onChangeCommitted={handlePriceSliderCommit}
-                  valueLabelDisplay="auto"
-                  step={sliderStep}
-                  min={0}
-                  max={sliderMaxRand}
-                  disableSwap
-                  valueLabelFormat={(v) => Math.round(v)}
-                />
-                <div className={pageStyles.priceInputs}>
-                  <TextField
-                    label="Min"
-                    type="number"
-                    size="small"
-                    value={priceRangeRand[0]}
-                    onChange={handlePriceInput('min')}
-                    InputProps={{ inputProps: { min: 0, max: priceRangeRand[1], step: 1 } }}
-                  />
-                  <TextField
-                    label="Max"
-                    type="number"
-                    size="small"
-                    value={priceRangeRand[1] || ''}
-                    onChange={handlePriceInput('max')}
-                    InputProps={{ inputProps: { min: priceRangeRand[0], max: sliderMaxRand, step: 1 } }}
-                  />
-                  <Button size="small" onClick={() => { setPriceMin(0); setPriceMax(maxCents); setPriceRangeRand([0, Math.ceil(maxCents / 100)]); }}>Reset</Button>
-                </div>
-              </div>
-
-              <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Manufacturer</Typography>
-                {manufacturers.length === 0 ? (
-                  <div className={pageStyles.checkboxLabel}>No manufacturers</div>
-                ) : (
-                  <>
-                    <FormControl component="fieldset" variant="standard">
-                      <FormGroup>
-                        {manufacturers.map(m => (
-                          <FormControlLabel
-                            key={m}
-                            control={<Checkbox checked={selectedManufacturers.includes(m)} onChange={() => toggleManufacturer(m)} size="small" />}
-                            label={m}
-                          />
-                        ))}
-                      </FormGroup>
-                    </FormControl>
-                    <Box mt={1}>
-                      <Button size="small" onClick={() => setSelectedManufacturers([])}>Clear</Button>
-                    </Box>
-                  </>
-                )}
-              </div>
-
-              <div className={pageStyles.stockBlock}>
-                <Typography variant="subtitle1" className={pageStyles.stockLabel}>Stock</Typography>
-                <FormControl component="fieldset" variant="standard">
-                  <FormGroup>
-                    <FormControlLabel control={<Checkbox checked={filterInStock} onChange={(e) => setFilterInStock(e.target.checked)} size="small" />} label="In stock" />
-                    <FormControlLabel control={<Checkbox checked={filterReserved} onChange={(e) => setFilterReserved(e.target.checked)} size="small" />} label="Reserved" />
-                    <FormControlLabel control={<Checkbox checked={filterOutOfStock} onChange={(e) => setFilterOutOfStock(e.target.checked)} size="small" />} label="Out of stock" />
-                  </FormGroup>
-                </FormControl>
-              </div>
-            </Box>
+            {filterContent}
           </Paper>
           <section className={pageStyles.resultsSection}>
             <div className={pageStyles.grid}>
@@ -344,9 +518,32 @@ export default function ProcessorListing(): JSX.Element {
             </div>
 
             {/* pagination moved to the small nav row under the breadcrumb */}
+            <Box display="flex" justifyContent="center" mt={4}>
+              <Pagination
+                count={Math.max(1, totalPages)}
+                page={page}
+                onChange={(_, value) => setPage(value)}
+                size="medium"
+                showFirstButton={false}
+                showLastButton={false}
+              />
+            </Box>
           </section>
         </div>
       </main>
+      
+      <MobileFiltering
+        sortOptions={[
+          { value: 'price_asc', label: 'Price: Low to High' },
+          { value: 'price_desc', label: 'Price: High to Low' },
+          { value: 'date_desc', label: 'Date: Newest' },
+          { value: 'date_asc', label: 'Date: Oldest' },
+        ]}
+        currentSort={sortBy}
+        onSortChange={setSortBy}
+      >
+        {filterContent}
+      </MobileFiltering>
     </div>
   )
 }

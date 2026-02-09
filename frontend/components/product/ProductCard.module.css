@@ -94,7 +94,7 @@
 
 .stockIn { color: green }
 .stockOut { color: #c00 }
-.stockReserved { color: #7b1fa2 }
+.stockReserved { color: #f59e0b }
 
 .priceEmpty { color: #9aa3ae }
 
@@ -138,7 +138,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ff7a45;
+  color: #E76F51;
   box-shadow: 0 6px 14px rgba(2,6,23,0.06);
   margin-left: 8px;
   cursor: pointer;
@@ -147,7 +147,7 @@
 .wishlistHeart svg { display: block; transition: fill .12s ease, stroke .12s ease }
 .wishlistHeart svg { fill: none; stroke: currentColor }
 
-.inWishlistHeart { color: #ff7a45 }
+.inWishlistHeart { color: #E76F51 }
 .inWishlistHeart svg { fill: currentColor; stroke: none }
 
 .inWishlist { background: #ffffff; color: #1f7a8c; border-color: #1f7a8c }
@@ -173,4 +173,72 @@
   margin-top: 10px;
   display: flex;
   justify-content: center;
+}
+
+.msgMobile { display: none; }
+.msgDesktop { display: inline; }
+
+/* Mobile Responsiveness Scaffolding */
+@media (max-width: 600px) {
+  .msgMobile { display: inline-flex; align-items: center; justify-content: center; }
+  .msgDesktop { display: none; }
+  
+  .container {
+    padding: 8px;
+    min-height: auto;
+  }
+
+  .imageWrapper {
+    height: 120px;
+    padding: 4px;
+    margin-bottom: 8px;
+  }
+
+  .title {
+    font-size: 13px;
+    line-height: 1.25;
+    margin: 4px 0;
+  }
+
+  .vendor {
+    font-size: 10px;
+    margin-bottom: 2px;
+  }
+
+  .price {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .priceWrap {
+    margin-top: 8px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .sku {
+    text-align: center;
+    margin-top: 0;
+    width: 100%;
+    font-size: 11px;
+  }
+
+  .wishlistHeart {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  .muiAddButton {
+    min-width: 0;
+    width: 48px !important;
+    height: 48px;
+    padding: 0 !important;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
