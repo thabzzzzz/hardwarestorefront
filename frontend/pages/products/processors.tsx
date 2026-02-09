@@ -281,58 +281,8 @@ export default function ProcessorListing(): JSX.Element {
 
 
 
-  return (
-    <div className={styles.page}>
-      <Header />
-      <main className={`${styles.main} ${pageStyles.main}`}>
-        <nav className={pageStyles.breadcrumb}>Home / Hardware / CPUs</nav>
-        <h1 className={pageStyles.title}>CPUs</h1>
 
-        <div className={pageStyles.controlsRow}>
-          <div className={pageStyles.controlsLeft}>
-            <FormControl size="small" className={pageStyles.smallSelectLabel}>
-              <InputLabel id="sort-by-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-by-label"
-                value={sortBy}
-                label="Sort By"
-                onChange={(e) => setSortBy(String(e.target.value))}
-              >
-                <MenuItem value={"price_asc"}>Price: Low to High</MenuItem>
-                <MenuItem value={"price_desc"}>Price: High to Low</MenuItem>
-                <MenuItem value={"date_desc"}>Date: Newest</MenuItem>
-                <MenuItem value={"date_asc"}>Date: Oldest</MenuItem>
-              </Select>
-            </FormControl>
 
-            <FormControl size="small" className={pageStyles.smallSelectLabel}>
-              <InputLabel id="show-label">Show</InputLabel>
-              <Select
-                labelId="show-label"
-                value={perPage}
-                label="Show"
-                onChange={(e) => setPerPage(Number(e.target.value))}
-              >
-                <MenuItem value={12}>12</MenuItem>
-                <MenuItem value={24}>24</MenuItem>
-                <MenuItem value={48}>48</MenuItem>
-                <MenuItem value={100}>100</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-
-          <div className={pageStyles.pageNav}>
-            <Pagination
-              count={Math.max(1, totalPages)}
-              page={page}
-              onChange={(_, value) => setPage(value)}
-              size="small"
-              showFirstButton={false}
-              showLastButton={false}
-            />
-            <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
-          </div>
-        </div>
 
   const filterContent = (
     <Box p={1}>
