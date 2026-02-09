@@ -10,16 +10,24 @@
 	margin: 24px auto;
 	padding: 0 16px;
 }
+  .metaItem {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 90px;
+  }
 .heading { margin: 16px 0 12px; }
 .emptyCard { margin-top: 16px; }
 .emptySub { margin-top: 8px; }
-.tableCard { margin-top: 12px; }
-.smallNote { font-size: 70%; color: #666; display: block; margin-left: 0; margin-top: 2px; }
-.table { width: 100%; border-collapse: collapse; }
-.headerRow { text-align: left; border-bottom: 1px solid #ddd; }
-.cell { padding: 8px 6px; }
-.colDate { width: 160px; }
-.colTag { width: 140px; }
+  .metaLabel {
+    font-size: 11px;
+    color: #6b6b6b;
+    align-self: flex-start;
+    padding: 0 2px;
+    white-space: nowrap;
+    line-height: 1.1;
+    letter-spacing: 0.2px;
+  }
 .colPriority { width: 140px; }
 .colQty { width: 140px; }
 .colSubtotal { width: 160px; }
@@ -127,6 +135,13 @@
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
+  }
+  .metaLabel {
+    font-size: 12px;
+    color: #6b6b6b;
+    align-self: center;
+    padding: 0 4px;
+    white-space: nowrap;
   }
   .metaControl {
     flex: 1;

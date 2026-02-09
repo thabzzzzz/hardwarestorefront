@@ -222,33 +222,41 @@ export default function WishlistPage(): JSX.Element {
                     </div>
 
                     <div className={styles.metaRow} style={{ marginTop: 12 }}>
+                      <div className={styles.metaItem}>
+                        <div className={styles.metaLabel} aria-hidden="true">Personal Tag</div>
                         <FormControl size="small" variant="outlined" className={`${styles.metaControl} ${styles.pillControl} ${tagClass}`} sx={{minWidth: 90}}>
-                            <Select
-                                value={item.tag ?? 'none'}
-                                onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })}
-                                fullWidth
-                                inputProps={{ style: { padding: '6px 10px', fontSize: 13 } }}
-                            >
-                                <MenuItem value="none">None</MenuItem>
-                                <MenuItem value="gift">Gift</MenuItem>
-                                <MenuItem value="research">Research</MenuItem>
-                                <MenuItem value="upgrade">Upgrade</MenuItem>
-                                <MenuItem value="new_build">New Build</MenuItem>
-                            </Select>
+                          <Select
+                            value={item.tag ?? 'none'}
+                            onChange={(e) => w.updateMeta(item.id, { tag: e.target.value as any })}
+                            fullWidth
+                            aria-label="Personal tag (only visible to you)"
+                            inputProps={{ style: { padding: '6px 10px', fontSize: 13 } }}
+                          >
+                            <MenuItem value="none">None</MenuItem>
+                            <MenuItem value="gift">Gift</MenuItem>
+                            <MenuItem value="research">Research</MenuItem>
+                            <MenuItem value="upgrade">Upgrade</MenuItem>
+                            <MenuItem value="new_build">New Build</MenuItem>
+                          </Select>
                         </FormControl>
+                      </div>
 
+                      <div className={styles.metaItem}>
+                        <div className={styles.metaLabel} aria-hidden="true">Priority (personal)</div>
                         <FormControl size="small" variant="outlined" className={`${styles.metaControl} ${styles.pillControl} ${priorityClass}`} sx={{minWidth: 90}}>
-                            <Select
-                                value={item.priority ?? 'low'}
-                                onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })}
-                                fullWidth
-                                inputProps={{ style: { padding: '6px 10px', fontSize: 13 } }}
-                            >
-                                <MenuItem value="low">Low</MenuItem>
-                                <MenuItem value="medium">Medium</MenuItem>
-                                <MenuItem value="high">High</MenuItem>
-                            </Select>
+                          <Select
+                            value={item.priority ?? 'low'}
+                            onChange={(e) => w.updateMeta(item.id, { priority: e.target.value as any })}
+                            fullWidth
+                            aria-label="Priority (personal)"
+                            inputProps={{ style: { padding: '6px 10px', fontSize: 13 } }}
+                          >
+                            <MenuItem value="low">Low</MenuItem>
+                            <MenuItem value="medium">Medium</MenuItem>
+                            <MenuItem value="high">High</MenuItem>
+                          </Select>
                         </FormControl>
+                      </div>
                     </div>
 
                     <div className={styles.mobileDate}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</div>
