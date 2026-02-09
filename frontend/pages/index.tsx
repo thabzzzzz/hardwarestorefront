@@ -69,7 +69,7 @@ export default function Home(): JSX.Element {
   const renderSection = (title: string, products: any[]) => (
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold' }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold' }} align="center">
           {title}
         </Typography>
       </Box>

@@ -402,7 +402,7 @@ export default function CaseFansListing(): JSX.Element {
                   )))}
             </div>
 
-            <div className={pageStyles.bottomControls}>
+            <Box display="flex" justifyContent="center" alignItems="center" mt={4} gap={2}>
                   <Pagination
                   count={Math.max(1, totalPages)}
                   page={page}
@@ -413,7 +413,7 @@ export default function CaseFansListing(): JSX.Element {
                   renderItem={(item) => <PaginationItem {...item} component="button" />}
               />
               <div className={pageStyles.pageCount}>Page {page} / {totalPages}</div>
-            </div>
+            </Box>
           </section>
         </div>
       </main>

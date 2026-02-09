@@ -514,7 +514,7 @@ export default function ProcessorListing(): JSX.Element {
             </div>
 
             {/* pagination moved to the small nav row under the breadcrumb */}
-            <div className={pageStyles.bottomPagination}>
+            <Box display="flex" justifyContent="center" mt={4}>
               <Pagination
                 count={Math.max(1, totalPages)}
                 page={page}
@@ -523,7 +523,7 @@ export default function ProcessorListing(): JSX.Element {
                 showFirstButton={false}
                 showLastButton={false}
               />
-            </div>
+            </Box>
           </section>
         </div>
       </main>

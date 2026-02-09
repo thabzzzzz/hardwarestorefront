@@ -399,7 +399,7 @@ export default function CasesListing(): JSX.Element {
                     />
                   )))}
             </div>
-            <div className={pageStyles.bottomPagination}>
+            <Box display="flex" justifyContent="center" mt={4}>
               <Pagination
                 count={Math.max(1, totalPages)}
                 page={page}
@@ -409,7 +409,7 @@ export default function CasesListing(): JSX.Element {
                 showLastButton={false}
                 renderItem={(item) => <PaginationItem {...item} component="button" />}
               />
-            </div>
+            </Box>
           </section>
         </div>
       </main>
