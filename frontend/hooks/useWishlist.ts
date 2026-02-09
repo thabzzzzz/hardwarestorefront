@@ -97,14 +97,28 @@ export default function useWishlist() {
 
   function addOrUpdate(entry: Omit<WishlistEntry, 'qty'>, qty = 1) {
     const id = entry.id
-    const found = storeItems.find(i => i.id === id)
-    if (found) {
-      const next = storeItems.map(i => i.id === id ? { ...i, qty: Math.max(1, Math.min(qty, i.stock?.qty_available ?? qty)) } : i)
-      persistAndNotify(next)
-      return
+    // try to find exact id match first
+    let found = storeItems.find(i => i.id === id)
+    // fallback: match by title or thumbnail to avoid duplicates when ids differ
+    if (!found) {
+      found = storeItems.find(i => (
+        (entry.title && i.title && i.title === entry.title) ||
+        (entry.thumbnail && i.thumbnail && i.thumbnail === entry.thumbnail)
+      ))
     }
+
+    if (found) {
+      // Do NOT increment qty when addOrUpdate is called from product pages.
+      // The wishlist page controls quantity via `updateQty` explicitly.
+      // Still allow updating other metadata if passed (tag/priority) — merge those.
+      const next = storeItems.map(i => i === found ? { ...i, tag: entry.tag ?? i.tag, priority: entry.priority ?? i.priority } : i)
+      persistAndNotify(next)
+      return { ok: true, added: false, message: 'Already in wishlist' }
+    }
+
     const nextEntry: WishlistEntry = { ...entry, qty: Math.max(1, qty), added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }
     persistAndNotify([nextEntry, ...storeItems])
+    return { ok: true, added: true }
   }
 
   function remove(id: string) {
@@ -114,16 +128,23 @@ export default function useWishlist() {
 
   function toggle(entry: Omit<WishlistEntry, 'qty'>) {
     const id = entry.id
-    const found = storeItems.find(i => i.id === id)
+    let found = storeItems.find(i => i.id === id)
+    if (!found) {
+      found = storeItems.find(i => (
+        (entry.title && i.title && i.title === entry.title) ||
+        (entry.thumbnail && i.thumbnail && i.thumbnail === entry.thumbnail)
+      ))
+    }
     if (found) {
-      persistAndNotify(storeItems.filter(i => i.id !== id))
+      persistAndNotify(storeItems.filter(i => i !== found))
       return
     }
     persistAndNotify([{ ...entry, qty: 1, added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }, ...storeItems])
   }
 
-  function isWished(id: string) {
-    return storeItems.some(i => i.id === id)
+  function isWished(idOrValue: string) {
+    // allow passing id or check by title/thumb via callers that pass an id
+    return storeItems.some(i => i.id === idOrValue)
   }
 
   function updateQty(id: string, qty: number): { ok: boolean; message?: string } {
