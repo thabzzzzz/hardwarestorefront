@@ -59,3 +59,5 @@ frontend/.env.local
 
 # Temp scraping/debug artifacts
 tmp/
+tools/
+scripts/

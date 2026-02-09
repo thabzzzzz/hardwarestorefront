@@ -34,3 +34,8 @@ nginx/dev-default.conf
 # OS files
 Thumbs.db
 desktop.ini
+
+# Scraper / Tooling
+tmp/
+tools/
+scripts/
