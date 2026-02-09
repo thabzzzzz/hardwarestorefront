@@ -240,24 +240,6 @@ class ProductsController extends Controller
                 ? $manufacturer
                 : (isset($variant->product->vendor) && $variant->product->vendor ? $variant->product->vendor->name : $variant->product->brand);
 
-            return [
-                'variant_id' => $variant->id,
-                'product_id' => $variant->product_id,
-                'name' => $variant->product->name,
-                'brand' => $brandField,
-                'board_partner' => $boardPartnerName,
-                'manufacturer' => $manufacturer,
-                'slug' => $variant->product->slug,
-                'sku' => $variant->sku,
-                'title' => $variant->title,
-                // CPU spec fields (nullable)
-                'cores' => $variant->product->cores,
-                'boost_clock' => $variant->product->boost_clock,
-                'microarchitecture' => $variant->product->microarchitecture,
-                'socket' => $variant->product->socket,
-                'current_price' => $price ? ['amount_cents' => $price->amount_cents, 'currency' => $price->currency] : null,
-                // prefer cleaned product-level thumbnail when available so listing cards
-                // use the same image as the product page
             $scrapedThumb = null;
             if (isset($variant->image_urls)) {
                 $rawImgs = $variant->image_urls;
@@ -267,9 +249,10 @@ class ProductsController extends Controller
                     if (is_array($json)) $rawImgs = $json;
                 }
                 if (is_array($rawImgs) && count($rawImgs) > 0) {
-                    $scrapedThumb = $rawImgs[0];
-                    // Clean up potential double-quotes if scraped that way
-                    $scrapedThumb = trim($scrapedThumb, '"');
+                    $candidate = $rawImgs[0];
+                    if (is_string($candidate) || is_numeric($candidate)) {
+                         $scrapedThumb = trim((string)$candidate, '"');
+                    }
                 }
             }
 
