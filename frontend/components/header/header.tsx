@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import TextField from '@mui/material/node/TextField/index.js'
 import InputAdornment from '@mui/material/node/InputAdornment/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
+import SearchIcon from '@mui/icons-material/Search.js'
 
 const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
@@ -169,7 +170,7 @@ export default function Header(): JSX.Element {
             </div>
           </div>
           <div className={styles.mobileRow2}>
-            <div className={styles.searchBoxMobile}>
+              <div className={styles.searchBoxMobile}>
               <TextField
                 placeholder="Search..."
                 value={query}
@@ -180,6 +181,11 @@ export default function Header(): JSX.Element {
                 onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon style={{ fontSize: 16, color: '#666' }} />
+                    </InputAdornment>
+                  ),
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
@@ -310,6 +316,11 @@ export default function Header(): JSX.Element {
                 onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
                 InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon style={{ fontSize: 18, color: '#666' }} />
+                    </InputAdornment>
+                  ),
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
