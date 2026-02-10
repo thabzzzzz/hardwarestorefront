@@ -481,12 +481,24 @@
 	top: calc(100% + 8px);
 	background: #fff;
 	border: 1px solid #eee;
+	border-radius: 12px;
 	box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 	padding: 8px;
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
 	z-index: 1500;
+	/* start hidden for animation */
+	opacity: 0;
+	transform: translateY(-6px) scale(.98);
+	transition: opacity .18s ease, transform .18s ease;
+	pointer-events: none;
+}
+
+.profileMenuOpen {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+	pointer-events: auto;
 }
 
 .profileMenu a {

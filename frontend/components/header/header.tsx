@@ -62,6 +62,8 @@ export default function Header(): JSX.Element {
   const debounceRef = useRef<number | null>(null)
 
   const [profileOpen, setProfileOpen] = useState(false)
+  const [profileVisible, setProfileVisible] = useState(false)
+  const [profileActive, setProfileActive] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
@@ -97,6 +99,24 @@ export default function Header(): JSX.Element {
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [profileOpen])
+
+  useEffect(() => {
+    let openTimer: number | undefined
+    let closeTimer: number | undefined
+
+    if (profileOpen) {
+      setProfileVisible(true)
+      openTimer = window.setTimeout(() => setProfileActive(true), 20)
+    } else {
+      setProfileActive(false)
+      closeTimer = window.setTimeout(() => setProfileVisible(false), 220)
+    }
+
+    return () => {
+      if (openTimer) window.clearTimeout(openTimer)
+      if (closeTimer) window.clearTimeout(closeTimer)
     }
   }, [profileOpen])
 
@@ -157,8 +177,8 @@ export default function Header(): JSX.Element {
                 <button aria-haspopup="true" aria-expanded={profileOpen} className={styles.iconButton} onClick={() => setProfileOpen(v => !v)}>
                   <img src="/images/icons/profile.svg" alt="Profile" />
                 </button>
-                {profileOpen && (
-                  <div className={styles.profileMenu}>
+                {profileVisible && (
+                  <div className={`${styles.profileMenu} ${profileActive ? styles.profileMenuOpen : ''}`}>
                     <Link href="/wishlist">Wishlist</Link>
                   </div>
                 )}
@@ -436,9 +456,7 @@ export default function Header(): JSX.Element {
                   </div>
                 </div>
                 
-                <div style={{ marginTop: 16, borderTop: '1px solid #eee', paddingTop: 16 }}>
-                   <Link href="/wishlist">My Wishlist ({wishlist.count})</Link>
-                </div>
+                 {/* Wishlist intentionally omitted from mobile side menu */}
               </nav>
             </div>
           </div>
