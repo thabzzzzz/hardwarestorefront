@@ -167,6 +167,53 @@
   text-transform: none !important;
 }
 
+  /* +1 feedback animation */
+  .plusFeedback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--accent, #1f7a8c);
+    background: rgba(31,122,140,0.08);
+    padding: 0 12px; /* give more horizontal breathing room */
+    border-radius: 8px;
+    transform-origin: center;
+    animation: plusPop 700ms cubic-bezier(.2,.9,.3,1) forwards;
+    height: 20px;
+    line-height: 1;
+  }
+
+  .plusFeedbackMobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--accent, #1f7a8c);
+    background: rgba(31,122,140,0.08);
+    padding: 0 8px; /* more breathing room on mobile */
+    border-radius: 6px;
+    transform-origin: center;
+    animation: plusPop 700ms cubic-bezier(.2,.9,.3,1) forwards;
+    height: 20px;
+    line-height: 1;
+  }
+
+@keyframes plusPop {
+  /* start slightly bottom-leaning, rise, then settle before fading */
+  0% { transform: translateY(6px) scale(0.9); opacity: 0 }
+  25% { transform: translateY(0) scale(1.06); opacity: 1 }
+  60% { transform: translateY(-6px) scale(1); opacity: 1 }
+  100% { transform: translateY(0) scale(1); opacity: 0 }
+}
+
+/* Ensure svgs inside the message wrappers are centered */
+.msgDesktop svg,
+.msgMobile svg {
+  display: block;
+  height: 20px;
+  width: auto;
+}
+
 .plusIcon {
   display: inline-flex;
   align-items: center;
@@ -183,12 +230,13 @@
 }
 
 .msgMobile { display: none; }
-.msgDesktop { display: inline; }
+.msgDesktop { display: inline-flex; align-items: center; justify-content: center; height: 20px; line-height: 1; }
 
 /* Mobile Responsiveness Scaffolding */
 @media (max-width: 600px) {
   .msgMobile { display: inline-flex; align-items: center; justify-content: center; }
   .msgDesktop { display: none; }
+  .msgMobile { height: 20px; line-height: 1; }
   
   .container {
     padding: 8px;

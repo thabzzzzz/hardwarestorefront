@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
@@ -125,6 +125,14 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
   // completes, shows appropriate toasts for success / already-in-wishlist / errors.
   const [busyAdd, setBusyAdd] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [showPlus, setShowPlus] = useState(false)
+  const plusTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (plusTimerRef.current) window.clearTimeout(plusTimerRef.current)
+    }
+  }, [])
   async function handleWishlistClick(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
@@ -184,10 +192,10 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
           variant={inCart ? 'outlined' : 'contained'}
           color="primary"
           className={`${styles.muiAddButton} ${inCart ? styles.inCart : ''}`}
-          onClick={async (e: React.MouseEvent) => {
+            onClick={async (e: React.MouseEvent) => {
             e.preventDefault()
             e.stopPropagation()
-            if (busy || inCart) return
+            if (busy) return
             setBusy(true)
             try {
               const entry = {
@@ -197,48 +205,55 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
                 price: price ? { amount_cents: price.amount_cents } : null,
                 stock: stock || null
               }
-              // Double-check for existing equivalent item to avoid merging from card click
-              const found = cart.items.find(matchesEntry)
-              if (found) {
-                // Do not call addOrUpdate from the product card when an equivalent exists
-                toast('Already in cart')
-                return
-              }
 
               const res = cart.addOrUpdate(entry, 1)
-              if (!res.added) {
-                console.info('Product already in cart')
-                toast.success(res.message || 'Cart updated')
-              } else {
-                console.info('Added to cart')
-                toast.success('Added to cart')
-              }
+                if (!res.added) {
+                  // existing item incremented — show transient +1 feedback
+                  setShowPlus(true)
+                  if (plusTimerRef.current) window.clearTimeout(plusTimerRef.current)
+                  plusTimerRef.current = window.setTimeout(() => setShowPlus(false), 800)
+                  console.info('Product already in cart - qty incremented')
+                  toast.success(res.message || 'Cart updated')
+                } else {
+                  console.info('Added to cart')
+                  toast.success('Added to cart')
+                }
             } catch (e) {
               console.error('Failed to add to cart')
               toast.error('Failed to add to cart')
             } finally { setBusy(false) }
           }}
-          disabled={busy || inCart}
+          disabled={busy}
           aria-busy={busy}
         >
-          <span className={styles.msgDesktop}>{inCart ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M20 6L9 17l-5-5"/>
-            </svg>
-          ) : (busy ? (<><span className={styles.plusIcon} aria-hidden>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-            </span>Adding...</>) : (<><span className={styles.plusIcon} aria-hidden>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-            </span>Add to cart</>))}</span>
-          <span className={styles.msgMobile}>
-            {inCart ? (
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          <span className={styles.msgDesktop}>
+            {showPlus ? (
+              <span className={styles.plusFeedback}>+1</span>
+            ) : inCart ? (
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
             ) : (busy ? (
-               <span style={{ fontSize: '1.5rem', lineHeight: 0.5 }}>...</span>
+              <><span className={styles.plusIcon} aria-hidden>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
+              </span>Adding...</>
             ) : (
-               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              <><span className={styles.plusIcon} aria-hidden>
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
+              </span>Add to cart</>
             ))}
           </span>
+           <span className={styles.msgMobile}>
+            {showPlus ? (
+              <span className={styles.plusFeedbackMobile}>+1</span>
+            ) : inCart ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            ) : (busy ? (
+              <span style={{ fontSize: '1.5rem', lineHeight: 0.5 }}>...</span>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            ))}
+           </span>
         </Button>
       </div>
       <div>
