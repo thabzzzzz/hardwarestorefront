@@ -21,6 +21,13 @@ export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
   const [errors, setErrors] = useState<Record<string,string>>({})
 
+  function fmtDate(dateStr?: string) {
+    if (!dateStr) return '-'
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return '-'
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  }
+
   function onQtyChange(id: string, value: string) {
     const qty = Number(value || 0)
     const res = w.updateQty(id, qty)
@@ -88,7 +95,7 @@ export default function WishlistPage(): JSX.Element {
                   <th className={`${styles.cell} ${styles.colTag}`}>Tag</th>
                   <th className={`${styles.cell} ${styles.colPriority}`}>Priority</th>
                   <th className={`${styles.cell} ${styles.colQty}`}>
-                    Qty <span className={styles.smallNote}>(limited by stock)</span>
+                    Qty
                   </th>
                   <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
                   <th className={`${styles.cell} ${styles.colActions}`}></th>
@@ -115,7 +122,7 @@ export default function WishlistPage(): JSX.Element {
                         </div>
                       </td>
 
-                      <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
+                      <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? fmtDate(item.added_at) : '-'}</td>
 
                       <td className={styles.cell}>
                         <FormControl size="small" variant="outlined" className={`${styles.pillControl} ${tagClass}`} fullWidth>

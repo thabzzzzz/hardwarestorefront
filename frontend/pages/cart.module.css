@@ -17,8 +17,8 @@
 .headerRow { text-align: left; border-bottom: 1px solid #ddd; }
 .cell { padding: 8px 6px; }
 .colDate { width: 160px; }
-.colQty { width: 140px; }
-.colSubtotal { width: 160px; }
+.colQty { width: 140px; text-align: center; }
+.colSubtotal { width: 160px; text-align: center; }
 .colActions { width: 120px; text-align: center; }
 .row { border-bottom: 1px solid #f0f0f0; }
 .productCell { display: flex; gap: 12px; align-items: center; }
@@ -28,6 +28,23 @@
 .metaCell { font-size: 13px; color: #444; }
 .errorText { color: #c00; font-size: 12px; margin-top: 4px; }
 .cellBold { padding: 12px 6px; font-weight: 700; }
+
+/* Center qty and subtotal columns for desktop table */
+.table td:nth-child(3), .table th:nth-child(3), .table tfoot td:nth-child(3) {
+  text-align: center;
+  vertical-align: middle;
+}
+.table td:nth-child(4), .table th:nth-child(4), .table tfoot td:nth-child(4) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Center numeric inputs inside qty column */
+.table td:nth-child(3) :global(input[type="number"]) {
+  text-align: center;
+  width: 64px;
+  margin: 0 auto;
+}
 
 /* Mobile Layout Utils */
 .mobileOnly { display: none; }

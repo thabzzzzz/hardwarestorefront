@@ -19,6 +19,13 @@ export default function CartPage(): JSX.Element {
   const cart = useCart()
   const [errors, setErrors] = useState<Record<string,string>>({})
 
+  function fmtDate(dateStr?: string) {
+    if (!dateStr) return '-'
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return '-'
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  }
+
   function onQtyChange(id: string, value: string) {
     const qty = Number(value || 0)
     const res = cart.updateQty(id, qty)
@@ -102,7 +109,7 @@ export default function CartPage(): JSX.Element {
                         </div>
                       </div>
                     </td>
-                    <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? new Date(item.added_at).toLocaleString() : '-'}</td>
+                    <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? fmtDate(item.added_at) : '-'}</td>
                     <td className={styles.cell}>
                       <TextField
                         type="number"
