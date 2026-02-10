@@ -128,10 +128,11 @@ export default function MinifiedActionBar({ visible, product }: Props) {
 
           <Button 
             variant="outlined" 
-            color={inWishlist ? "secondary" : "inherit"}
+            color="secondary"
             onClick={handleWishlist}
             disabled={busyWish}
             size="small"
+            aria-pressed={inWishlist}
             sx={{ textTransform: 'none', minWidth: '40px' }}
             title={inWishlist ? "Un-save" : "Save for later"}
           >
