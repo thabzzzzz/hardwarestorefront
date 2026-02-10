@@ -163,7 +163,8 @@ export default function Header(): JSX.Element {
                 )}
               </div>
               <Link href="/cart" className={styles.iconButton} aria-label="View cart">
-                <img src="/icons/cart.svg" alt="Cart" />
+                <img src="/images/icons/cart.svg" alt="Cart" />
+                <span className={styles.cartCount}>({cart.count})</span>
               </Link>
             </div>
           </div>
@@ -333,7 +334,7 @@ export default function Header(): JSX.Element {
               )}
             </div>
             <Link href="/cart" className={styles.cartButton} aria-label="View cart">
-              <img src="/icons/cart.svg" alt="Cart" />
+              <img src="/images/icons/cart.svg" alt="Cart" />
               <span className={styles.cartCount}>({cart.count})</span>
             </Link>
           </div>
