@@ -330,7 +330,7 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
       </Head>
 
       <Header />
-      <main className={`${styles.main} ${pageStyles.main}`}>
+      <main className={`${styles.main} ${pageStyles.main}`} style={{ paddingBottom: !isDesktop ? '120px' : '0' }}>
         <nav className={pageStyles.breadcrumb}>
           {product ? (() => {
             const prodAny = (product as any)
