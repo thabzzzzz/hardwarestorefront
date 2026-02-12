@@ -17,7 +17,39 @@
 
 @media (max-width: 600px) {
   .container {
-    display: none !important;
+    /* Show on mobile as bottom sticky */
+    display: flex !important;
+    top: auto;
+    bottom: 0;
+    height: auto;
+    padding: 10px 12px;
+    transform: translateY(0);
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .container:not(.visible) {
+    /* Always visible on mobile */
+    transform: translateY(0);
+  }
+  .leftSection {
+    display: none;
+  }
+  .rightSection {
+    width: 100%;
+  }
+  .priceRow {
+    text-align: center;
+  }
+  .qtyRow {
+    display: flex;
+    justify-content: center;
+  }
+  .actionsRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
@@ -100,4 +132,11 @@
 
 .topIcon {
   font-size: 20px;
+}
+
+.qtyControl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
 }

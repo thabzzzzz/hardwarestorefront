@@ -18,6 +18,10 @@
 		flex: 1;
 		justify-content: flex-end;
 	}
+	/* Hide the main ProductActions on mobile - we use MinifiedActionBar instead */
+	.container {
+		display: none;
+	}
 }
 
 .price {

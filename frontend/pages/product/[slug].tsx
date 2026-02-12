@@ -8,7 +8,6 @@ import ProductSummary from '../../components/product/ProductSummary'
 import ProductSpecs from '../../components/product/ProductSpecs'
 import ProductActions from '../../components/product/ProductActions'
 import MinifiedActionBar from '../../components/product/MinifiedActionBar'
-import MobileStickyAction from '../../components/product/MobileStickyAction'
 import styles from '../../styles/home.module.css'
 import pageStyles from './[slug].module.css'
 
@@ -118,10 +117,12 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const [loading, setLoading] = useState(false)
   const actionsRef = useRef<HTMLDivElement>(null)
   const [showMinified, setShowMinified] = useState(false)
-  const [showMobileSticky, setShowMobileSticky] = useState(false)
   const [isDesktop, setIsDesktop] = useState(false)
 
   useEffect(() => {
+    // Only set up intersection observer on desktop
+    if (!isDesktop) return
+
     const el = actionsRef.current
     if (!el) return
 
@@ -132,16 +133,11 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
       } else {
         setShowMinified(false)
       }
-
-      // Mobile: Show if NOT intersecting (meaning either above or below viewport)
-      // "disappear once visible"
-      setShowMobileSticky(!entry.isIntersecting)
-
     }, { threshold: 0 })
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [product, loading])
+  }, [product, loading, isDesktop])
 
   const mapCategory = (cat: string | undefined | null) => {
     if (!cat) return null
@@ -392,18 +388,7 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
             <ProductSpecs specs={product.specs || null} specTables={product.spec_tables || null} specFields={product.spec_fields || null} />
             
             <MinifiedActionBar 
-              visible={showMinified}
-              product={{
-                id: product.product_id || '',
-                title: product.title,
-                thumbnail: product.thumbnail || null,
-                price: product.price,
-                stock: product.stock
-              }}
-            />
-            
-            <MobileStickyAction
-              visible={showMobileSticky}
+              visible={showMinified || !isDesktop}
               product={{
                 id: product.product_id || '',
                 title: product.title,

@@ -12,6 +12,7 @@ import theme from '../lib/muiTheme'
 import Footer from '../components/footer/Footer'
 import styles from './_app.module.css'
 import { Toaster } from 'sonner'
+import { useState, useEffect } from 'react'
 
 // Client-side cache shared for the session
 const clientSideEmotionCache = createEmotionCache()
@@ -21,6 +22,18 @@ type MyAppProps = AppProps & {
 }
 
 export default function App({ Component, pageProps, emotionCache = clientSideEmotionCache }: MyAppProps) {
+  const [toastPosition, setToastPosition] = useState<'top-left' | undefined>(undefined)
+
+  useEffect(() => {
+    const updatePosition = () => {
+      if (typeof window === 'undefined') return
+      setToastPosition(window.innerWidth <= 600 ? 'top-left' : undefined)
+    }
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    return () => window.removeEventListener('resize', updatePosition)
+  }, [])
+
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
@@ -39,7 +52,7 @@ export default function App({ Component, pageProps, emotionCache = clientSideEmo
           <main className={styles.main}>
             <Component {...pageProps} />
           </main>
-          <Toaster />
+          <Toaster {...(toastPosition ? { position: toastPosition } : {})} />
           <Footer />
         </div>
       </ThemeProvider>
