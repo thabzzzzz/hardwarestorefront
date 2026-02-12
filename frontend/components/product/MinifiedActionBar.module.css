@@ -26,8 +26,9 @@
     transform: translateY(0);
     border-radius: 8px;
     border: 1px solid #e0e0e0;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
   .container:not(.visible) {
     /* Always visible on mobile */
@@ -39,17 +40,36 @@
   .rightSection {
     width: 100%;
   }
-  .priceRow {
+
+  .mobileRow {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .mobileRow .price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .mobileRow .qtyControl {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mobileRow .qtyControl .MuiTypography-root {
+    font-size: 14px;
+    min-width: 24px;
     text-align: center;
   }
-  .qtyRow {
-    display: flex;
-    justify-content: center;
-  }
-  .actionsRow {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+
+  .mobileRow .qtyControl .MuiButton-root {
+    min-width: 28px;
+    padding: 2px;
   }
 }
 
