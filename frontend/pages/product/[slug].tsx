@@ -119,6 +119,7 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   const actionsRef = useRef<HTMLDivElement>(null)
   const [showMinified, setShowMinified] = useState(false)
   const [showMobileSticky, setShowMobileSticky] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   useEffect(() => {
     const el = actionsRef.current
@@ -198,6 +199,16 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
     const label = String(cat).replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
     return { section: 'Hardware', label, href: `/products/${encodeURIComponent(String(cat))}` }
   }
+
+  useEffect(() => {
+    function update() {
+      if (typeof window === 'undefined') return
+      setIsDesktop(window.innerWidth >= 768)
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
   useEffect(() => {
     if (!router.isReady) return
@@ -372,6 +383,7 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
                     title={product.title}
                     thumbnail={product.thumbnail || null}
                     stock={product.stock || null}
+                    useNativeQty={!isDesktop}
                   />
                 </div>
               </div>

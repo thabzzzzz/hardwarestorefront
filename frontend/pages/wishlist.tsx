@@ -14,8 +14,6 @@ import Button from '@mui/material/node/Button/index.js'
 import FormControl from '@mui/material/node/FormControl/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
-import AddIcon from '@mui/icons-material/Add.js'
-import RemoveIcon from '@mui/icons-material/Remove.js'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
@@ -155,15 +153,22 @@ export default function WishlistPage(): JSX.Element {
                       </td>
 
                       <td className={styles.cell}>
-                        <TextField
-                          type="number"
-                          size="small"
-                          value={item.qty}
-                          onChange={(e) => onQtyChange(item.id, e.target.value)}
-                          inputProps={{ min: 1, max: item.stock?.qty_available ?? undefined }}
-                          error={Boolean(errors[item.id])}
-                          helperText={errors[item.id] || ''}
-                        />
+                        <div className={styles.qtyControl}>
+                          <button
+                            className={styles.qtyButton}
+                            aria-label="Decrease quantity"
+                            onClick={() => decrement(item.id, item.qty)}
+                            disabled={item.qty <= 1}
+                          >-</button>
+                          <div className={styles.qtyValue} aria-live="polite">{item.qty}</div>
+                          <button
+                            className={styles.qtyButton}
+                            aria-label="Increase quantity"
+                            onClick={() => increment(item.id, item.qty)}
+                            disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}
+                          >+</button>
+                        </div>
+                        {errors[item.id] && <div className={styles.qtyError}>{errors[item.id]}</div>}
                       </td>
 
                       <td className={styles.cell}>
@@ -189,7 +194,7 @@ export default function WishlistPage(): JSX.Element {
                   <td className={styles.cellBold}><Typography variant="body1" component="span" sx={{ fontWeight: 700 }}>{w.formatPrice(w.totalCents)}</Typography></td>
                   <td>
                     <Button size="small" variant="outlined" color="error" onClick={() => w.clear()} sx={{ fontWeight: 700 }}>
-                      Clear wishlist
+                      Clear list
                     </Button>
                   </td>
                 </tr>
@@ -218,13 +223,9 @@ export default function WishlistPage(): JSX.Element {
                       </IconButton>
 
                       <div className={styles.qtyControl}>
-                        <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)}>
-                            <RemoveIcon fontSize="small" />
-                        </button>
+                        <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                         <div className={styles.qtyVal}>{item.qty}</div>
-                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)}>
-                            <AddIcon fontSize="small" />
-                        </button>
+                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
                       </div>
                     </div>
 

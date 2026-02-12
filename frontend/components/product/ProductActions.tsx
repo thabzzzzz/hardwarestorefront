@@ -16,10 +16,11 @@ type Props = {
   id?: string | null,
   title?: string | null,
   thumbnail?: string | null,
-  stock?: { qty_available?: number; qty_reserved?: number; status?: string } | null
+  stock?: { qty_available?: number; qty_reserved?: number; status?: string } | null,
+  useNativeQty?: boolean
 }
 
-export default function ProductActions({ price, id, title, thumbnail, stock }: Props) {
+export default function ProductActions({ price, id, title, thumbnail, stock, useNativeQty = true }: Props) {
   const [qty, setQty] = useState(1)
   const cart = useCart()
   const wishlist = useWishlist()
@@ -89,15 +90,37 @@ export default function ProductActions({ price, id, title, thumbnail, stock }: P
       </div>
 
       <div className={styles.controls}>
-        <TextField
-          type="number"
-          inputProps={{ min: 1 }}
-          value={qty}
-          size="small"
-          onChange={(e) => setQty(Number((e.target as HTMLInputElement).value || 1))}
-          className={styles.qtyInput}
-          label="Qty"
-        />
+        {useNativeQty ? (
+          <TextField
+            type="number"
+            inputProps={{ min: 1 }}
+            value={qty}
+            size="small"
+            onChange={(e) => setQty(Number((e.target as HTMLInputElement).value || 1))}
+            className={styles.qtyInput}
+            label="Qty"
+          />
+        ) : (
+          <div className={styles.qtyControl}>
+            <button
+              className={styles.qtyButton}
+              aria-label="Decrease quantity"
+              onClick={() => setQty(q => Math.max(1, q - 1))}
+              disabled={stock?.status === 'out_of_stock' || (stock?.qty_available !== undefined && qty <= 1)}
+            >-</button>
+            <div className={styles.qtyValue} aria-live="polite">{qty}</div>
+            <button
+              className={styles.qtyButton}
+              aria-label="Increase quantity"
+              onClick={() => setQty(q => {
+                const max = stock?.qty_available
+                if (typeof max === 'number') return Math.min(max, q + 1)
+                return q + 1
+              })}
+              disabled={stock?.status === 'out_of_stock' || (stock?.qty_available !== undefined && qty >= (stock?.qty_available || 1))}
+            >+</button>
+          </div>
+        )}
 
         <Button 
           variant="contained" 

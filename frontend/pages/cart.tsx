@@ -12,8 +12,6 @@ import Button from '@mui/material/node/Button/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder.js'
-import AddIcon from '@mui/icons-material/Add.js'
-import RemoveIcon from '@mui/icons-material/Remove.js'
 
 export default function CartPage(): JSX.Element {
   const cart = useCart()
@@ -111,16 +109,22 @@ export default function CartPage(): JSX.Element {
                     </td>
                     <td className={`${styles.cell} ${styles.metaCell}`}>{item.added_at ? fmtDate(item.added_at) : '-'}</td>
                     <td className={styles.cell}>
-                      <TextField
-                        type="number"
-                        size="small"
-                        value={item.qty}
-                        onChange={(e) => onQtyChange(item.id, e.target.value)}
-                        inputProps={{ min: 1 }}
-                        error={Boolean(errors[item.id])}
-                        helperText={errors[item.id] || ''}
-                        sx={{ width: '80px' }}
-                      />
+                      <div className={styles.qtyControl}>
+                        <button
+                          className={styles.qtyButton}
+                          aria-label="Decrease quantity"
+                          onClick={() => decrement(item.id, item.qty)}
+                          disabled={item.qty <= 1}
+                        >-</button>
+                        <div className={styles.qtyValue} aria-live="polite">{item.qty}</div>
+                        <button
+                          className={styles.qtyButton}
+                          aria-label="Increase quantity"
+                          onClick={() => increment(item.id, item.qty)}
+                          disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}
+                        >+</button>
+                      </div>
+                      {errors[item.id] && <div className={styles.qtyError}>{errors[item.id]}</div>}
                     </td>
                     <td className={styles.cell}>
                       <Typography variant="body1" component="span">{cart.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</Typography>
@@ -169,13 +173,9 @@ export default function CartPage(): JSX.Element {
                     </div>
                     
                     <div className={styles.qtyControl}>
-                       <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)}>
-                          <RemoveIcon fontSize="small" />
-                       </button>
+                       <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                        <div className={styles.qtyVal}>{item.qty}</div>
-                       <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)}>
-                          <AddIcon fontSize="small" />
-                       </button>
+                       <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
                     </div>
                   </div>
                   
