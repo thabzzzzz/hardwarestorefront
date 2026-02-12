@@ -116,11 +116,42 @@ export default function MinifiedActionBar({ visible, product }: Props) {
   return (
     <div className={containerClass}>
       {isMobile ? (
-        <div className={styles.mobileRow}>
+        <div className={styles.mobileGrid}>
           <div className={styles.price}>
             {displayPrice}
           </div>
           
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={handleAddToCart}
+            disabled={busyAdd}
+            size="small"
+            sx={{ textTransform: 'none' }}
+            className={styles.addButton}
+          >
+            <span className={styles.plusIcon} aria-hidden>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
+            </span>
+            Add to cart
+          </Button>
+
+          <Button 
+            variant="outlined" 
+            color="secondary"
+            onClick={handleWishlist}
+            disabled={busyWish}
+            size="small"
+            aria-pressed={inWishlist}
+            sx={{ textTransform: 'none', minWidth: '40px' }}
+            title={inWishlist ? "Un-save" : "Save for later"}
+            className={styles.wishButton}
+          >
+            {inWishlist ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
+          </Button>
+
+          <div className={styles.empty1}></div>
+
           <div className={styles.qtyControl}>
             <Button
               variant="outlined"
@@ -144,32 +175,7 @@ export default function MinifiedActionBar({ visible, product }: Props) {
             </Button>
           </div>
 
-          <Button 
-            variant="contained" 
-            color="primary"
-            onClick={handleAddToCart}
-            disabled={busyAdd}
-            size="small"
-            sx={{ textTransform: 'none', marginLeft: '8px' }}
-          >
-            <span className={styles.plusIcon} aria-hidden>
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-            </span>
-            Add to cart
-          </Button>
-
-          <Button 
-            variant="outlined" 
-            color="secondary"
-            onClick={handleWishlist}
-            disabled={busyWish}
-            size="small"
-            aria-pressed={inWishlist}
-            sx={{ textTransform: 'none', minWidth: '40px', marginLeft: '8px' }}
-            title={inWishlist ? "Un-save" : "Save for later"}
-          >
-            {inWishlist ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-          </Button>
+          <div className={styles.empty2}></div>
         </div>
       ) : (
         <>
