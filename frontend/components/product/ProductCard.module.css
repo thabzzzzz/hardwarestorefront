@@ -176,6 +176,13 @@
   justify-content: center;
 }
 
+.buyLabel {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  color: currentColor;
+}
+
   /* +1 feedback animation */
   .plusFeedback {
     display: inline-flex;
@@ -297,7 +304,7 @@
 
   .muiAddButton {
     min-width: 0;
-    width: 48px !important;
+    width: 60px !important;
     height: 48px;
     padding: 0 !important;
     border-radius: 10px;
@@ -305,6 +312,10 @@
     align-items: center;
     justify-content: center;
   }
+
+  /* reduce spacing between Buy and wishlist on narrow screens */
+  .actionsRow > div:last-child { margin-left: 4px; }
+  .wishlistHeart { margin-left: 4px; }
 }
 
 .loadingDots {
