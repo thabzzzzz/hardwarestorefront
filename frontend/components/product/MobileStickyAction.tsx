@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from './MobileStickyAction.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
 import useCart from '../../hooks/useCart'
@@ -7,6 +7,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder.js'
 import FavoriteIcon from '@mui/icons-material/Favorite.js'
 import Button from '@mui/material/node/Button/index.js'
 import { toast } from '../../lib/toast'
+import useAddFeedback from '../../hooks/useAddFeedback'
 
 type Props = {
   visible: boolean
@@ -25,6 +26,7 @@ export default function MobileStickyAction({ visible, product }: Props) {
   const wishlist = useWishlist()
   const [busyAdd, setBusyAdd] = useState(false)
   const [busyWish, setBusyWish] = useState(false)
+  const { showPlus, showTick, trigger } = useAddFeedback()
 
   const { id, price, title, thumbnail, stock } = product
   const displayPrice = price ? formatPriceFromCents(price.amount_cents) : 'Call'
@@ -43,8 +45,10 @@ export default function MobileStickyAction({ visible, product }: Props) {
       }
       const res = cart.addOrUpdate(entry, qty)
       if (res.added) {
+        trigger(true)
         toast.success(`Check cart: Added ${qty} item(s)`)
       } else {
+        trigger(false)
         toast.success(res.message || 'Cart updated')
       }
     } catch (err) {
@@ -54,6 +58,8 @@ export default function MobileStickyAction({ visible, product }: Props) {
       setBusyAdd(false)
     }
   }
+
+  // useAddFeedback handles timer cleanup
 
   async function handleWishlist() {
     if (!id) return
@@ -93,9 +99,12 @@ export default function MobileStickyAction({ visible, product }: Props) {
           className={styles.addButton}
           disabled={!stock || stock.status === 'out_of_stock' || busyAdd}
         >
-          {busyAdd ? '...' : <><span className={styles.plusIcon} aria-hidden>
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-          </span>Add to cart</>}
+          {busyAdd ? '...' : <>
+            <span className={styles.plusIcon} aria-hidden>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
+            </span>
+            {showPlus ? <span className={styles.plusFeedbackMobile}>+1</span> : showTick ? <span className={styles.tickFeedbackMobile}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span> : 'Buy'}
+          </>}
         </Button>
 
         <Button

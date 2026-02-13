@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import styles from './ProductCard.module.css'
 import formatPriceFromCents from '../../lib/formatPrice'
@@ -7,6 +7,7 @@ import useCart from '../../hooks/useCart'
 import Button from '@mui/material/node/Button/index.js'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { toast } from '../../lib/toast'
+import useAddFeedback from '../../hooks/useAddFeedback'
 
 type Props = {
   title: string
@@ -136,14 +137,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
   // completes, shows appropriate toasts for success / already-in-wishlist / errors.
   const [busyAdd, setBusyAdd] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [showPlus, setShowPlus] = useState(false)
-  const plusTimerRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (plusTimerRef.current) window.clearTimeout(plusTimerRef.current)
-    }
-  }, [])
+  const { showPlus, showTick, trigger } = useAddFeedback(800)
   async function handleWishlistClick(e: React.MouseEvent) {
     e.preventDefault()
     e.stopPropagation()
@@ -202,9 +196,9 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     <div className={styles.actionsRow}>
       <div>
         <Button
-          variant={inCart ? 'outlined' : 'contained'}
+          variant="contained"
           color="primary"
-          className={`${styles.muiAddButton} ${inCart ? styles.inCart : ''}`}
+          className={styles.muiAddButton}
             onClick={async (e: React.MouseEvent) => {
             e.preventDefault()
             e.stopPropagation()
@@ -222,12 +216,11 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const res = cart.addOrUpdate(entry, 1)
                 if (!res.added) {
                   // existing item incremented — show transient +1 feedback
-                  setShowPlus(true)
-                  if (plusTimerRef.current) window.clearTimeout(plusTimerRef.current)
-                  plusTimerRef.current = window.setTimeout(() => setShowPlus(false), 800)
+                  trigger(false)
                   console.info('Product already in cart - qty incremented')
                   toast.success(res.message || 'Cart updated')
                 } else {
+                  trigger(true)
                   console.info('Added to cart')
                   toast.success('Added to cart')
                 }
@@ -242,7 +235,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
           <span className={styles.msgDesktop}>
             {showPlus ? (
               <span className={styles.plusFeedback}>+1</span>
-            ) : inCart ? (
+            ) : showTick ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M20 6L9 17l-5-5"/>
               </svg>
@@ -253,7 +246,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
             ) : (
               <><span className={styles.plusIcon} aria-hidden>
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-              </span>Add to cart</>
+              </span>Buy</>
             ))}
           </span>
            <span className={styles.msgMobile}>
