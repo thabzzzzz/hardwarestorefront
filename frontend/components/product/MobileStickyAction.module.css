@@ -95,11 +95,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #10b981;
+  background: transparent;
   color: #fff;
-  padding: 0 8px;
-  border-radius: 6px;
-  height: 20px;
+  padding: 0;
+  border-radius: 0;
+  height: auto;
 }
 
 @keyframes plusPop {
