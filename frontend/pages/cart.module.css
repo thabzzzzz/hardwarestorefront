@@ -121,7 +121,8 @@
   .mobileList {
     display: flex;
     flex-direction: column;
-    gap: 0; 
+    gap: 0;
+    margin-top: 12px; 
   }
 
   .mobileCard {
