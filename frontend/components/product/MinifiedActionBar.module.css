@@ -79,41 +79,68 @@
   }
 
   .mobileGrid .bottomRow {
-    grid-column: 1;
+    grid-column: 1 / span 2;
     grid-row: 2;
     display: flex;
-    gap: 8px;
+    flex-direction: row;
     align-items: center;
     width: 100%;
+    gap: 10px;
+    padding: 0 0 8px 0;
+  }
+  
+  .mobileGrid .wishWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 28px;
+    min-width: 0;
+    padding: 0;
   }
   /* Add fills the left column; wishlist lives in its own grid column */
-  .mobileGrid .bottomRow .addButton {
+  .mobileGrid .addButton {
     flex: 1 1 0;
     min-width: 0;
-    width: 100%;
-    display: inline-flex;
-    justify-content: center;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #111;
+    border: 1px solid rgba(0,0,0,0.12);
+    box-shadow: none;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    padding: 0 18px;
+    transition: background 0.15s;
   }
 
   /* Remove any left margin on add button so it aligns with the price above */
-  .mobileGrid .addButton {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-  }
-
-  .mobileGrid .wishWrapper {
-    grid-column: 2;
-    grid-row: 2;
+  .mobileGrid .wishButton {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.12);
+    color: #ff7a45;
+    box-sizing: border-box;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
   }
-
-  .mobileGrid .wishWrapper :global(.MuiButton-root) {
-    min-width: 0;
-    width: auto;
-    padding: 6px 10px;
+  .mobileGrid .wishButton[aria-pressed="true"] {
+    background: #ff7a45;
+    color: #fff;
+    border-color: #ff7a45;
+  }
+  .mobileGrid .wishButton svg {
+    color: inherit;
+    font-size: 22px;
   }
 }
 

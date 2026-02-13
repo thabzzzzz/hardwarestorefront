@@ -159,9 +159,6 @@ export default function MinifiedActionBar({ visible, product }: Props) {
               </span>
               Add to cart
             </Button>
-          </div>
-
-          <div className={styles.wishWrapper}>
             <Button 
               variant="outlined" 
               color="secondary"
@@ -170,6 +167,7 @@ export default function MinifiedActionBar({ visible, product }: Props) {
               size="medium"
               aria-pressed={inWishlist}
               sx={{ textTransform: 'none', minWidth: '40px' }}
+              className={styles.wishButton}
               title={inWishlist ? "Un-save" : "Save for later"}
             >
               {inWishlist ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
@@ -209,20 +207,18 @@ export default function MinifiedActionBar({ visible, product }: Props) {
                 </span>
                 Add to cart
               </Button>
-
               <Button 
                 variant="outlined" 
                 color="secondary"
                 onClick={handleWishlist}
                 disabled={busyWish}
-                size="small"
+                size="medium"
                 aria-pressed={inWishlist}
                 sx={{ textTransform: 'none', minWidth: '40px' }}
                 title={inWishlist ? "Un-save" : "Save for later"}
               >
                 {inWishlist ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
               </Button>
-
               <Button 
                 variant="outlined" 
                 className={styles.topButton} 
