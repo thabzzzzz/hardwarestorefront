@@ -138,6 +138,14 @@
     margin-bottom: 12px;
   }
 
+  .cardHeaderRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
   .mobileThumb {
     width: 80px;
     height: 80px;
@@ -146,6 +154,18 @@
     border-radius: 4px;
     flex-shrink: 0;
     background: #fff;
+  }
+
+  .mobileThumbWrap { display: flex; justify-content: center; }
+
+  .mobileThumbWrap { margin-bottom: 8px; }
+
+  .priceRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
   }
 
   .cardContent {

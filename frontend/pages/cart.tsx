@@ -157,27 +157,27 @@ export default function CartPage(): JSX.Element {
           <div className={`${styles.mobileList} ${styles.mobileOnly}`}>
               {cart.items.map(item => (
                 <div key={item.id} className={styles.mobileCard}>
-                  <div className={styles.cardTop}>
-                     <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
-                     <div className={styles.cardContent}>
-                        <div className={styles.mobileTitleLink}>{item.title}</div>
-                        <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0))}</div>
-                     </div>
-                  </div>
-                  
-                  <div className={styles.cardActions}>
-                    <div className={styles.actionLinks}>
-                       <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)}>
-                          <DeleteOutlineIcon fontSize="small" />
-                       </IconButton>
+                    <div className={styles.cardHeaderRow}>
+                      <div style={{ flex: 1 }} />
+                      <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)} aria-label="Remove">
+                        <DeleteOutlineIcon fontSize="small" />
+                      </IconButton>
                     </div>
-                    
-                    <div className={styles.qtyControl}>
-                       <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
-                       <div className={styles.qtyVal}>{item.qty}</div>
-                       <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
+
+                    <div className={styles.mobileThumbWrap}>
+                      <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
                     </div>
-                  </div>
+
+                    <div className={styles.mobileTitleLink}>{item.title}</div>
+
+                    <div className={styles.priceRow}>
+                      <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0))}</div>
+                      <div className={styles.qtyControl}>
+                         <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
+                         <div className={styles.qtyVal}>{item.qty}</div>
+                         <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
+                      </div>
+                    </div>
                   
                   <div className={styles.mobileDate}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</div>
                 </div>

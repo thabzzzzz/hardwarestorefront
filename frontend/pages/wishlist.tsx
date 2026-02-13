@@ -209,19 +209,21 @@ export default function WishlistPage(): JSX.Element {
 
                 return (
                   <div key={item.id} className={styles.mobileCard}>
-                    <div className={styles.cardTop}>
-                      <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
-                      <div className={styles.cardContent}>
-                          <div className={styles.mobileTitleLink}>{item.title}</div>
-                          <div className={styles.mobilePrice}>{w.formatPrice(item.price?.amount_cents ?? 0)}</div>
-                      </div>
+                    <div className={styles.cardHeaderRow}>
+                      <div style={{ flex: 1 }} />
+                      <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)} aria-label="Remove">
+                        <DeleteOutlineIcon fontSize="small" />
+                      </IconButton>
                     </div>
 
-                    <div className={styles.cardActions}>
-                      <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)}>
-                          <DeleteOutlineIcon fontSize="small" />
-                      </IconButton>
+                    <div className={styles.mobileThumbWrap}>
+                      <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
+                    </div>
 
+                    <div className={styles.mobileTitleLink}>{item.title}</div>
+
+                    <div className={styles.priceRow}>
+                      <div className={styles.mobilePrice}>{w.formatPrice(item.price?.amount_cents ?? 0)}</div>
                       <div className={styles.qtyControl}>
                         <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                         <div className={styles.qtyVal}>{item.qty}</div>
