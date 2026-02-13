@@ -85,7 +85,7 @@ export default function useCart() {
   function addOrUpdate(entry: Omit<CartEntry, 'qty'>, qty = 1): { ok: boolean; added: boolean; message?: string } {
     const id = entry.id
     // Try to find by canonical id first
-    let found = storeItems.find(i => i.id === id)
+    let found = storeItems.find(i => String(i.id) === String(id))
     // Fallback: detect the same product by title or thumbnail if ids differ
     if (!found) {
       found = storeItems.find(i => (
@@ -116,12 +116,12 @@ export default function useCart() {
   }
 
   function remove(id: string) {
-    const next = storeItems.filter(i => i.id !== id)
+    const next = storeItems.filter(i => String(i.id) !== String(id))
     persistAndNotify(next)
   }
 
   function updateQty(id: string, qty: number): { ok: boolean; message?: string } {
-    const idx = storeItems.findIndex(i => i.id === id)
+    const idx = storeItems.findIndex(i => String(i.id) === String(id))
     if (idx === -1) return { ok: false, message: 'Item not in cart' }
     // Removed strict stock limiting
     // const entry = storeItems[idx]
@@ -129,14 +129,14 @@ export default function useCart() {
     if (qty < 1) qty = 1
     // if (qty > avail) { ... }
     
-    const next = storeItems.map(i => i.id === id ? { ...i, qty } : i)
+    const next = storeItems.map(i => String(i.id) === String(id) ? { ...i, qty } : i)
     persistAndNotify(next)
     return { ok: true }
   }
 
   function clear() { persistAndNotify([]) }
 
-  const totalCents = storeItems.reduce((s, it) => s + computeSubtotal(it), 0)
+  const totalCents = items.reduce((s, it) => s + computeSubtotal(it), 0)
 
   return {
     items,

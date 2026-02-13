@@ -172,7 +172,7 @@ export default function WishlistPage(): JSX.Element {
                       </td>
 
                       <td className={styles.cell}>
-                        <Typography variant="body1" component="span">{w.formatPrice(item.price?.amount_cents ?? 0)}</Typography>
+                        <Typography variant="body1" component="span">{w.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</Typography>
                       </td>
 
                       <td className={`${styles.cell} ${styles.colActions}`}>

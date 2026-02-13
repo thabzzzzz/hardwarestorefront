@@ -98,7 +98,7 @@ export default function useWishlist() {
   function addOrUpdate(entry: Omit<WishlistEntry, 'qty'>, qty = 1) {
     const id = entry.id
     // try to find exact id match first
-    let found = storeItems.find(i => i.id === id)
+    let found = storeItems.find(i => String(i.id) === String(id))
     // fallback: match by title or thumbnail to avoid duplicates when ids differ
     if (!found) {
       found = storeItems.find(i => (
@@ -122,13 +122,13 @@ export default function useWishlist() {
   }
 
   function remove(id: string) {
-    const next = storeItems.filter(i => i.id !== id)
+    const next = storeItems.filter(i => String(i.id) !== String(id))
     persistAndNotify(next)
   }
 
   function toggle(entry: Omit<WishlistEntry, 'qty'>) {
     const id = entry.id
-    let found = storeItems.find(i => i.id === id)
+    let found = storeItems.find(i => String(i.id) === String(id))
     if (!found) {
       found = storeItems.find(i => (
         (entry.title && i.title && i.title === entry.title) ||
@@ -142,13 +142,13 @@ export default function useWishlist() {
     persistAndNotify([{ ...entry, qty: 1, added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }, ...storeItems])
   }
 
-  function isWished(idOrValue: string) {
+    function isWished(idOrValue: string) {
     // allow passing id or check by title/thumb via callers that pass an id
-    return storeItems.some(i => i.id === idOrValue)
+    return storeItems.some(i => String(i.id) === String(idOrValue))
   }
 
   function updateQty(id: string, qty: number): { ok: boolean; message?: string } {
-    const idx = storeItems.findIndex(i => i.id === id)
+    const idx = storeItems.findIndex(i => String(i.id) === String(id))
     if (idx === -1) return { ok: false, message: 'Item not in wishlist' }
     const entry = storeItems[idx]
     const avail = entry.stock?.qty_available ?? Infinity
@@ -158,19 +158,19 @@ export default function useWishlist() {
       persistAndNotify(corrected)
       return { ok: false, message: `Only ${avail} available` }
     }
-    const next = storeItems.map(i => i.id === id ? { ...i, qty } : i)
+    const next = storeItems.map(i => String(i.id) === String(id) ? { ...i, qty } : i)
     persistAndNotify(next)
     return { ok: true }
   }
 
   function updateMeta(id: string, fields: Partial<Pick<WishlistEntry, 'tag' | 'priority'>>) {
-    const next = storeItems.map(i => i.id === id ? { ...i, ...fields } : i)
+    const next = storeItems.map(i => String(i.id) === String(id) ? { ...i, ...fields } : i)
     persistAndNotify(next)
   }
 
   function clear() { persistAndNotify([]) }
 
-  const totalCents = storeItems.reduce((s, it) => s + computeSubtotal(it), 0)
+  const totalCents = items.reduce((s, it) => s + computeSubtotal(it), 0)
 
   return {
     items,
