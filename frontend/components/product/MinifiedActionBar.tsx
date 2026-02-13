@@ -44,7 +44,11 @@ export default function MinifiedActionBar({ visible, product }: Props) {
   const { id, title, thumbnail, price, stock } = product
   const displayPrice = price ? formatPriceFromCents(price.amount_cents) : 'Call for price'
   const displayStock = stock?.qty_available ? `${stock.qty_available} In Stock` : (stock?.status || 'Unknown Status')
-  const inWishlist = wishlist.isWished(id)
+  const [inWishlist, setInWishlist] = useState(() => wishlist.isWished(id))
+
+  useEffect(() => {
+    setInWishlist(wishlist.isWished(id))
+  }, [wishlist, id])
 
   async function handleAddToCart() {
     if (!id) return
@@ -72,22 +76,20 @@ export default function MinifiedActionBar({ visible, product }: Props) {
     }
   }
 
-  async function handleWishlist() {
+  async function handleWishlist(e?: React.MouseEvent) {
+    if (e) e.preventDefault()
     if (!id) return
     if (busyWish) return
     setBusyWish(true)
     try {
-      if (inWishlist) {
+      const already = wishlist.isWished(id)
+      if (already) {
         wishlist.remove(id)
+        setInWishlist(false)
         toast('Removed from wishlist')
       } else {
-        wishlist.addOrUpdate({ 
-          id, 
-          title: title || 'Product', 
-          thumbnail: thumbnail || null, 
-          price: price ? { amount_cents: price.amount_cents } : null, 
-          stock: stock || null 
-        }, 1)
+        wishlist.addOrUpdate({ id, title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+        setInWishlist(true)
         toast.success('Added to wishlist')
       }
     } catch (err) {

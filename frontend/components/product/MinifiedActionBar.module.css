@@ -62,30 +62,42 @@
   .mobileGrid .qtyControl {
     grid-column: 2;
     grid-row: 1;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+    height: 36px;
   }
 
   .mobileGrid .qtyControl .MuiTypography-root {
     font-size: 14px;
-    min-width: 24px;
+    min-width: 20px;
     text-align: center;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
   }
 
-  .mobileGrid .qtyControl .MuiButton-root {
-    min-width: 28px;
-    padding: 2px;
-    border: 1px solid #d1d5db !important; /* grey border always */
-    color: #222;
-    background: #fff;
-    box-shadow: none;
-    transition: border 0.15s;
+  .mobileGrid .qtyControl :global(.MuiButton-root) {
+    background: transparent !important;
+    border: 1px solid #ddd !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    cursor: pointer !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    color: #222 !important;
+    box-shadow: none !important;
+    transition: border 0.15s !important;
   }
-  .mobileGrid .qtyControl .MuiButton-root.Mui-disabled {
+  .mobileGrid .qtyControl :global(.MuiButton-root.Mui-disabled) {
     border: 1px solid #e0e0e0 !important;
-    color: #bdbdbd;
-    background: #fafafa;
+    color: #bdbdbd !important;
+    background: #fafafa !important;
+    cursor: not-allowed !important;
   }
   @media (max-width: 600px) {
     .mobileGrid .qtyControl .MuiButton-root {

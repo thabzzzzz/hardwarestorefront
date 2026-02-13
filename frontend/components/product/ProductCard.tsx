@@ -107,8 +107,13 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
 
   // wishlist hook (frontend-only localStorage)
   const wishlist = useWishlist()
-  const cart = useCart()
   const id = String(slug || sku || name || title)
+  const [inWishlist, setInWishlist] = useState(() => wishlist.isWished(id))
+
+  useEffect(() => {
+    setInWishlist(wishlist.isWished(id))
+  }, [wishlist, id])
+  const cart = useCart()
 
   const matchesEntry = (i: any) => {
     // Match by canonical id first
@@ -138,25 +143,27 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     e.stopPropagation()
     if (busyAdd) return
     setBusyAdd(true)
-      try {
-        const already = wishlist.isWished(id)
-        if (already) {
-          wishlist.remove(id)
-          console.info('Removed from wishlist')
-          toast('Removed from wishlist')
-        } else {
-          try {
-            wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: src, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
-            console.info('Added to wishlist')
-            toast.success('Added to wishlist')
-          } catch (err) {
-            console.error('Failed to add to wishlist', err)
-            console.error('Could not add to wishlist')
-          }
+    try {
+      const already = wishlist.isWished(id)
+      if (already) {
+        wishlist.remove(id)
+        setInWishlist(false)
+        console.info('Removed from wishlist')
+        toast('Removed from wishlist')
+      } else {
+        try {
+          wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: src, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+          setInWishlist(true)
+          console.info('Added to wishlist')
+          toast.success('Added to wishlist')
+        } catch (err) {
+          console.error('Failed to add to wishlist', err)
+          console.error('Could not add to wishlist')
         }
-      } finally {
-        setBusyAdd(false)
       }
+    } finally {
+      setBusyAdd(false)
+    }
   }
 
   // Build the non-interactive navigable area (image/title/price)
@@ -249,7 +256,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
             ) : inCart ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
             ) : (busy ? (
-              <span style={{ fontSize: '1.5rem', lineHeight: 0.5 }}>...</span>
+              <span className={styles.loadingDots}>...</span>
             ) : (
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             ))}
@@ -261,11 +268,11 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
           onClick={handleWishlistClick}
           disabled={busyAdd}
           aria-busy={busyAdd}
-          aria-pressed={wishlist.isWished(id)}
-          className={`${styles.wishlistHeart} ${wishlist.isWished(id) ? styles.inWishlistHeart : ''}`}
-          title={wishlist.isWished(id) ? 'Remove from wishlist' : 'Add to wishlist'}
+          aria-pressed={inWishlist}
+          className={`${styles.wishlistHeart} ${inWishlist ? styles.inWishlistHeart : ''}`}
+          title={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          {wishlist.isWished(id) ? (
+          {inWishlist ? (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 3.99 4 6.5 4c1.74 0 3.41.81 4.5 2.09C12.09 4.81 13.76 4 15.5 4 18.01 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
             </svg>
