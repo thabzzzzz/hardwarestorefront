@@ -240,13 +240,9 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
                 <path d="M20 6L9 17l-5-5"/>
               </svg>
             ) : (busy ? (
-              <><span className={styles.plusIcon} aria-hidden>
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-              </span>Adding...</>
+              <>Adding...</>
             ) : (
-              <><span className={styles.plusIcon} aria-hidden>
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v10M3 8h10"/></svg>
-              </span>Buy</>
+              <>Buy</>
             ))}
           </span>
           <span className={styles.msgMobile}>
