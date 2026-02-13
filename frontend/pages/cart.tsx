@@ -171,7 +171,7 @@ export default function CartPage(): JSX.Element {
                     <div className={styles.mobileTitleLink}>{item.title}</div>
 
                     <div className={styles.priceRow}>
-                      <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0))}</div>
+                      <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</div>
                       <div className={styles.qtyControl}>
                          <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                          <div className={styles.qtyVal}>{item.qty}</div>

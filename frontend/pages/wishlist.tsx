@@ -261,7 +261,7 @@ export default function WishlistPage(): JSX.Element {
                     </div>
 
                     <div className={styles.priceRow}>
-                      <div className={styles.mobilePrice}>{w.formatPrice(item.price?.amount_cents ?? 0)}</div>
+                      <div className={styles.mobilePrice}>{w.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</div>
                       <div className={styles.qtyControl}>
                         <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                         <div className={styles.qtyVal}>{item.qty}</div>
