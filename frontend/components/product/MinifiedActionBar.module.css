@@ -82,9 +82,22 @@
     grid-column: 1 / -1;
     grid-row: 2;
     display: flex;
-    justify-content: center;
     gap: 8px;
     align-items: center;
+    width: 100%;
+  }
+
+  /* Use :global to override MUI button defaults inside CSS modules */
+  .mobileGrid .bottomRow :global(.MuiButton-root):first-child {
+    flex: 4 1 0;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .mobileGrid .bottomRow :global(.MuiButton-root):last-child {
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
   }
 }
 
