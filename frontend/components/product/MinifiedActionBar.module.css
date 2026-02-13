@@ -76,6 +76,28 @@
   .mobileGrid .qtyControl .MuiButton-root {
     min-width: 28px;
     padding: 2px;
+    border: 1px solid #d1d5db !important; /* grey border always */
+    color: #222;
+    background: #fff;
+    box-shadow: none;
+    transition: border 0.15s;
+  }
+  .mobileGrid .qtyControl .MuiButton-root.Mui-disabled {
+    border: 1px solid #e0e0e0 !important;
+    color: #bdbdbd;
+    background: #fafafa;
+  }
+  @media (max-width: 600px) {
+    .mobileGrid .qtyControl .MuiButton-root {
+      border: 1px solid #d1d5db !important;
+      color: #222;
+      background: #fff;
+    }
+    .mobileGrid .qtyControl .MuiButton-root.Mui-disabled {
+      border: 1px solid #e0e0e0 !important;
+      color: #bdbdbd;
+      background: #fafafa;
+    }
   }
 
   .mobileGrid .bottomRow {
@@ -106,9 +128,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    color: #111;
-    border: 1px solid rgba(0,0,0,0.12);
+    background: var(--accent, #1f7a8c);
+    color: #fff;
+    border: none;
     box-shadow: none;
     font-weight: 600;
     font-size: 16px;
@@ -137,9 +159,14 @@
     transition: background 0.15s, color 0.15s;
   }
   .mobileGrid .wishButton[aria-pressed="true"] {
-    background: #ff7a45;
-    color: #fff;
-    border-color: #ff7a45;
+    background: #fff;
+    color: #ff7a45;
+    /* border-color unchanged */
+  }
+  .mobileGrid .wishButton[aria-pressed="true"] svg {
+    color: #ff7a45;
+    font-size: 22px;
+    filter: drop-shadow(0 0 2px #ff7a45);
   }
   .mobileGrid .wishButton svg {
     color: inherit;
