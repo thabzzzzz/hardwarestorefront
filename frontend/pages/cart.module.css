@@ -14,8 +14,9 @@
   overflow: hidden;
 }
 .heading { margin: 16px 0 12px; border-radius: 8px; overflow: hidden; }
-.emptyCard { margin-top: 16px; }
-.emptySub { margin-top: 8px; }
+.emptyCard { margin-top: 16px; border-radius: 8px; overflow: hidden; }
+.emptyCard h6 { font-weight: 700; font-family: Helvetica, Roboto, Arial, sans-serif; font-size: 2.125rem; }
+.emptySub { margin-top: 8px; font-weight: 700; }
 .tableCard { margin-top: 12px; }
 .table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
 .headerRow { text-align: left; border-bottom: 1px solid #ddd; }
@@ -299,8 +300,11 @@ tr.row td:last-child {
     right: 0;
     z-index: 100;
     border-top: 1px solid #ddd;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+    box-shadow: none; /* removed mobile shadow per design */
   }
+
+  /* ensure any MUI Container wrappers don't add shadows on small screens */
+  .main > [class*="MuiContainer-root"] { box-shadow: none !important; }
 
   .promoSection {
     margin-bottom: 16px;
@@ -342,4 +346,6 @@ tr.row td:last-child {
   .checkoutBtn:active {
     background: #16606e;
   }
+  /* match mobile header font size */
+  .emptyCard h6 { font-size: 18px; }
 }

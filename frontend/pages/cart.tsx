@@ -71,7 +71,7 @@ export default function CartPage(): JSX.Element {
         </Typography>
 
         {cart.count === 0 ? (
-          <Paper className={styles.emptyCard} elevation={1}>
+          <Paper className={styles.emptyCard} elevation={0}>
             <Box textAlign="center" py={6}>
               <Typography variant="h6">{'No items in cart ¯\\_(ツ)_/¯'}</Typography>
               <Typography variant="body2" color="text.secondary" className={styles.emptySub}>Browse the catalog and add some</Typography>
