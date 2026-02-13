@@ -144,7 +144,8 @@ tr.row td:last-child { border-top-right-radius: 8px; border-bottom-right-radius:
   .mobileList {
     display: flex;
     flex-direction: column;
-    gap: 0; 
+    gap: 0;
+    margin-top: 12px; 
   }
 
   .mobileCard {
