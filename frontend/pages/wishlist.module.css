@@ -70,10 +70,21 @@
 tr.row td {
   background: #fff;
   padding: 12px 10px;
-  border: 1px solid rgba(0,0,0,0.06);
+  border-top: 1px solid rgba(0,0,0,0.06);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border-left: none;
+  border-right: none;
 }
-tr.row td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-tr.row td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
+tr.row td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-left: 1px solid rgba(0,0,0,0.06);
+}
+tr.row td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  border-right: 1px solid rgba(0,0,0,0.06);
+}
 .productCell { display: flex; gap: 12px; align-items: center; }
 .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
 .prodTitle { font-weight: 600; }
