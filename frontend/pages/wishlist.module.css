@@ -70,10 +70,10 @@
 tr.row td {
   background: #fff;
   padding: 12px 10px;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
 }
-tr.row td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
-tr.row td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+tr.row td:first-child { border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+tr.row td:last-child { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
 .productCell { display: flex; gap: 12px; align-items: center; }
 .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
 .prodTitle { font-weight: 600; }
