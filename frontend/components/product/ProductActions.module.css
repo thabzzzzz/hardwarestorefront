@@ -104,6 +104,12 @@
 	font-weight: 700;
 }
 
+/* show orange border and color when wishlisted */
+.wishlistButtonLarge[aria-pressed="true"] {
+	border: 1px solid #E76F51;
+	color: #E76F51;
+}
+
 .wishlistButtonLarge[disabled] {
 	opacity: 0.6;
 	cursor: not-allowed;

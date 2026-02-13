@@ -173,12 +173,11 @@
   .mobileGrid .wishButton[aria-pressed="true"] {
     background: #fff;
     color: #ff7a45;
-    /* border-color unchanged */
+    border-color: #ff7a45;
   }
   .mobileGrid .wishButton[aria-pressed="true"] svg {
     color: #ff7a45;
     font-size: 22px;
-    filter: drop-shadow(0 0 2px #ff7a45);
   }
   .mobileGrid .wishButton svg {
     color: inherit;

@@ -150,6 +150,11 @@
 .inWishlistHeart { color: #E76F51 }
 .inWishlistHeart svg { fill: currentColor; stroke: none }
 
+/* show orange border when wishlisted */
+.wishlistHeart.inWishlistHeart {
+  border-color: #E76F51;
+}
+
 .inWishlist { background: #ffffff; color: #1f7a8c; border-color: #1f7a8c }
 .inCart {
   background: #ffffff;
