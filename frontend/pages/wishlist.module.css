@@ -228,6 +228,13 @@ tr.row td:last-child { border-top-right-radius: 8px; border-bottom-right-radius:
     gap: 8px;
     margin-bottom: 12px;
   }
+  .metaItem {
+    flex: 1;
+    min-width: 0;
+  }
+  .metaItem:last-child {
+    align-items: flex-end;
+  }
   .metaLabel {
     font-size: 12px;
     color: #6b6b6b;
