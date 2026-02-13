@@ -436,7 +436,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 8px 12px;
+	padding: 16px 16px 7px;
 }
 
 .mobileLogo {
@@ -517,6 +517,9 @@
 	align-items: center;
 	width: 100%;
 }
+
+/* ensure mobile search has horizontal padding matching main content */
+.searchBoxMobile { padding: 0 4px; box-sizing: border-box; }
 
 .searchBoxMobile .MuiOutlinedInput-root {
 	width: 100%;

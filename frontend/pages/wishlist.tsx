@@ -272,7 +272,7 @@ export default function WishlistPage(): JSX.Element {
                 )
              })}
               
-             <Box sx={{ p: 2 }}>
+             <Box sx={{ px: 0 }}>
                   <Button 
                     variant="outlined" 
                     color="error" 

@@ -183,7 +183,7 @@ export default function CartPage(): JSX.Element {
                 </div>
               ))}
               
-              <Box sx={{ p: 2 }}>
+              <Box sx={{ px: 0 }}>
                   <Button 
                     variant="outlined" 
                     color="error" 
