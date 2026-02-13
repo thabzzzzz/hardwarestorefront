@@ -189,7 +189,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    color: var(--accent, #1f7a8c);
+    color: #fff;
     background: rgba(31,122,140,0.08);
     padding: 0 12px; /* give more horizontal breathing room */
     border-radius: 8px;
@@ -204,7 +204,7 @@
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    color: var(--accent, #1f7a8c);
+    color: #fff;
     background: rgba(31,122,140,0.08);
     padding: 0 8px; /* more breathing room on mobile */
     border-radius: 6px;
