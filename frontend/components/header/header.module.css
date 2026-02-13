@@ -465,6 +465,13 @@
 	display: block;
 }
 
+.iconButton svg {
+	width: 22px;
+	height: 22px;
+	display: block;
+	color: #666;
+}
+
 .profileWrap {
 	position: relative;
 }

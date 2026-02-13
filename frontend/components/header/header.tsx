@@ -173,15 +173,12 @@ export default function Header(): JSX.Element {
               <button aria-label="Open menu" className={styles.iconButton} onClick={() => setMobileMenuOpen(true)}>
                 <img src="/images/icons/burger-menu.svg" alt="Menu" />
               </button>
-              <div className={styles.profileWrap} ref={profileRef}>
-                <button aria-haspopup="true" aria-expanded={profileOpen} className={styles.iconButton} onClick={() => setProfileOpen(v => !v)}>
-                  <img src="/images/icons/profile.svg" alt="Profile" />
-                </button>
-                {profileVisible && (
-                  <div className={`${styles.profileMenu} ${profileActive ? styles.profileMenuOpen : ''}`}>
-                    <Link href="/wishlist">Wishlist</Link>
-                  </div>
-                )}
+              <div className={styles.profileWrap}>
+                <Link href="/wishlist" className={styles.iconButton} aria-label="Wishlist">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M20.8 8.6c0 4.2-3.4 7.3-8.1 11.8L12 21.35l-0.7-0.85C6.6 15.9 3.2 12.8 3.2 8.6 3.2 6 5.2 4 7.8 4c1.9 0 3.7 1 4.2 2.4.5-1.4 2.3-2.4 4.2-2.4 2.6 0 4.6 2 4.6 4.6z" />
+                  </svg>
+                </Link>
               </div>
               <Link href="/cart" className={styles.iconButton} aria-label="View cart">
                 <img src="/images/icons/cart.svg" alt="Cart" />
