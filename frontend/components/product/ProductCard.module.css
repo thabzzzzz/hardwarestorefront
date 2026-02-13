@@ -304,7 +304,7 @@
 
   .muiAddButton {
     min-width: 0;
-    width: 60px !important;
+    width: 80px !important;
     height: 48px;
     padding: 0 !important;
     border-radius: 10px;
@@ -313,9 +313,10 @@
     justify-content: center;
   }
 
-  /* reduce spacing between Buy and wishlist on narrow screens */
-  .actionsRow > div:last-child { margin-left: 4px; }
-  .wishlistHeart { margin-left: 4px; }
+  /* make Buy noticeably wider than wishlist and keep healthy spacing */
+  /* gap reduced to keep wishlist aligned when Buy width increases */
+  .actionsRow > div:last-child { margin-left: 0; }
+  .wishlistHeart { margin-left: 0; }
 }
 
 .loadingDots {
