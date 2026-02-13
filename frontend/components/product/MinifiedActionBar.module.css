@@ -79,25 +79,41 @@
   }
 
   .mobileGrid .bottomRow {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 2;
     display: flex;
     gap: 8px;
     align-items: center;
     width: 100%;
   }
-
-  /* Use :global to override MUI button defaults inside CSS modules */
-  .mobileGrid .bottomRow :global(.MuiButton-root):first-child {
-    flex: 4 1 0;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .mobileGrid .bottomRow :global(.MuiButton-root):last-child {
+  /* Add fills the left column; wishlist lives in its own grid column */
+  .mobileGrid .bottomRow .addButton {
     flex: 1 1 0;
     min-width: 0;
     width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Remove any left margin on add button so it aligns with the price above */
+  .mobileGrid .addButton {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .mobileGrid .wishWrapper {
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .mobileGrid .wishWrapper :global(.MuiButton-root) {
+    min-width: 0;
+    width: auto;
+    padding: 6px 10px;
   }
 }
 
