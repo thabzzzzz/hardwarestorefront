@@ -95,6 +95,10 @@
 	border: none;
 	padding: 10px 14px;
 	cursor: pointer;
+	height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .wishlistButtonLarge {

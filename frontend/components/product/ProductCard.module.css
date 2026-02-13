@@ -170,6 +170,10 @@
   font-weight: 600;
   /* MUI buttons default to uppercase — force normal case here */
   text-transform: none !important;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
   /* +1 feedback animation */
