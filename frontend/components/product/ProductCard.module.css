@@ -304,13 +304,20 @@
 
   .muiAddButton {
     min-width: 0;
-    width: 80px !important;
+    width: auto !important;
+    flex: 1 1 0;
     height: 48px;
     padding: 0 !important;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Ensure the add button fills the left flex cell on mobile so it stretches beside the wishlist */
+  .actionsRow > div:first-child .muiAddButton {
+    width: 100% !important;
+    flex: 1 1 0 !important;
   }
 
   /* make Buy noticeably wider than wishlist and keep healthy spacing */
