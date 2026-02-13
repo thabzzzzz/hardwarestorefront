@@ -222,15 +222,6 @@ export default function WishlistPage(): JSX.Element {
 
                     <div className={styles.mobileTitleLink}>{item.title}</div>
 
-                    <div className={styles.priceRow}>
-                      <div className={styles.mobilePrice}>{w.formatPrice(item.price?.amount_cents ?? 0)}</div>
-                      <div className={styles.qtyControl}>
-                        <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
-                        <div className={styles.qtyVal}>{item.qty}</div>
-                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
-                      </div>
-                    </div>
-
                     <div className={styles.metaRow} style={{ marginTop: 12 }}>
                       <div className={styles.metaItem}>
                         <div className={styles.metaLabel} aria-hidden="true">Personal Tag</div>
@@ -266,6 +257,15 @@ export default function WishlistPage(): JSX.Element {
                             <MenuItem value="high">High</MenuItem>
                           </Select>
                         </FormControl>
+                      </div>
+                    </div>
+
+                    <div className={styles.priceRow}>
+                      <div className={styles.mobilePrice}>{w.formatPrice(item.price?.amount_cents ?? 0)}</div>
+                      <div className={styles.qtyControl}>
+                        <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
+                        <div className={styles.qtyVal}>{item.qty}</div>
+                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
                       </div>
                     </div>
 
