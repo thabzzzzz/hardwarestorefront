@@ -108,11 +108,17 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
   // wishlist hook (frontend-only localStorage)
   const wishlist = useWishlist()
   const id = String(slug || sku || name || title)
-  const [inWishlist, setInWishlist] = useState(() => wishlist.isWished(id))
+  const [inWishlist, setInWishlist] = useState(false)
 
   useEffect(() => {
-    setInWishlist(wishlist.isWished(id))
-  }, [wishlist, id])
+    try {
+      const found = wishlist.items.some(matchesEntry)
+      setInWishlist(found)
+    } catch (err) {
+      // fallback to id-only check
+      setInWishlist(wishlist.isWished(id))
+    }
+  }, [wishlist.items, id, src, displayTitle, sku])
   const cart = useCart()
 
   const matchesEntry = (i: any) => {

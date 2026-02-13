@@ -24,6 +24,13 @@ export default function ProductActions({ price, id, title, thumbnail, stock, use
   const [qty, setQty] = useState(1)
   const cart = useCart()
   const wishlist = useWishlist()
+  const inWishlist = (() => {
+    try {
+      return wishlist.items.some(i => (
+        i.id === (id || '') || (i.title && title && i.title === title) || (i.thumbnail && thumbnail && i.thumbnail === thumbnail)
+      ))
+    } catch (e) { return wishlist.isWished(id || '') }
+  })()
   const [busyAdd, setBusyAdd] = useState(false)
   const [busyWish, setBusyWish] = useState(false)
 
@@ -64,13 +71,15 @@ export default function ProductActions({ price, id, title, thumbnail, stock, use
     if (busyWish) return
     setBusyWish(true)
     try {
-      const already = wishlist.isWished(id)
-      if (already) {
-        wishlist.remove(id)
+      const found = wishlist.items.find(i => (
+        i.id === (id || '') || (i.title && title && i.title === title) || (i.thumbnail && thumbnail && i.thumbnail === thumbnail)
+      ))
+      if (found) {
+        wishlist.remove(found.id)
         console.info('Removed from wishlist')
         toast('Removed from wishlist')
       } else {
-        wishlist.addOrUpdate({ id, title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+        wishlist.addOrUpdate({ id: id || '', title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
         console.info('Added to wishlist')
         toast.success('Added to wishlist')
       }

@@ -44,11 +44,19 @@ export default function MinifiedActionBar({ visible, product }: Props) {
   const { id, title, thumbnail, price, stock } = product
   const displayPrice = price ? formatPriceFromCents(price.amount_cents) : 'Call for price'
   const displayStock = stock?.qty_available ? `${stock.qty_available} In Stock` : (stock?.status || 'Unknown Status')
-  const [inWishlist, setInWishlist] = useState(() => wishlist.isWished(id))
+  const [inWishlist, setInWishlist] = useState(false)
 
   useEffect(() => {
-    setInWishlist(wishlist.isWished(id))
-  }, [wishlist, id])
+    try {
+      const found = wishlist.items.some(i => (
+        i.id === id || (i.title && title && i.title === title) || (i.thumbnail && thumbnail && i.thumbnail === thumbnail)
+      ))
+      setInWishlist(!!found)
+    } catch (err) {
+      console.error('Error checking wishlist in effect', err)
+      setInWishlist(wishlist.isWished(id))
+    }
+  }, [wishlist.items, id, title, thumbnail])
 
   async function handleAddToCart() {
     if (!id) return
@@ -82,14 +90,17 @@ export default function MinifiedActionBar({ visible, product }: Props) {
     if (busyWish) return
     setBusyWish(true)
     try {
-      const already = wishlist.isWished(id)
-      if (already) {
-        wishlist.remove(id)
-        setInWishlist(false)
+      // Robust presence check: match by id, then fallback to title or thumbnail
+      const found = wishlist.items.find(i => (
+        i.id === id || (i.title && title && i.title === title) || (i.thumbnail && thumbnail && i.thumbnail === thumbnail)
+      ))
+      if (found) {
+        console.info('Removing wishlist item', { id, foundId: found.id })
+        wishlist.remove(found.id)
         toast('Removed from wishlist')
       } else {
+        console.info('Adding to wishlist', { id })
         wishlist.addOrUpdate({ id, title: title || 'Product', thumbnail: thumbnail || null, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
-        setInWishlist(true)
         toast.success('Added to wishlist')
       }
     } catch (err) {
