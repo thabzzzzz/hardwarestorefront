@@ -127,12 +127,8 @@ export default function ProductActions({ price, id, title, thumbnail, stock, use
             <button
               className={styles.qtyButton}
               aria-label="Increase quantity"
-              onClick={() => setQty(q => {
-                const max = stock?.qty_available
-                if (typeof max === 'number') return Math.min(max, q + 1)
-                return q + 1
-              })}
-              disabled={stock?.status === 'out_of_stock' || (stock?.qty_available !== undefined && qty >= (stock?.qty_available || 1))}
+              onClick={() => setQty(q => q + 1)}
+              disabled={stock?.status === 'out_of_stock'}
             >+</button>
           </div>
         )}

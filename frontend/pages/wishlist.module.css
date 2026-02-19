@@ -90,6 +90,8 @@ tr.row td:last-child {
 .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
 .prodTitle { font-weight: 600; }
 .prodStock { font-size: 13px; color: #666; }
+.stockOut { color: #c00 }
+.stockReserved { color: #f59e0b }
 .metaCell { font-size: 13px; color: #444; }
 .pillControl { min-width: 140px; background: #f7f7f7; border-radius: 8px; }
 .pillControl :global(.MuiOutlinedInput-notchedOutline) { border-color: transparent; }
@@ -238,7 +240,14 @@ tr.row td:last-child {
     font-size: 12px;
     color: #767676;
     margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
+
+.mobileDateText { color: #767676; font-size: 12px }
+.mobileStock { font-size: 12px; font-weight: 700; }
 
   /* Card Actions & Meta Controls */
   .metaRow {

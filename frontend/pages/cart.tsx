@@ -3,6 +3,7 @@ import Head from 'next/head'
 import useCart from '../hooks/useCart'
 import Header from '../components/header/header'
 import styles from './cart.module.css'
+import guardedToast from '../lib/guardedToast'
 
 import Paper from '@mui/material/node/Paper/index.js'
 import Box from '@mui/material/node/Box/index.js'
@@ -30,8 +31,18 @@ export default function CartPage(): JSX.Element {
     setErrors(prev => ({ ...prev, [id]: res.ok ? '' : (res.message || 'Invalid quantity') }))
   }
 
-  function increment(id: string, current: number) {
-    onQtyChange(id, String(current + 1))
+  function increment(item: { id: string; qty: number; stock?: { status?: string } | null }) {
+    if (item.stock?.status === 'out_of_stock') {
+      guardedToast.error('Product out of stock')
+      setErrors(prev => ({ ...prev, [item.id]: 'Product out of stock' }))
+      return
+    }
+    if (item.stock?.status === 'reserved') {
+      guardedToast.error('Product reserved')
+      setErrors(prev => ({ ...prev, [item.id]: 'Product reserved' }))
+      return
+    }
+    onQtyChange(item.id, String(item.qty + 1))
   }
 
   function decrement(id: string, current: number) {
@@ -101,8 +112,8 @@ export default function CartPage(): JSX.Element {
                           <Typography component="div" variant="body1" className={styles.prodTitle} sx={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', fontWeight: 600 }}>
                             {item.title}
                           </Typography>
-                          <div className={styles.prodStock}>
-                            {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}
+                          <div className={`${styles.prodStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>
+                            {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Item is currently reserved and may not be fulfilled.' : ''}
                           </div>
                         </div>
                       </div>
@@ -120,11 +131,10 @@ export default function CartPage(): JSX.Element {
                         <button
                           className={styles.qtyButton}
                           aria-label="Increase quantity"
-                          onClick={() => increment(item.id, item.qty)}
-                          disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}
+                          onClick={() => increment(item)}
                         >+</button>
                       </div>
-                      {errors[item.id] && <div className={styles.qtyError}>{errors[item.id]}</div>}
+                      
                     </td>
                     <td className={styles.cell}>
                       <Typography variant="body1" component="span">{cart.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</Typography>
@@ -175,11 +185,16 @@ export default function CartPage(): JSX.Element {
                       <div className={styles.qtyControl}>
                          <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                          <div className={styles.qtyVal}>{item.qty}</div>
-                         <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
+                         <button className={styles.qtyBtn} onClick={() => increment(item)}>+</button>
                       </div>
                     </div>
                   
-                  <div className={styles.mobileDate}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</div>
+                    <div className={styles.mobileDate}>
+                      <span className={styles.mobileDateText}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</span>
+                      <span className={`${styles.mobileStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>
+                        {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}
+                      </span>
+                    </div>
                 </div>
               ))}
               

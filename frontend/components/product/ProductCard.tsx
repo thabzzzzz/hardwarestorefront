@@ -229,7 +229,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               toast.error('Failed to add to cart')
             } finally { setBusy(false) }
           }}
-          disabled={busy}
+          disabled={busy || stock?.status === 'out_of_stock'}
           aria-busy={busy}
         >
           <span className={styles.msgDesktop}>

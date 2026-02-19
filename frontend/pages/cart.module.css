@@ -30,6 +30,10 @@
 .thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
 .prodTitle { font-weight: 600; }
 .prodStock { font-size: 13px; color: #666; }
+/* Match product page out-of-stock color */
+.stockOut { color: #c00 }
+/* Match product page reserved color */
+.stockReserved { color: #f59e0b }
 .metaCell { font-size: 13px; color: #444; }
 .errorText { color: #c00; font-size: 12px; margin-top: 4px; }
 .cellBold { padding: 12px 6px; font-weight: 700; }
@@ -104,6 +108,8 @@ tr.row td:last-child {
   border-right: 1px solid rgba(0,0,0,0.06);
 }
 
+/* Out-of-stock row highlight */
+
 /* Mobile Layout Utils */
 .mobileOnly { display: none; }
 .desktopOnly { display: block; }
@@ -157,6 +163,8 @@ tr.row td:last-child {
     overflow: hidden;
     margin-bottom: 10px;
   }
+
+/* removed OOS border styling per request */
 
   .cardTop {
     display: flex;
@@ -223,7 +231,14 @@ tr.row td:last-child {
     font-size: 12px;
     color: #767676;
     margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
+
+.mobileDateText { color: #767676; font-size: 12px }
+.mobileStock { font-size: 12px; font-weight: 700 }
 
   .cardActions {
     display: flex;

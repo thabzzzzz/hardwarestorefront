@@ -90,32 +90,61 @@ export default function useWishlist() {
   }
 
   function persistAndNotify(nextItems: WishlistEntry[]) {
-    storeItems = nextItems
+    // Merge with remote to avoid overwriting concurrent tab changes.
+    const remote = loadFromStorage()
+    const nextMap = new Map(nextItems.map(i => [String(i.id), i]))
+    const merged: WishlistEntry[] = [...nextItems]
+    for (const r of remote) {
+      const key = String(r.id)
+      if (!nextMap.has(key)) merged.push(r)
+    }
+    storeItems = merged
     saveToStorage(storeItems)
     notifySubscribers()
   }
 
-  function addOrUpdate(entry: Omit<WishlistEntry, 'qty'>, qty = 1) {
-    const id = entry.id
-    // try to find exact id match first
-    let found = storeItems.find(i => String(i.id) === String(id))
-    // fallback: match by title or thumbnail to avoid duplicates when ids differ
-    if (!found) {
-      found = storeItems.find(i => (
-        (entry.title && i.title && i.title === entry.title) ||
-        (entry.thumbnail && i.thumbnail && i.thumbnail === entry.thumbnail)
-      ))
-    }
+  function normalizeText(s?: string | null) {
+    if (!s) return ''
+    return String(s).trim().toLowerCase().replace(/\s+/g, ' ').replace(/["'`\[\]\(\)\.,\/\\]/g, '').replace(/[^\w\s-]/g, '')
+  }
 
-    if (found) {
-      // Do NOT increment qty when addOrUpdate is called from product pages.
-      // The wishlist page controls quantity via `updateQty` explicitly.
-      // Still allow updating other metadata if passed (tag/priority) — merge those.
-      const next = storeItems.map(i => i === found ? { ...i, tag: entry.tag ?? i.tag, priority: entry.priority ?? i.priority } : i)
+  function extractFirstImageUrl(raw?: string | null) {
+    if (!raw) return ''
+    let t = String(raw).trim()
+    t = t.replace(/\\\//g, '/')
+    while ((t.startsWith('[') && t.endsWith(']')) || (t.startsWith('"') && t.endsWith('"'))) {
+      t = t.slice(1, -1).trim()
+    }
+    const m = t.match(/https?:\/\/[^"'\s,]+?\.(?:jpg|jpeg|png|webp|gif)/i)
+    if (m) return m[0]
+    return t
+  }
+
+  function findIndexForEntry(entry: Omit<WishlistEntry, 'qty'>) {
+    const idStr = String(entry.id)
+    let idx = storeItems.findIndex(i => String(i.id) === idStr)
+    if (idx !== -1) return idx
+    if (entry.title) {
+      const want = normalizeText(entry.title)
+      idx = storeItems.findIndex(i => normalizeText(i.title) === want)
+      if (idx !== -1) return idx
+    }
+    if (entry.thumbnail) {
+      const wantThumb = extractFirstImageUrl(entry.thumbnail)
+      idx = storeItems.findIndex(i => extractFirstImageUrl(i.thumbnail) === wantThumb)
+      if (idx !== -1) return idx
+    }
+    return -1
+  }
+
+  function addOrUpdate(entry: Omit<WishlistEntry, 'qty'>, qty = 1) {
+    const idx = findIndexForEntry(entry)
+    if (idx !== -1) {
+      // merge metadata but do not change qty here (wishlist page controls qty)
+      const next = storeItems.map((i, j) => j === idx ? { ...i, tag: entry.tag ?? i.tag, priority: entry.priority ?? i.priority } : i)
       persistAndNotify(next)
       return { ok: true, added: false, message: 'Already in wishlist' }
     }
-
     const nextEntry: WishlistEntry = { ...entry, qty: Math.max(1, qty), added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }
     persistAndNotify([nextEntry, ...storeItems])
     return { ok: true, added: true }
@@ -127,16 +156,9 @@ export default function useWishlist() {
   }
 
   function toggle(entry: Omit<WishlistEntry, 'qty'>) {
-    const id = entry.id
-    let found = storeItems.find(i => String(i.id) === String(id))
-    if (!found) {
-      found = storeItems.find(i => (
-        (entry.title && i.title && i.title === entry.title) ||
-        (entry.thumbnail && i.thumbnail && i.thumbnail === entry.thumbnail)
-      ))
-    }
-    if (found) {
-      persistAndNotify(storeItems.filter(i => i !== found))
+    const idx = findIndexForEntry(entry)
+    if (idx !== -1) {
+      persistAndNotify(storeItems.filter((_, j) => j !== idx))
       return
     }
     persistAndNotify([{ ...entry, qty: 1, added_at: new Date().toISOString(), tag: entry.tag ?? 'none', priority: entry.priority ?? 'low' }, ...storeItems])
@@ -150,14 +172,10 @@ export default function useWishlist() {
   function updateQty(id: string, qty: number): { ok: boolean; message?: string } {
     const idx = storeItems.findIndex(i => String(i.id) === String(id))
     if (idx === -1) return { ok: false, message: 'Item not in wishlist' }
-    const entry = storeItems[idx]
-    const avail = entry.stock?.qty_available ?? Infinity
+    // Removed strict stock limiting so users may adjust wishlist quantities
+    // regardless of the current reported availability. Server-side checks
+    // should validate availability at checkout.
     if (qty < 1) qty = 1
-    if (qty > avail) {
-      const corrected = storeItems.map(i => i.id === id ? { ...i, qty: Math.max(1, avail === Infinity ? i.qty : avail) } : i)
-      persistAndNotify(corrected)
-      return { ok: false, message: `Only ${avail} available` }
-    }
     const next = storeItems.map(i => String(i.id) === String(id) ? { ...i, qty } : i)
     persistAndNotify(next)
     return { ok: true }

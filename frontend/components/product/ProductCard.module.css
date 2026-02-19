@@ -176,6 +176,14 @@
   justify-content: center;
 }
 
+/* Greyed-out appearance for disabled Buy button to communicate unavailability */
+.muiAddButton[disabled] {
+  background: #e6e6e6 !important;
+  color: #8a8a8a !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
 .buyLabel {
   font-weight: 700;
   font-size: 14px;

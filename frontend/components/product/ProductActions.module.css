@@ -70,6 +70,12 @@
 	cursor: pointer;
 }
 
+.qtyButton[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
 .qtyValue {
 	min-width: 20px;
 	text-align: center;

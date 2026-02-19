@@ -113,7 +113,7 @@ export default function WishlistPage(): JSX.Element {
                             <Typography component="div" variant="body1" className={styles.prodTitle} sx={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', fontWeight: 600 }}>
                               {item.title}
                             </Typography>
-                            <div className={styles.prodStock}>
+                            <div className={`${styles.prodStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>
                               {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}
                             </div>
                           </div>
@@ -165,7 +165,6 @@ export default function WishlistPage(): JSX.Element {
                             className={styles.qtyButton}
                             aria-label="Increase quantity"
                             onClick={() => increment(item.id, item.qty)}
-                            disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}
                           >+</button>
                         </div>
                         {errors[item.id] && <div className={styles.qtyError}>{errors[item.id]}</div>}
@@ -265,11 +264,14 @@ export default function WishlistPage(): JSX.Element {
                       <div className={styles.qtyControl}>
                         <button className={styles.qtyBtn} onClick={() => decrement(item.id, item.qty)} disabled={item.qty <= 1}>-</button>
                         <div className={styles.qtyVal}>{item.qty}</div>
-                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)} disabled={item.stock?.status === 'out_of_stock' || (item.stock?.qty_available !== undefined && item.qty >= (item.stock?.qty_available || 1))}>+</button>
+                        <button className={styles.qtyBtn} onClick={() => increment(item.id, item.qty)}>+</button>
                       </div>
                     </div>
 
-                    <div className={styles.mobileDate}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</div>
+                    <div className={styles.mobileDate}>
+                      <span className={styles.mobileDateText}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</span>
+                      <span className={`${styles.mobileStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>{item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}</span>
+                    </div>
                   </div>
                 )
              })}
