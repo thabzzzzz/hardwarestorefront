@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { GetServerSideProps } from 'next'
 import Header from '../../components/header/header'
@@ -31,12 +32,26 @@ type ProductPayload = {
 // Server-side fetch so product pages render specs from the DB on first load.
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params?.slug
-  if (!slug) return { props: { initialProduct: null } }
+  if (!slug) return { props: { initialProduct: null, missing: true } }
 
   const API_BASE = process.env.SERVER_API_BASE_URL || 'http://web'
   try {
     const res = await fetch(`${API_BASE}/api/products/${encodeURIComponent(String(slug))}`)
-    if (!res.ok) return { props: { initialProduct: null } }
+    if (!res.ok) {
+      if (res.status === 404) {
+        try {
+          const r2 = await fetch(`${API_BASE}/api/product/resolve/${encodeURIComponent(String(slug))}`)
+          if (r2.ok) {
+            const js = await r2.json()
+            if (js.canonical && js.canonical !== slug) {
+              return { redirect: { destination: `/product/${encodeURIComponent(String(js.canonical))}`, permanent: true } }
+            }
+          }
+        } catch (e) {}
+      }
+      if (context.res) context.res.statusCode = 404
+      return { props: { initialProduct: null, missing: true } }
+    }
     const json = await res.json()
 
     // helper: extract first http(s) image URL from messy strings (handles brackets, nested quotes, escaped slashes)
@@ -100,17 +115,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const first = extractFirstImageUrl(String(json.spec_fields.images))
       json.spec_fields.images = [normalize(first)]
     }
-    return { props: { initialProduct: json } }
+    return { props: { initialProduct: json, missing: false } }
   } catch (e) {
-    return { props: { initialProduct: null } }
+    if (context.res) context.res.statusCode = 404
+    return { props: { initialProduct: null, missing: true } }
   }
 }
 
 type PageProps = {
   initialProduct?: ProductPayload | null
+  missing?: boolean
 }
 
-export default function ProductPage({ initialProduct }: PageProps): JSX.Element {
+export default function ProductPage({ initialProduct, missing }: PageProps): JSX.Element {
   const router = useRouter()
   const { slug } = router.query
   const [product, setProduct] = useState<ProductPayload | null>(initialProduct || null)
@@ -209,6 +226,10 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
   useEffect(() => {
     if (!router.isReady) return
     if (!slug) return
+    if (missing) {
+      setLoading(false)
+      return
+    }
     // ensure we only fetch once on the client to avoid multiple network requests
     const fetchedRef = (load as any).__hasFetched
     if (fetchedRef) return
@@ -401,7 +422,21 @@ export default function ProductPage({ initialProduct }: PageProps): JSX.Element 
         )}
 
         {!loading && !product && (
-          <div>Product not found.</div>
+          <div className={styles.notFoundContainer}>
+            <h1 className={styles.notFoundSubtitle}>
+              Product Unavailable
+            </h1>
+            <p className={styles.notFoundText}>
+              It looks like this product is no longer available, the link may be outdated, or the item has been removed from our catalog.
+            </p>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <Link href="/" legacyBehavior>
+                <a className={styles.cta} style={{ textDecoration: 'none', fontWeight: '600', padding: '12px 24px', fontSize: '15px', display: 'inline-block' }}>
+                  Return Home
+                </a>
+              </Link>
+            </div>
+          </div>
         )}
       </main>
     </div>
