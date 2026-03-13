@@ -7,6 +7,7 @@ type Stock = { qty_available?: number; qty_reserved?: number; status?: string }
 export type CartEntry = {
   id: string
   title: string
+  slug?: string
   thumbnail?: string | null
   price?: Price | null
   stock?: Stock | null

@@ -144,9 +144,24 @@ class ProductController extends Controller
         $isUuid = (bool) preg_match('/^[0-9a-fA-F\-]{36}$/', $slug);
         if ($isUuid) {
             $product = Product::find($slug);
+            // Also check if it's a variant ID
+            if (! $product) {
+                $variant = \App\Models\ProductVariant::find($slug);
+                if ($variant) {
+                    $product = $variant->product;
+                }
+            }
         } else {
             // exact slug match (case-insensitive)
             $product = Product::whereRaw('LOWER(slug) = ?', [strtolower($slug)])->first();
+            
+            // then check if it's an exact SKU match on Variant
+            if (! $product) {
+                $variant = \App\Models\ProductVariant::where('sku', $slug)->first();
+                if ($variant) {
+                    $product = $variant->product;
+                }
+            }
         }
 
         // Do NOT perform fuzzy matching. If not found, return 404 to avoid ambiguity.
@@ -356,6 +371,20 @@ class ProductController extends Controller
         // if slug looks like a UUID, try id
         if (! $product && preg_match('/^[0-9a-fA-F\-]{36}$/', $slug)) {
             $product = Product::find($slug);
+            if (! $product) {
+                $variant = \App\Models\ProductVariant::find($slug);
+                if ($variant) {
+                    $product = $variant->product;
+                }
+            }
+        }
+        
+        // if still not found, check sku on product variant
+        if (! $product) {
+            $variant = \App\Models\ProductVariant::where('sku', $slug)->first();
+            if ($variant) {
+                $product = $variant->product;
+            }
         }
 
         // fallback: tokenized AND match on slug or name (require all tokens)

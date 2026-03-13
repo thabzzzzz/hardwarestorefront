@@ -26,6 +26,7 @@ Route::get('/hot-deals', [HotDealsController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 // singular route for product lookup (convenience)
 Route::get('/product/{slug}', [ProductController::class, 'show']);
+Route::get('/product/resolve/{slug}', [ProductController::class, 'resolve']);
 
 // Authentication
 use App\Http\Controllers\Api\AuthController;

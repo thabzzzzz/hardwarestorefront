@@ -152,7 +152,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
         toast('Removed from wishlist')
       } else {
         try {
-          wishlist.addOrUpdate({ id, title: displayTitle, thumbnail: src, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
+          wishlist.addOrUpdate({ id, title: displayTitle, slug: slug, thumbnail: src, price: price ? { amount_cents: price.amount_cents } : null, stock: stock || null }, 1)
           setInWishlist(true)
           console.info('Added to wishlist')
           toast.success('Added to wishlist')
@@ -208,10 +208,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const entry = {
                 id: sku ?? id,
                 title: displayTitle,
-                thumbnail: src,
-                price: price ? { amount_cents: price.amount_cents } : null,
-                stock: stock || null
-              }
+                  slug: slug,
 
               const res = cart.addOrUpdate(entry, 1)
                 if (!res.added) {

@@ -257,9 +257,21 @@ export default function PcBuilder() {
                     
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <div>
-                        <h3 style={{ fontSize: '16px', color: '#111', marginBottom: '12px', lineHeight: 1.4, fontWeight: 600 }}>
-                          {product.title}
-                        </h3>
+                        <a 
+                          href={`/product/${product.slug ? product.slug : encodeURIComponent(product.title.replace(/[^a-zA-Z0-9- ]/g, '').replace(/\\s+/g, '-').toLowerCase())}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
+                          <h3 
+                            style={{ fontSize: '16px', color: '#111', marginBottom: '12px', lineHeight: 1.4, fontWeight: 600, cursor: 'pointer', transition: 'color 0.2s ease' }}
+                            onMouseOver={(e) => e.currentTarget.style.color = '#1f7a8c'}
+                            onMouseOut={(e) => e.currentTarget.style.color = '#111'}
+                            title={`View specs for ${product.title} in new tab`}
+                          >
+                            {product.title}
+                          </h3>
+                        </a>
                         
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
                           {specs.map((spec: string, idx: number) => (

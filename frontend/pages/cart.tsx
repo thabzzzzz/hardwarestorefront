@@ -110,7 +110,16 @@ export default function CartPage(): JSX.Element {
                         <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.thumb} />
                         <div>
                           <Typography component="div" variant="body1" className={styles.prodTitle} sx={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', fontWeight: 600 }}>
-                            {item.title}
+                            <a 
+                                href={`/product/${item.slug ? item.slug : item.id}`} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              style={{ color: 'inherit', textDecoration: 'none' }}
+                              onMouseOver={(e) => e.currentTarget.style.color = '#1f7a8c'}
+                              onMouseOut={(e) => e.currentTarget.style.color = 'inherit'}
+                            >
+                              {item.title}
+                            </a>
                           </Typography>
                           <div className={`${styles.prodStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>
                             {item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Item is currently reserved and may not be fulfilled.' : ''}
@@ -178,7 +187,16 @@ export default function CartPage(): JSX.Element {
                       <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
                     </div>
 
-                    <div className={styles.mobileTitleLink}>{item.title}</div>
+                      <div className={styles.mobileTitleLink}>
+                        <a 
+                          href={`/product/${item.slug ? item.slug : item.id}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          style={{ color: 'inherit', textDecoration: 'none' }}
+                        >
+                          {item.title}
+                        </a>
+                      </div>
 
                     <div className={styles.priceRow}>
                       <div className={styles.mobilePrice}>{cart.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</div>
