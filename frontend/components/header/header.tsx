@@ -248,6 +248,11 @@ export default function Header(): JSX.Element {
             </Link>
           </div>
           <nav className={styles.nav}>
+            <div className={styles.navItem}>
+              <Link href="/pc-builder" className={styles.navLabel} style={{textDecoration:'none', color:'#1f7a8c', fontWeight: 700}}>
+                PC Builder
+              </Link>
+            </div>
             <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
               <span className={styles.navLabel} aria-hidden="true">Computer Components
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
@@ -386,6 +391,9 @@ export default function Header(): JSX.Element {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
               </button>
               <nav className={styles.mobileNav}>
+                <Link href="/pc-builder" className={styles.mobileSummary} style={{color:'#1f7a8c', textDecoration:'none', fontWeight: 600, display: 'block', marginBottom: '8px'}}>
+                  PC Builder
+                </Link>
                 <div className={styles.mobileGroup}>
                   <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'comp' ? null : 'comp')}>
                     Computer Components
