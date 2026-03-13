@@ -230,7 +230,7 @@ export default function PcBuilder() {
           </div>
 
           {/* Product List */}
-          <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#fff' }}>
+          <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#fafafa', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {loadingCategory ? (
                <div style={{ padding: '80px', textAlign: 'center', color: '#666' }}>Loading components...</div>
             ) : activeProducts.length > 0 ? (
@@ -242,8 +242,9 @@ export default function PcBuilder() {
                   <div 
                     key={product.variant_id} 
                     style={{
-                      display: 'flex', padding: '24px', borderBottom: '1px solid #eee', gap: '24px', alignItems: 'stretch',
-                      backgroundColor: isItemActive ? '#fcfdfd' : '#fff'
+                      display: 'flex', padding: '24px', border: isItemActive ? '1px solid #1f7a8c' : '1px solid #eaeaea', borderRadius: '8px', gap: '24px', alignItems: 'stretch',
+                      backgroundColor: isItemActive ? '#fcfdfd' : '#fff',
+                      boxShadow: isItemActive ? '0 4px 12px rgba(31,122,140,0.08)' : '0 2px 8px rgba(0,0,0,0.02)'
                     }}
                   >
                     <div style={{ width: '140px', height: '140px', flexShrink: 0, backgroundColor: '#fff', borderRadius: '4px', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
