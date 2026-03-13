@@ -208,7 +208,11 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
               const entry = {
                 id: sku ?? id,
                 title: displayTitle,
-                  slug: slug,
+                slug: slug,
+                price: price ? { amount_cents: price.amount_cents } : null,
+                thumbnail: thumbnail || null,
+                stock: stock || null
+              }
 
               const res = cart.addOrUpdate(entry, 1)
                 if (!res.added) {
