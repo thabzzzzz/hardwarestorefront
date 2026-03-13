@@ -27,6 +27,12 @@ class AuthController extends Controller
     }
 
     // Email/Password stubs
-    public function register(Request $request) { return response()->json(['message' => 'Not implemented'], 501); }
-    public function login(Request $request) { return response()->json(['message' => 'Not implemented'], 501); }
+    public function register(Request $request)
+    {
+        return response()->json(['message' => 'Not implemented'], 501);
+    }
+    public function login(Request $request)
+    {
+        return response()->json(['message' => 'Not implemented'], 501);
+    }
 }

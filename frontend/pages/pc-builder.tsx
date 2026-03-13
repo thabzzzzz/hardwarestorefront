@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Header from '../components/header/header';
 import { useAuth } from '../hooks/useAuth';
@@ -16,42 +16,99 @@ const CATEGORIES = [
    { id: 'hdds', name: 'Storage (HDD)' },
 ];
 
-const MOCK_PRODUCTS: Record<string, any[]> = {
-  cases: [
-    { id: 'c1', title: 'Montech XR ARGB Tempered Glass Black ATX Mid Tower Desktop Chassis', price: 1099, oldPrice: 1799, specs: ['ATX', 'Chassis Max GPU Length: 420', 'Windowed Side Panel', 'Max CPU Cooler: 175'], image: '/images/placeholder.png' },
-    { id: 'c2', title: 'Montech AIR 903 MAX Black RGB Tempered Glass ATX Mid Tower Desktop Chassis', price: 1499, oldPrice: 1949, specs: ['E-ATX', 'Chassis Max GPU Length: 400', 'Windowed Side Panel', 'Max CPU Cooler: 180'], image: '/images/placeholder.png' },
-    { id: 'c3', title: 'Montech X5 RGB Tempered Glass Black ATX Mid Tower Desktop Chassis', price: 999, oldPrice: 1199, specs: ['ATX', 'Chassis Max GPU Length: 410', 'Windowed Side Panel', 'Max CPU Cooler: 165'], image: '/images/placeholder.png' },
-  ],
-  cpus: [
-    { id: 'cpu1', title: 'AMD Ryzen 5 7600 5.1GHz 6-Core AM5 Processor', price: 4299, oldPrice: 4999, specs: ['AM5', '6 Cores', '12 Threads', '65W TDP'], image: '/images/placeholder.png' },
-    { id: 'cpu2', title: 'Intel Core i5-13400F 4.6GHz 10-Core LGA1700 Processor', price: 4199, oldPrice: 4599, specs: ['LGA1700', '10 Cores', '16 Threads', '65W TDP'], image: '/images/placeholder.png' },
-  ],
-  motherboards: [
-     { id: 'mb1', title: 'MSI MAG B650M MORTAR WIFI DDR5 AM5 Micro-ATX Motherboard', price: 3899, oldPrice: 4499, specs: ['AM5', 'Micro-ATX', 'DDR5', 'WI-FI 6'], image: '/images/placeholder.png' }
-  ]
+const API_BASE = typeof window === 'undefined'
+  ? (process.env.SERVER_API_BASE_URL || 'http://web')
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080');
+
+const ENDPOINT_MAP: Record<string, string> = {
+  cases: 'cases',
+  cpus: 'cpus',
+  coolers: 'case-fans',
+  motherboards: 'motherboards',
+  ram: 'ram',
+  gpus: 'gpus',
+  psus: 'psus',
+  ssds: 'ssds',
+  hdds: 'hdds'
+};
+
+const getSpecs = (prod: any) => {
+  const skip = ['variant_id', 'title', 'sku', 'current_price', 'thumbnail', 'stock', 'slug', 'manufacturer', 'product_type', 'board_partner', 'description', 'images', 'id', 'category_id', 'created_at', 'updated_at', 'brand_id'];
+  const pills: string[] = [];
+  for (const key of Object.keys(prod)) {
+    if (skip.includes(key)) continue;
+    if (prod[key] && (typeof prod[key] === 'string' || typeof prod[key] === 'number')) {
+      const label = key.replace(/_/g, ' ');
+      pills.push(prod[key].toString());
+    }
+  }
+  return pills.slice(0, 5); 
 };
 
 export default function PcBuilder() {
   const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState('cases');
   const [selectedComponents, setSelectedComponents] = useState<Record<string, any>>({});
+  
+  const [productsCache, setProductsCache] = useState<Record<string, any[]>>({});
+  const [loadingCategory, setLoadingCategory] = useState(false);
 
   // Calculate total
-  const totalPrice = Object.values(selectedComponents).reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = Object.values(selectedComponents).reduce((sum, item) => {
+      const priceCents = item.current_price?.amount_cents || 0;
+      return sum + (priceCents / 100);
+  }, 0);
 
-  const handleSelect = (category: string, product: any) => {
-    setSelectedComponents(prev => ({
-      ...prev,
-      [category]: product
-    }));
-    // Optionally auto-advance to next category
-    const currentIndex = CATEGORIES.findIndex(c => c.id === category);
-    if (currentIndex < CATEGORIES.length - 1) {
-      setActiveCategory(CATEGORIES[currentIndex + 1].id);
+  useEffect(() => {
+    const slug = ENDPOINT_MAP[activeCategory];
+    if (!slug) return;
+
+    if (productsCache[activeCategory]) {
+       return; // Already loaded
     }
+
+    const fetchItems = async () => {
+      setLoadingCategory(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/${slug}?per_page=50`);
+        if(res.ok) {
+           const json = await res.json();
+           setProductsCache(prev => ({...prev, [activeCategory]: json.data || []}));
+        }
+      } catch (e) {
+        console.error('Failed to fetch builder products', e);
+      } finally {
+        setLoadingCategory(false);
+      }
+    };
+    fetchItems();
+  }, [activeCategory, productsCache]);
+
+  const handleSelectToggle = (category: string, product: any) => {
+    setSelectedComponents(prev => {
+        const isCurrentlySelected = prev[category]?.variant_id === product.variant_id;
+        const newSelection = { ...prev };
+        
+        if (isCurrentlySelected) {
+            delete newSelection[category];
+        } else {
+            newSelection[category] = product;
+        }
+        
+        return newSelection;
+    });
   };
 
-  const activeProducts = MOCK_PRODUCTS[activeCategory] || [];
+  const handleRemove = (e: React.MouseEvent, category: string) => {
+      e.stopPropagation();
+      setSelectedComponents(prev => {
+          const newSelection = { ...prev };
+          delete newSelection[category];
+          return newSelection;
+      });
+  };
+
+  const activeProducts = productsCache[activeCategory] || [];
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f4f4f6', display: 'flex', flexDirection: 'column' }}>
@@ -64,9 +121,8 @@ export default function PcBuilder() {
       <main style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', padding: '24px', flex: 1, display: 'flex', gap: '24px', paddingBottom: '120px' }}>
         
         {/* Left Sidebar - Categories */}
-        <div style={{ width: '320px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {/* Header for Actions or Bulk Clear */}
-          <div style={{ paddingBottom: '0px', color: '#333', fontWeight: 700, fontSize: '24px' }}>
+        <div style={{ width: '340px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ paddingBottom: '12px', color: '#333', fontWeight: 700, fontSize: '24px' }}>
             System Builder
           </div>
 
@@ -79,40 +135,56 @@ export default function PcBuilder() {
                 key={cat.id} 
                 onClick={() => setActiveCategory(cat.id)}
                 style={{
-                  display: 'flex', alignItems: 'center', padding: '16px', backgroundColor: '#fff', border: true ? `1px solid ${isSelected ? '#1f7a8c' : '#e0e0e0'}` : 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: isSelected ? '0 4px 12px rgba(31,122,140,0.1)' : '0 1px 3px rgba(0,0,0,0.02)', transition: 'all 0.2s ease', position: 'relative', overflow: 'hidden'
+                  display: 'flex', alignItems: 'center', padding: '12px', backgroundColor: '#fff', 
+                  border: isSelected ? '1px solid #1f7a8c' : '1px solid #e0e0e0', 
+                  borderRadius: '6px', cursor: 'pointer', 
+                  boxShadow: isSelected ? '0 4px 12px rgba(31,122,140,0.1)' : '0 1px 2px rgba(0,0,0,0.02)', 
+                  transition: 'all 0.15s ease', position: 'relative', overflow: 'hidden'
                 }}
               >
-                {/* Accent line for active */}
+                {/* Accent line for active column */}
                 { isSelected && (
                   <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px', backgroundColor: '#1f7a8c' }} />
                 )}
                 
-                <div style={{ width: '44px', height: '44px', backgroundColor: '#f0f4f5', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '16px', color: '#1f7a8c' }}>
-                  {/* Just a square or icon placeholder */}
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                  </svg>
+                <div style={{ width: '50px', height: '50px', flexShrink: 0, backgroundColor: selectedItem ? '#fff' : '#f0f4f5', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '14px', color: '#1f7a8c', border: selectedItem ? '1px solid #eee' : 'none' }}>
+                  {selectedItem?.thumbnail ? (
+                      <img src={selectedItem.thumbnail} alt={selectedItem.title} style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }} />
+                  ) : (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                      </svg>
+                  )}
                 </div>
                 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, color: '#333', fontSize: '16px', marginBottom: '4px' }}>{cat.name}</div>
-                  <div style={{ 
-                    fontSize: '13px', 
-                    color: selectedItem ? '#1f7a8c' : '#888',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    fontWeight: selectedItem ? 700 : 500
-                  }}>
-                    {selectedItem ? selectedItem.title : 'PLEASE SELECT'}
-                  </div>
+                <div style={{ flex: 1, minWidth: 0, paddingRight: '10px' }}>
+                  <div style={{ fontWeight: 700, color: '#333', fontSize: '15px', marginBottom: '2px' }}>{cat.name}</div>
+                  {selectedItem ? (
+                      <>
+                        <div style={{ fontSize: '12px', color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {selectedItem.title}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#1f7a8c', fontWeight: 700, marginTop: '2px' }}>
+                            R {(selectedItem.current_price?.amount_cents / 100 || 0).toLocaleString('en-ZA', {minimumFractionDigits: 0})}
+                        </div>
+                      </>
+                  ) : (
+                    <div style={{ fontSize: '12px', color: '#888', fontWeight: 500 }}>
+                      PLEASE SELECT
+                    </div>
+                  )}
                 </div>
 
                 {selectedItem && (
-                  <div style={{ color: '#4caf50', marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <div 
+                    style={{ padding: '8px', color: '#999', cursor: 'pointer', transition: 'color 0.2s' }}
+                    onClick={(e) => handleRemove(e, cat.id)}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#dc2626'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#999'}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                   </div>
                 )}
               </div>
@@ -123,19 +195,19 @@ export default function PcBuilder() {
         {/* Right Pane - Product Selection */}
         <div style={{ flex: 1, backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: '600px' }}>
           {/* Header */}
-          <div style={{ padding: '20px 24px', borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fafafa' }}>
+          <div style={{ padding: '16px 24px', borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fafafa' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#333' }}>
-              <div style={{ width: '30px', height: '30px', color: '#666' }}>
+              <div style={{ width: '24px', height: '24px', color: '#666' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                     <line x1="8" y1="21" x2="16" y2="21"></line>
                     <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>
                 {CATEGORIES.find(c => c.id === activeCategory)?.name}
               </h2>
-              <span style={{ backgroundColor: '#e2e8f0', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600 }}>
+              <span style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600 }}>
                 {activeProducts.length}
               </span>
             </div>
@@ -144,12 +216,12 @@ export default function PcBuilder() {
               <input 
                 type="text" 
                 placeholder="Quick Filter" 
-                style={{ padding: '10px 14px', border: '1px solid #ccc', borderRadius: '5px', fontSize: '14px', width: '240px', outline: 'none' }}
+                style={{ padding: '8px 14px', border: '1px solid #ccc', borderRadius: '5px', fontSize: '13px', width: '200px', outline: 'none' }}
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#555', fontSize: '14px', fontWeight: 600 }}>
-                Filtering <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#555', fontSize: '13px', fontWeight: 600 }}>
+                Filtering <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
               </div>
-              <select style={{ padding: '10px 14px', border: '1px solid #ccc', borderRadius: '5px', fontSize: '14px', backgroundColor: '#fff', outline: 'none' }}>
+              <select style={{ padding: '8px 14px', border: '1px solid #ccc', borderRadius: '5px', fontSize: '13px', backgroundColor: '#fff', outline: 'none' }}>
                 <option>Most popular</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
@@ -158,84 +230,95 @@ export default function PcBuilder() {
           </div>
 
           {/* Product List */}
-          <div style={{ overflowY: 'auto', flex: 1 }}>
-            {activeProducts.length > 0 ? (
-              activeProducts.map(product => (
-                <div 
-                  key={product.id} 
-                  style={{
-                    display: 'flex', padding: '24px 32px', borderBottom: '1px solid #eee', gap: '32px', alignItems: 'stretch'
-                  }}
-                >
-                  <div style={{ width: '160px', height: '160px', flexShrink: 0, backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <img src={product.image} alt="product" style={{ maxWidth: '80%', maxHeight: '80%', objectFit: 'contain', filter: 'grayscale(1) opacity(0.3)' }}/>
-                  </div>
-                  
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <div>
-                      <h3 style={{ fontSize: '18px', color: '#222', marginBottom: '16px', lineHeight: 1.5, fontWeight: 600 }}>
-                        {product.title}
-                      </h3>
-                      
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '20px' }}>
-                        {product.specs.map((spec: string, idx: number) => (
-                          <span key={idx} style={{ padding: '4px 10px', backgroundColor: '#f3f4f6', color: '#4b5563', border: '1px solid #e5e7eb', borderRadius: '4px', fontSize: '13px' }}>
-                            {spec}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+          <div style={{ overflowY: 'auto', flex: 1, backgroundColor: '#fff' }}>
+            {loadingCategory ? (
+               <div style={{ padding: '80px', textAlign: 'center', color: '#666' }}>Loading components...</div>
+            ) : activeProducts.length > 0 ? (
+              activeProducts.map((product: any) => {
+                const isItemActive = selectedComponents[activeCategory]?.variant_id === product.variant_id;
+                const specs = getSpecs(product);
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                return (
+                  <div 
+                    key={product.variant_id} 
+                    style={{
+                      display: 'flex', padding: '24px', borderBottom: '1px solid #eee', gap: '24px', alignItems: 'stretch',
+                      backgroundColor: isItemActive ? '#fcfdfd' : '#fff'
+                    }}
+                  >
+                    <div style={{ width: '140px', height: '140px', flexShrink: 0, backgroundColor: '#fff', borderRadius: '4px', border: '1px solid #eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {product.thumbnail ? (
+                         <img src={product.thumbnail} alt={product.title} style={{ maxWidth: '85%', maxHeight: '85%', objectFit: 'contain' }}/>
+                      ) : (
+                         <div style={{ color: '#ccc' }}>No Image</div>
+                      )}
+                    </div>
+                    
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
-                          {product.oldPrice && (
-                            <span style={{ textDecoration: 'line-through', color: '#8faca6', fontSize: '14px' }}>
-                              R {product.oldPrice.toLocaleString() }
+                        <h3 style={{ fontSize: '16px', color: '#111', marginBottom: '12px', lineHeight: 1.4, fontWeight: 600 }}>
+                          {product.title}
+                        </h3>
+                        
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                          {specs.map((spec: string, idx: number) => (
+                            <span key={idx} style={{ padding: '4px 8px', backgroundColor: '#f9fafb', color: '#4b5563', border: '1px solid #e5e7eb', borderRadius: '4px', fontSize: '12px' }}>
+                              {spec}
                             </span>
-                          )}
-                          {product.oldPrice && (
-                            <span style={{ backgroundColor: '#fef2f2', color: '#dc2626', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 800 }}>
-                              Save R {(product.oldPrice - product.price).toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                        <div style={{ fontSize: '28px', fontWeight: 800 + 'important!', color: '#1f7a8c' }}>
-                          R {product.price.toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+                          ))}
                         </div>
                       </div>
-                      
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <div style={{ color: '#16a34a', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                          In stock with WiredWorkshop
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                        <div>
+                          <div style={{ fontSize: '24px', fontWeight: 800, color: '#1f7a8c' }}>
+                            R {(product.current_price?.amount_cents / 100 || 0).toLocaleString('en-ZA', { minimumFractionDigits: 0 })}
+                          </div>
                         </div>
                         
-                        <button 
-                          onClick={() => handleSelect(activeCategory, product)}
-                          style={{
-                            padding: '12px 32px',
-                            backgroundColor: selectedComponents[activeCategory]?.id === product.id ? '#111' : '#fff',
-                            color: selectedComponents[activeCategory]?.id === product.id ? '#fff' : '#1f7a8c',
-                            border: `2px solid ${selectedComponents[activeCategory]?.id === product.id ? '#111' : '#1f7a8c'}`,
-                            borderRadius: '6px',
-                            fontWeight: 700,
-                            fontSize: '15px',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          {selectedComponents[activeCategory]?.id === product.id ? 'Selected' : 'Select'}
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                          <div style={{ 
+                            color: product.stock?.status === 'in_stock' ? 'green' : 
+                                   product.stock?.status === 'out_of_stock' ? '#c00' : 
+                                   product.stock?.status === 'reserved' ? '#f59e0b' : '#999', 
+                            fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 
+                          }}>
+                            {product.stock?.status === 'in_stock' ? (
+                                'In stock'
+                             ) : product.stock?.status === 'out_of_stock' ? (
+                                'Out of stock'
+                             ) : product.stock?.status === 'reserved' ? (
+                                'Reserved'
+                             ) : 'Check stock'}
+                          </div>
+                          
+                          <button 
+                            onClick={() => handleSelectToggle(activeCategory, product)}
+                            style={{
+                              padding: '10px 24px',
+                              backgroundColor: isItemActive ? '#fef2f2' : '#fff',
+                              color: isItemActive ? '#dc2626' : '#1f7a8c',
+                              border: `2px solid ${isItemActive ? '#dc2626' : '#1f7a8c'}`,
+                              borderRadius: '4px',
+                              fontWeight: 700,
+                              fontSize: '14px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s ease',
+                              minWidth: '120px'
+                            }}
+                          >
+                            {isItemActive ? 'Deselect' : 'Select'}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
+                )
+              })
             ) : (
-              <div style={{ padding: '60px', textAlign: 'center', color: '#6b9' }}>
+              <div style={{ padding: '80px', textAlign: 'center', color: '#888' }}>
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <h3 style={{ marginTop: '16px', color: '#333' }}>No Products / Coming Soon</h3>
+                <h3 style={{ marginTop: '16px', color: '#333' }}>No Products Found</h3>
               </div>
             )}
           </div>
@@ -249,42 +332,42 @@ export default function PcBuilder() {
         bottom: 0, left: 0, right: 0, 
         backgroundColor: '#fafafa', 
         borderTop: '1px solid #e0e0e0', 
-        boxShadow: '0 -4px 10px rgba(0,0,0,0.03)',
-        padding: '24px 32px',
+        boxShadow: '0 -4px 10px rgba(0,0,0,0.02)',
+        padding: '20px 32px',
         zIndex: 100
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '18px', color: '#333', fontWeight: 600 }}>Total</span>
-            <span style={{ fontSize: '32px', fontWeight: 800, color: '#1f7a8c' }}>
+            <span style={{ fontSize: '16px', color: '#555', fontWeight: 600 }}>Total</span>
+            <span style={{ fontSize: '28px', fontWeight: 800, color: '#1f7a8c' }}>
               R { totalPrice.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) }
             </span>
           </div>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '15px', color: '#333', fontWeight: 600 }}>
-              <input type="checkbox" style={{ width: '20px', height: '20px', accentColor: '#1f7a8c' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#333', fontWeight: 600 }}>
+              <input type="checkbox" style={{ width: '18px', height: '18px', accentColor: '#1f7a8c' }} />
               Build it for me!
             </label>
             
             <button 
               style={{ 
-                padding: '14px 40px', 
+                padding: '12px 32px', 
                 backgroundColor: '#111', 
                 color: '#fff', 
                 border: 'none', 
-                borderRadius: '8px', 
-                fontSize: '16px', 
+                borderRadius: '6px', 
+                fontSize: '15px', 
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
+                gap: '8px',
                 opacity: totalPrice > 0 ? 1 : 0.5
               }}
               disabled={totalPrice === 0}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>

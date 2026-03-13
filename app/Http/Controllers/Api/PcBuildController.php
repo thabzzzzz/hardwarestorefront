@@ -15,9 +15,9 @@ class PcBuildController extends Controller
     public function index()
     {
         $builds = PcBuild::where('user_id', Auth::id())
-                         ->with('components.variant.product')
-                         ->orderBy('updated_at', 'desc')
-                         ->get();
+            ->with('components.variant.product')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return response()->json($builds);
     }
@@ -56,8 +56,8 @@ class PcBuildController extends Controller
     public function show(string $id)
     {
         $build = PcBuild::where('id', $id)->where('user_id', Auth::id())
-                        ->with('components.variant.product')
-                        ->firstOrFail();
+            ->with('components.variant.product')
+            ->firstOrFail();
 
         return response()->json($build);
     }
@@ -95,7 +95,7 @@ class PcBuildController extends Controller
     public function destroy(string $id)
     {
         $build = PcBuild::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        
+
         $build->delete();
 
         return response()->json(['message' => 'PC Build successfully deleted']);

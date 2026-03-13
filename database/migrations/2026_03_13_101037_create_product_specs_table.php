@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('value');
             $table->timestamps();
-            
+
             $table->index(['name', 'value']);
             $table->unique(['product_variant_id', 'name']);
         });

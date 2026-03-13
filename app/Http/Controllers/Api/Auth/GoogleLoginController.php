@@ -47,7 +47,6 @@ class GoogleLoginController extends Controller
             // Redirect back to frontend
             $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
             return redirect()->away($frontendUrl . '/auth/callback?token=' . $tokenString);
-
         } catch (\Exception $e) {
             $frontendUrl = env('FRONTEND_URL', 'http://localhost:3000');
             return redirect()->away($frontendUrl . '/auth/callback?error=' . urlencode($e->getMessage()));
