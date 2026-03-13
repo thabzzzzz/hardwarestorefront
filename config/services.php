@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        // Automatically build the callback URL using Laravel's existing APP_URL logic
+        'redirect' => env('APP_URL') . '/api/auth/google/callback',
+    ],
+
 ];

@@ -39,49 +39,60 @@
 	align-items: center;
 }
 
+.disabledLink,
+.topbarLink {
+      color: #666;
+      text-decoration: none;
+      font-size: 12px;
+}
+
 .disabledLink {
-	color: #666;
-	text-decoration: none;
-	font-size: 12px;
-	cursor: default;
+      cursor: default;
+}
+
+.topbarLink {
+      cursor: pointer;
 }
 
 .coming {
-	font-size: 11px;
-	color: #999;
-	margin-left: 6px;
+      font-size: 11px;
+      color: #999;
+      margin-left: 6px;
 }
 
 .wishlistLink {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	color: #E76F51;
-	text-decoration: none;
-	font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #E76F51;
+      text-decoration: none;
+      font-weight: 600;
 }
 
 .wishlistIcon {
-	width: 18px;
-	height: 18px;
-	flex: 0 0 18px;
-	fill: currentColor;
-	color: currentColor;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      fill: currentColor;
+      color: currentColor;
 }
 
 /* Hover/focus animations for topbar links (Login, Blog, Wishlist) */
 .wishlistLink,
-.disabledLink {
-	transition: color .18s ease, transform .12s ease;
+.disabledLink,
+.topbarLink {
+      transition: color .18s ease, transform .12s ease;
 }
 
 .wishlistLink:hover,
 .wishlistLink:focus-visible {
-	opacity: 0.8;
+      opacity: 0.8;
 }
 
 .disabledLink:hover,
-.disabledLink:focus-visible {
+.disabledLink:focus-visible,
+.topbarLink:hover,
+.topbarLink:focus-visible {
 	color: #1f7a8c; /* main theme color */
 }
 

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import styles from './header.module.css'
 import useWishlist from '../../hooks/useWishlist'
 import useCart from '../../hooks/useCart'
+import { useAuth } from '../../hooks/useAuth'
 import getDisplayTitle from '../../lib/getDisplayTitle'
 import { useRouter } from 'next/router'
 import TextField from '@mui/material/node/TextField/index.js'
@@ -21,6 +22,7 @@ export default function Header(): JSX.Element {
   const [atTop, setAtTop] = useState<boolean>(true)
   const [topbarHeight, setTopbarHeight] = useState<number>(0)
   const [brandHeight, setBrandHeight] = useState<number>(0)
+  const { user, login, logout } = useAuth()
 
   useEffect(() => {
     function updateHeights() {
@@ -217,7 +219,17 @@ export default function Header(): JSX.Element {
         </div>
         <div ref={topbarRef} className={styles.topbar}>
           <div className={styles.topbarLeft}>
-            <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Login <span className={styles.coming}>(Coming soon)</span></a>
+            {user ? (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#666' }}>
+                {user.name} 
+                <span style={{margin: '0 4px', opacity: 0.5}}>|</span>
+                <Link href="/profile" className={styles.topbarLink}>Profile</Link>
+                <span style={{margin: '0 4px', opacity: 0.5}}>|</span>
+                <a href="#" onClick={(e) => { e.preventDefault(); logout(); }} className={styles.topbarLink}>Logout</a>
+              </span>
+            ) : (
+              <a href="#" onClick={(e)=>{ e.preventDefault(); login(); }} className={styles.topbarLink}>Login</a>
+            )}
             <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Blog <span className={styles.coming}>(Coming soon)</span></a>
           </div>
           <div className={styles.topbarRight}>
