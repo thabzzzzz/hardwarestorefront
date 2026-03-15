@@ -42,9 +42,14 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::get('/auth/me', [AuthController::class, 'me'])->middleware(AuthenticateWithApiToken::class);
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware(AuthenticateWithApiToken::class);
 
-// PC Builder Routes
+// PC Builder Public Route (for share links)
+Route::get('pc-builds/{token}', [PcBuildController::class, 'show']);
+
+// PC Builder Authenticated Routes
 Route::middleware([AuthenticateWithApiToken::class])->group(function () {
-    Route::apiResource('pc-builds', PcBuildController::class);
+    Route::get('pc-builds', [PcBuildController::class, 'index']);
+    Route::post('pc-builds', [PcBuildController::class, 'store']);
+    Route::delete('pc-builds/{id}', [PcBuildController::class, 'destroy']);
 });
 
 // Wishlist removed

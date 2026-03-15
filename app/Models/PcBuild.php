@@ -11,7 +11,18 @@ class PcBuild extends Model
         'name',
         'description',
         'total_price',
+        'share_token',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->share_token)) {
+                $model->share_token = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
 
     public function user()
     {

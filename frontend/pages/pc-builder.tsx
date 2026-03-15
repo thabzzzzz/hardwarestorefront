@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Header from "../components/header/header";
 import { useAuth } from "../hooks/useAuth";
 
@@ -102,15 +103,94 @@ const getSpecs = (prod: any) => {
 
 export default function PcBuilder() {
     const { user } = useAuth();
+    const router = useRouter();
     const [activeCategory, setActiveCategory] = useState("cases");
     const [selectedComponents, setSelectedComponents] = useState<
         Record<string, any>
     >({});
 
-    const [productsCache, setProductsCache] = useState<Record<string, any[]>>(
-        {},
-    );
+    const [productsCache, setProductsCache] = useState<Record<string, any[]>>({});
     const [loadingCategory, setLoadingCategory] = useState(false);
+
+    // Save feature state
+    const [buildName, setBuildName] = useState("My Build 1");
+    const [shareToken, setShareToken] = useState("");
+    const [isSaving, setIsSaving] = useState(false);
+    const [isLoadingBuild, setIsLoadingBuild] = useState(false);
+    const [buildAuthorId, setBuildAuthorId] = useState<number | null>(null);
+
+    // Initial load of build if query token exists
+    useEffect(() => {
+        if (!router.isReady) return;
+        const token = router.query.build_id as string;
+        if (token && token !== shareToken) {
+            fetchBuild(token);
+        }
+    }, [router.isReady, router.query]);
+
+    const fetchBuild = async (token: string) => {
+        setIsLoadingBuild(true);
+        try {
+            const res = await fetch(`${API_BASE}/api/pc-builds/${token}`);
+            if (res.ok) {
+                const data = await res.json();
+                setBuildName(data.name || "My Build 1");
+                setShareToken(data.share_token);
+                setSelectedComponents(data.components || {});
+                setBuildAuthorId(data.user_id);
+            }
+        } catch(e) {
+            console.error("Failed to load build", e);
+        } finally {
+            setIsLoadingBuild(false);
+        }
+    };
+
+    const handleSave = async (saveAsNew = false) => {
+        if (!user) {
+            alert("Please log in to save builds");
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const componentsMap: Record<string, string> = {};
+            for (const cat in selectedComponents) {
+                componentsMap[cat] = selectedComponents[cat].variant_id;
+            }
+
+            const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+
+            const res = await fetch(`${API_BASE}/api/pc-builds`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: buildName,
+                    components: componentsMap,
+                    share_token: shareToken,
+                    save_as_new: saveAsNew
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setShareToken(data.share_token);
+                setBuildName(data.name);
+                alert("Build saved successfully!");
+                router.replace(`/pc-builder?build_id=${data.share_token}`, undefined, { shallow: true });
+            } else {
+                alert("Failed to save build");
+            }
+        } catch(e) {
+            console.error("Failed to save build", e);
+            alert("Error saving build");
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Calculate total
     const totalPrice = Object.values(selectedComponents).reduce((sum, item) => {
@@ -206,9 +286,83 @@ export default function PcBuilder() {
                         color: "#333",
                         fontWeight: 700,
                         fontSize: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
                     }}
                 >
-                    System Builder
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                        <span>System Builder</span>
+                        <span style={{color: "#ccc"}}>|</span>
+                        <input 
+                            type="text" 
+                            value={buildName} 
+                            onChange={(e) => setBuildName(e.target.value)}
+                            placeholder="My Build 1"
+                            style={{
+                                fontSize: "20px",
+                                fontWeight: 600,
+                                padding: "4px 8px",
+                                border: "1px solid transparent",
+                                borderRadius: "4px",
+                                backgroundColor: "transparent",
+                                outline: "none",
+                                transition: "all 0.2s",
+                                cursor: "pointer",
+                                width: "300px"
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.backgroundColor = "#fff";
+                                e.target.style.border = "1px solid #1f7a8c";
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.backgroundColor = "transparent";
+                                e.target.style.border = "1px solid transparent";
+                            }}
+                        />
+                    </div>
+                    
+                    {user && (
+                        <div style={{ display: "flex", gap: "12px" }}>
+                            <button
+                                onClick={() => handleSave(false)}
+                                disabled={isSaving}
+                                style={{
+                                    padding: "8px 16px",
+                                    backgroundColor: "#1f7a8c",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    cursor: isSaving ? "not-allowed" : "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px"
+                                }}
+                            >
+                                <SaveIcon fontSize="small" />
+                                {isSaving ? "Saving..." : "Save Build"}
+                            </button>
+                            
+                            {shareToken && (
+                                <button
+                                    onClick={() => handleSave(true)}
+                                    disabled={isSaving}
+                                    style={{
+                                        padding: "8px 16px",
+                                        backgroundColor: "#f4f4f6",
+                                        color: "#1f7a8c",
+                                        border: "1px solid #1f7a8c",
+                                        borderRadius: "8px",
+                                        fontWeight: 600,
+                                        cursor: isSaving ? "not-allowed" : "pointer"
+                                    }}
+                                >
+                                    Save as New
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div style={{ display: "flex", gap: "24px", flex: 1 }}>

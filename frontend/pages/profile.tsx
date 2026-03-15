@@ -68,8 +68,7 @@ export default function Profile() {
             <div>
               <h3 style={{ fontSize: '18px', color: '#333', marginBottom: '16px' }}>Account Settings</h3>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <li><a href="#" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }} onClick={(e) => e.preventDefault()}>Order History <span style={{color:'#999', fontSize:'12px', fontWeight: 'normal', marginLeft: '6px'}}>(Coming soon)</span></a></li>
-                <li><a href="#" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }} onClick={(e) => e.preventDefault()}>Address Book <span style={{color:'#999', fontSize:'12px', fontWeight: 'normal', marginLeft: '6px'}}>(Coming soon)</span></a></li>
+                <li><a href="#" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }} onClick={(e) => e.preventDefault()}>Order History <span style={{color:'#999', fontSize:'12px', fontWeight: 'normal', marginLeft: '6px'}}>(Coming soon)</span></a></li>                  <li><a href="/saved-builds" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }}>Saved PC Builds</a></li>                <li><a href="#" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }} onClick={(e) => e.preventDefault()}>Address Book <span style={{color:'#999', fontSize:'12px', fontWeight: 'normal', marginLeft: '6px'}}>(Coming soon)</span></a></li>
                 <li><a href="#" style={{ color: '#1f7a8c', textDecoration: 'none', fontWeight: 500 }} onClick={(e) => e.preventDefault()}>Payment Methods <span style={{color:'#999', fontSize:'12px', fontWeight: 'normal', marginLeft: '6px'}}>(Coming soon)</span></a></li>
               </ul>
             </div>

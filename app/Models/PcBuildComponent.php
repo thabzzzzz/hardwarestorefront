@@ -9,6 +9,7 @@ class PcBuildComponent extends Model
     protected $fillable = [
         'pc_build_id',
         'product_variant_id',
+        'category',
         'quantity',
     ];
 
