@@ -12,6 +12,7 @@ import StorageIcon from "@mui/icons-material/Storage.js";
 import SaveIcon from "@mui/icons-material/Save.js";
 import ExtensionIcon from "@mui/icons-material/Extension.js";
 import PowerIcon from "@mui/icons-material/Power.js";
+import EditIcon from "@mui/icons-material/Edit.js";
 
 const CategoryIconMap: Record<string, any> = {
     cases: ComputerIcon,
@@ -294,32 +295,35 @@ export default function PcBuilder() {
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
-                        <input 
-                            type="text" 
-                            value={buildName} 
-                            onChange={(e) => setBuildName(e.target.value)}
-                            placeholder="My Build 1"
-                            style={{
-                                fontSize: "20px",
-                                fontWeight: 600,
-                                padding: "4px 8px",
-                                border: "1px solid transparent",
-                                borderRadius: "4px",
-                                backgroundColor: "transparent",
-                                outline: "none",
-                                transition: "all 0.2s",
-                                cursor: "pointer",
-                                width: "300px"
-                            }}
-                            onFocus={(e) => {
-                                e.target.style.backgroundColor = "#fff";
-                                e.target.style.border = "1px solid #1f7a8c";
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.backgroundColor = "transparent";
-                                e.target.style.border = "1px solid transparent";
-                            }}
-                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                            <EditIcon fontSize="small" style={{ color: "#aaa" }} />
+                            <input 
+                                type="text" 
+                                value={buildName} 
+                                onChange={(e) => setBuildName(e.target.value)}
+                                placeholder="My Build 1"
+                                style={{
+                                    fontSize: "20px",
+                                    fontWeight: 600,
+                                    padding: "4px 8px",
+                                    border: "1px solid transparent",
+                                    borderRadius: "4px",
+                                    backgroundColor: "transparent",
+                                    outline: "none",
+                                    transition: "all 0.2s",
+                                    cursor: "pointer",
+                                    width: "300px"
+                                }}
+                                onFocus={(e) => {
+                                    e.target.style.backgroundColor = "#fff";
+                                    e.target.style.border = "1px solid #1f7a8c";
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.border = "1px solid transparent";
+                                }}
+                            />
+                        </div>
                     </div>
                     
                     {user && (
