@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -121,6 +121,7 @@ export default function PcBuilder() {
     const [isSaving, setIsSaving] = useState(false);
     const [isLoadingBuild, setIsLoadingBuild] = useState(false);
     const [buildAuthorId, setBuildAuthorId] = useState<number | null>(null);
+    const buildNameInputRef = useRef<HTMLInputElement>(null);
 
     // Initial load of build if query token exists
     useEffect(() => {
@@ -289,7 +290,7 @@ export default function PcBuilder() {
                     paddingBottom: "120px",
                 }}
             >
-                {user && (
+                {user && shareToken && (
                     <div style={{ marginBottom: "16px" }}>
                         <Link
                             href="/saved-builds"
@@ -327,8 +328,13 @@ export default function PcBuilder() {
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
                         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            <EditIcon fontSize="small" style={{ color: "#aaa" }} />
+                            <EditIcon 
+                                fontSize="small" 
+                                style={{ color: "#aaa", cursor: "pointer" }} 
+                                onClick={() => buildNameInputRef.current?.focus()} 
+                            />
                             <input 
+                                ref={buildNameInputRef}
                                 type="text" 
                                 value={buildName} 
                                 onChange={(e) => setBuildName(e.target.value)}
