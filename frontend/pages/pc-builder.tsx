@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Header from "../components/header/header";
 import { useAuth } from "../hooks/useAuth";
+import useCart from "../hooks/useCart";
+import { toast } from "../lib/toast";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack.js";
 import ComputerIcon from "@mui/icons-material/Computer.js";
@@ -107,6 +109,7 @@ const getSpecs = (prod: any) => {
 export default function PcBuilder() {
     const { user } = useAuth();
     const router = useRouter();
+    const cart = useCart();
     const [activeCategory, setActiveCategory] = useState("cases");
     const [selectedComponents, setSelectedComponents] = useState<
         Record<string, any>
@@ -153,6 +156,46 @@ export default function PcBuilder() {
             console.error("Failed to load build", e);
         } finally {
             setIsLoadingBuild(false);
+        }
+    };
+
+    const handleAddAllToCart = () => {
+        let addedCount = 0;
+        let outOfStockCount = 0;
+
+        const products = Object.values(selectedComponents).filter(Boolean);
+        if (products.length === 0) {
+            toast('Your build is empty. Select components first.');
+            return;
+        }
+
+        products.forEach((product) => {
+            if (!product || (!product.product_id && !product.variant_id)) return;
+
+            const isOutOfStock = product.stock?.status === 'out_of_stock';
+            if (isOutOfStock) {
+                outOfStockCount++;
+                return;
+            }
+
+            const entry = {
+                id: String(product.product_id || product.variant_id),
+                title: product.title || product.name || 'Product',
+                thumbnail: product.thumbnail || product.clean_thumbnail || null,
+                price: product.current_price ? { amount_cents: product.current_price.amount_cents } : (product.price ? { amount_cents: product.price.amount_cents } : null),
+                stock: product.stock || null
+            };
+
+            cart.addOrUpdate(entry, 1);
+            addedCount++;
+        });
+
+        if (addedCount > 0 && outOfStockCount === 0) {
+            toast.success('Added ' + addedCount + ' components to your cart!');
+        } else if (addedCount > 0 && outOfStockCount > 0) {
+            toast.success('Added ' + addedCount + ' components to your cart, but ' + outOfStockCount + ' were out of stock.');
+        } else if (outOfStockCount > 0) {
+            toast.error('Could not add components: ' + outOfStockCount + ' items are out of stock.');
         }
     };
 
@@ -1258,7 +1301,7 @@ export default function PcBuilder() {
                                 gap: "8px",
                                 opacity: totalPrice > 0 ? 1 : 0.5,
                             }}
-                            disabled={totalPrice === 0}
+                            onClick={handleAddAllToCart} disabled={totalPrice === 0}
                         >
                             <svg
                                 width="20"
@@ -1274,7 +1317,7 @@ export default function PcBuilder() {
                                 <circle cx="20" cy="21" r="1"></circle>
                                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                             </svg>
-                            Go to Cart
+                            Add Build to Cart
                         </button>
                     </div>
                 </div>
