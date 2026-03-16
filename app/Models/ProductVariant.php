@@ -14,10 +14,11 @@ class ProductVariant extends Model
 
     protected $table = 'product_variants';
 
-    protected $fillable = ['id', 'product_id', 'sku', 'title', 'specs', 'attributes_normalized', 'is_active'];
+    protected $fillable = ['id', 'product_id', 'sku', 'title', 'specs', 'normalized_specs', 'attributes_normalized', 'is_active'];
 
     protected $casts = [
         'specs' => 'array',
+        'normalized_specs' => 'array',
         'attributes_normalized' => 'array',
         'is_active' => 'boolean',
         'raw_spec_tables' => 'array',

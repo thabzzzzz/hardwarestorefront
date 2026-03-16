@@ -67,6 +67,7 @@ class PcBuildController extends Controller
                         "currency" => "ZAR"
                     ] : null,
                     "thumbnail" => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnailModel ? $thumbnailModel->path : $scrapedThumbPath),
+                    "normalized_specs" => $variant->normalized_specs,
                     "stock" => [
                         "status" => $variant->stock_status,
                         "qty_available" => (int) $variant->stock_qty

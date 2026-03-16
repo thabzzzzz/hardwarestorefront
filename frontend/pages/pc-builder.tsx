@@ -17,6 +17,11 @@ import SaveIcon from "@mui/icons-material/Save.js";
 import ExtensionIcon from "@mui/icons-material/Extension.js";
 import PowerIcon from "@mui/icons-material/Power.js";
 import EditIcon from "@mui/icons-material/Edit.js";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem.js";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle.js";
+import InfoIcon from "@mui/icons-material/Info.js";
+
+import { validateBuild, ValidationMessage } from "../lib/compatibilityEngine";
 
 const CategoryIconMap: Record<string, any> = {
     cases: ComputerIcon,
@@ -306,6 +311,19 @@ export default function PcBuilder() {
 
     const activeProducts = productsCache[activeCategory] || [];
 
+    const validationMessages = validateBuild({
+        cpu: selectedComponents["cpus"],
+        motherboard: selectedComponents["motherboards"],
+        ram: selectedComponents["ram"],
+        gpu: selectedComponents["gpus"],
+        psu: selectedComponents["psus"],
+        case: selectedComponents["cases"],
+        cpu_cooler: selectedComponents["coolers"],
+    });
+
+    const errorCount = validationMessages.filter(m => m.type === 'error').length;
+    const warningCount = validationMessages.filter(m => m.type === 'warning').length;
+
     return (
         <div
             style={{
@@ -448,6 +466,55 @@ export default function PcBuilder() {
                         </div>
                     )}
                 </div>
+
+                {/* COMPATIBILITY ENGINE WARNINGS */}
+                {validationMessages.length > 0 && (
+                    <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                        {validationMessages.map((msg, idx) => {
+                            const isError = msg.type === "error";
+                            const isWarning = msg.type === "warning";
+                            const isSuccess = msg.type === "success";
+
+                            let Icon = InfoIcon;
+                            let bgColor = "#e3f2fd";
+                            let borderColor = "#90caf9";
+                            let textColor = "#0277bd";
+
+                            if (isError) {
+                                Icon = ReportProblemIcon;
+                                bgColor = "#ffebee"; // red-ish
+                                borderColor = "#ff8a80";
+                                textColor = "#c62828";
+                            } else if (isWarning) {
+                                Icon = ReportProblemIcon;
+                                bgColor = "#fff3e0"; // orange-ish
+                                borderColor = "#ffb74d";
+                                textColor = "#e65100";
+                            } else if (isSuccess) {
+                                Icon = CheckCircleIcon;
+                                bgColor = "#e8f5e9";
+                                borderColor = "#81c784";
+                                textColor = "#2e7d32";
+                            }
+
+                            return (
+                                <div key={idx} style={{
+                                    display: "flex", alignItems: "center", gap: "12px",
+                                    padding: "12px 16px",
+                                    backgroundColor: bgColor,
+                                    border: `1px solid ${borderColor}`,
+                                    borderRadius: "8px",
+                                    color: textColor,
+                                    fontSize: "15px",
+                                    fontWeight: 500
+                                }}>
+                                    <Icon fontSize="small" />
+                                    {msg.message}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
                 <div style={{ display: "flex", gap: "24px", flex: 1 }}>
                     {/* Left Sidebar - Categories */}

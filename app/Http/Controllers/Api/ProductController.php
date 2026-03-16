@@ -297,6 +297,8 @@ class ProductController extends Controller
             'price' => $price,
             // Human-friendly key/value specs (synthesized if empty)
             'specs' => $specs,
+            // Machine-readable normalized specs for Compatibility Engine
+            'normalized_specs' => $variant->normalized_specs,
             // Preserve any parsed spec tables (from scraper/parser) when present
             'spec_tables' => null,
             // Raw spec-ish fields (numeric and original parsed blobs) to allow

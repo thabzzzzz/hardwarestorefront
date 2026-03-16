@@ -275,6 +275,7 @@ class ProductsController extends Controller
                 // Fallback: Product clean thumb -> Local thumb -> Scraped thumb
                 'thumbnail' => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnail ? $thumbnail->path : $scrapedThumb),
                 'short_specs' => array_slice((array)($variant->specs ?? []), 0, 6),
+                'normalized_specs' => $variant->normalized_specs,
                 'stock' => $variant->stock ? ['qty_available' => $variant->stock->qty_available, 'status' => $variant->stock->status] : null,
                 'release_date' => $variant->product->release_date ?? null,
             ];
