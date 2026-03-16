@@ -42,7 +42,7 @@ class PcBuildController extends Controller
     public function show(string $token)
     {
         $build = PcBuild::where("share_token", $token)
-            ->with(["components.variant.product", "components.variant.prices", "user"])
+            ->with(["components.variant.product.images", "components.variant.images", "components.variant.prices", "user"])
             ->firstOrFail();
 
         $components = [];
@@ -51,6 +51,10 @@ class PcBuildController extends Controller
             if ($variant && $variant->product) {
                 $product = $variant->product;
                 $price = $variant->prices()->orderByDesc('valid_from')->first();
+                
+                $thumbnailModel = $variant->images()->where('role', 'thumbnail')->first() ?? $variant->product->images()->where('role', 'thumbnail')->first() ?? $variant->images()->first();
+                $scrapedThumb = $variant->images()->where('role', 'scraped')->first() ?? $variant->product->images()->where('role', 'scraped')->first();
+                $scrapedThumbPath = $scrapedThumb ? $scrapedThumb->path : null;
 
                 $components[$comp->category] = [
                     "variant_id" => $variant->id,
@@ -62,7 +66,7 @@ class PcBuildController extends Controller
                         "amount_cents" => (int) $price->amount_cents,
                         "currency" => "ZAR"
                     ] : null,
-                    "thumbnail" => $variant->thumbnail ?: $product->thumbnail,
+                    "thumbnail" => ($variant->product->clean_thumbnail ?? null) ?: ($thumbnailModel ? $thumbnailModel->path : $scrapedThumbPath),
                     "stock" => [
                         "status" => $variant->stock_status,
                         "qty_available" => (int) $variant->stock_qty

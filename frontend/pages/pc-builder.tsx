@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import Header from "../components/header/header";
 import { useAuth } from "../hooks/useAuth";
 
+import ArrowBackIcon from "@mui/icons-material/ArrowBack.js";
 import ComputerIcon from "@mui/icons-material/Computer.js";
 import MemoryIcon from "@mui/icons-material/Memory.js";
 import ToysIcon from "@mui/icons-material/Toys.js";
@@ -126,8 +128,14 @@ export default function PcBuilder() {
         const token = router.query.build_id as string;
         if (token && token !== shareToken) {
             fetchBuild(token);
+        } else if (!token && shareToken) {
+            // User navigated away from a saved build back to the clean builder root
+            setBuildName("My Build 1");
+            setShareToken("");
+            setSelectedComponents({});
+            setBuildAuthorId(null);
         }
-    }, [router.isReady, router.query]);
+    }, [router.isReady, router.query.build_id, shareToken]);
 
     const fetchBuild = async (token: string) => {
         setIsLoadingBuild(true);
@@ -281,6 +289,29 @@ export default function PcBuilder() {
                     paddingBottom: "120px",
                 }}
             >
+                {user && (
+                    <div style={{ marginBottom: "16px" }}>
+                        <Link
+                            href="/saved-builds"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "8px",
+                                color: "#1f7a8c",
+                                textDecoration: "none",
+                                fontWeight: 600,
+                                fontSize: "15px",
+                                transition: "opacity 0.2s",
+                            }}
+                            onMouseOver={(e) => (e.currentTarget.style.opacity = "0.8")}
+                            onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+                        >
+                            <ArrowBackIcon fontSize="small" />
+                            Back to Saved Builds
+                        </Link>
+                    </div>
+                )}
+
                 <div
                     style={{
                         paddingBottom: "16px",
