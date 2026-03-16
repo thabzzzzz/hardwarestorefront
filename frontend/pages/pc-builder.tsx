@@ -21,7 +21,7 @@ import ReportProblemIcon from "@mui/icons-material/ReportProblem.js";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle.js";
 import InfoIcon from "@mui/icons-material/Info.js";
 
-import { validateBuild, ValidationMessage } from "../lib/compatibilityEngine";
+import { validateBuild, ValidationMessage, getComponentCompatibility } from "../lib/compatibilityEngine";
 
 const CategoryIconMap: Record<string, any> = {
     cases: ComputerIcon,
@@ -941,6 +941,18 @@ export default function PcBuilder() {
                                 </div>
                             ) : activeProducts.length > 0 ? (
                                 activeProducts.map((product: any) => {
+                                    const compatError = !selectedComponents[activeCategory]
+                                        ? getComponentCompatibility(activeCategory, product, {
+                                            cpu: selectedComponents["cpus"],
+                                            motherboard: selectedComponents["motherboards"],
+                                            ram: selectedComponents["ram"],
+                                            gpu: selectedComponents["gpus"],
+                                            psu: selectedComponents["psus"],
+                                            case: selectedComponents["cases"],
+                                            cpu_cooler: selectedComponents["coolers"],
+                                        })
+                                        : null;
+                                        
                                     const isItemActive =
                                         selectedComponents[activeCategory]
                                             ?.variant_id === product.variant_id;
@@ -1139,6 +1151,12 @@ export default function PcBuilder() {
                                                             gap: "24px",
                                                         }}
                                                     >
+                                                        {compatError && !isItemActive && (
+                                                            <div style={{ color: "#c62828", fontSize: "13px", display: "flex", alignItems: "center", gap: "4px", maxWidth: "200px" }}>
+                                                                <ReportProblemIcon style={{ fontSize: "16px" }} />
+                                                                {compatError.message}
+                                                            </div>
+                                                        )}
                                                         <div
                                                             style={{
                                                                 color:
@@ -1211,6 +1229,8 @@ export default function PcBuilder() {
                                                                     "all 0.2s ease",
                                                                 minWidth:
                                                                     "120px",
+                                                                opacity: compatError && !isItemActive ? 0.4 : 1,
+                                                                pointerEvents: compatError && !isItemActive ? "none" : "auto",
                                                             }}
                                                         >
                                                             {isItemActive

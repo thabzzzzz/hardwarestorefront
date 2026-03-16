@@ -45,17 +45,25 @@ export function validateBuild(build: PcBuildState): ValidationMessage[] {
 
   const { cpu, motherboard, ram, gpu, psu, case: pcCase, cpu_cooler } = build;
 
+const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+  
   // 1. CPU & Motherboard Socket Validation
-  if (cpu?.normalized_specs?.socket && motherboard?.normalized_specs?.socket) {
-    if (cpu.normalized_specs.socket !== motherboard.normalized_specs.socket) {
+  const cpuSocket = cpu?.normalized_specs?.socket || null;
+  const mbSocket = motherboard?.normalized_specs?.socket || null;
+
+  if (cpuSocket && mbSocket) {
+    const cNorm = normalizeStr(cpuSocket);
+    const mNorm = normalizeStr(mbSocket);
+    
+    if (cNorm !== mNorm && !cNorm.includes(mNorm) && !mNorm.includes(cNorm)) {
       messages.push({
         type: 'error',
-        message: `Incompatible Socket! CPU requires ${cpu.normalized_specs.socket} but Motherboard is ${motherboard.normalized_specs.socket}.`
+        message: `Incompatible Socket! CPU requires ${cpuSocket} but Motherboard is ${mbSocket}.`
       });
     } else {
       messages.push({
         type: 'success',
-        message: `Motherboard and CPU socket (${cpu.normalized_specs.socket}) match.`
+        message: `Motherboard and CPU socket match.`
       });
     }
   }
@@ -81,16 +89,19 @@ export function validateBuild(build: PcBuildState): ValidationMessage[] {
   }
 
   // 3. RAM & Motherboard
-  if (ram?.normalized_specs?.memory_type && motherboard?.normalized_specs?.memory_type) {
-    if (ram.normalized_specs.memory_type !== motherboard.normalized_specs.memory_type) {
+  const ramType = ram?.normalized_specs?.memory_type || (ram?.title?.match(/DDR[345]/i) ? ram.title.match(/DDR[345]/i)![0].toUpperCase() : null);
+  const mbType = motherboard?.normalized_specs?.memory_type || (motherboard?.title?.match(/DDR[345]/i) ? motherboard.title.match(/DDR[345]/i)![0].toUpperCase() : null);
+
+  if (ramType && mbType) {
+    if (normalizeStr(ramType) !== normalizeStr(mbType)) {
       messages.push({
         type: 'error',
-        message: `Incompatible Memory! RAM is ${ram.normalized_specs.memory_type} but Motherboard supports ${motherboard.normalized_specs.memory_type}.`
+        message: `Incompatible Memory! RAM is ${ramType} but Motherboard supports ${mbType}.`
       });
     } else {
       messages.push({
         type: 'success',
-        message: `Memory type (${ram.normalized_specs.memory_type}) matches Motherboard.`
+        message: `Memory type (${ramType}) matches.`
       });
     }
   }
@@ -173,4 +184,22 @@ export function validateBuild(build: PcBuildState): ValidationMessage[] {
   }
 
   return messages;
+}
+
+export function getComponentCompatibility(category: string, product: any, currentBuild: PcBuildState): ValidationMessage | null {
+  const testBuild: PcBuildState = { ...currentBuild };
+  if (category === 'cpus') testBuild.cpu = product;
+  else if (category === 'motherboards') testBuild.motherboard = product;
+  else if (category === 'ram') testBuild.ram = product;
+  else if (category === 'gpus') testBuild.gpu = product;
+  else if (category === 'psus') testBuild.psu = product;
+  else if (category === 'cases') testBuild.case = product;
+  else if (category === 'coolers') testBuild.cpu_cooler = product;
+  else return null;
+
+  const messages = validateBuild(testBuild);
+  const error = messages.find((m) => m.type === 'error');
+  if (error) return error;
+
+  return null;
 }
