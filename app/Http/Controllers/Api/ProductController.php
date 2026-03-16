@@ -154,7 +154,7 @@ class ProductController extends Controller
         } else {
             // exact slug match (case-insensitive)
             $product = Product::whereRaw('LOWER(slug) = ?', [strtolower($slug)])->first();
-            
+
             // then check if it's an exact SKU match on Variant
             if (! $product) {
                 $variant = \App\Models\ProductVariant::where('sku', $slug)->first();
@@ -378,7 +378,7 @@ class ProductController extends Controller
                 }
             }
         }
-        
+
         // if still not found, check sku on product variant
         if (! $product) {
             $variant = \App\Models\ProductVariant::where('sku', $slug)->first();

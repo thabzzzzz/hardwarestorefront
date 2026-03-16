@@ -16,7 +16,7 @@ return new class extends Migration
 
         // Set tokens for existing
         $builds = DB::table('pc_builds')->get();
-        foreach($builds as $build) {
+        foreach ($builds as $build) {
             DB::table('pc_builds')->where('id', $build->id)->update(['share_token' => (string) Str::uuid()]);
         }
 

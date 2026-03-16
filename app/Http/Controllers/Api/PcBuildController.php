@@ -15,8 +15,26 @@ class PcBuildController extends Controller
     {
         $builds = PcBuild::where("user_id", Auth::id())
             ->withCount("components")
+            ->with(["components.variant.prices"])
             ->orderBy("updated_at", "desc")
-            ->get();
+            ->get()
+            ->map(function ($build) {
+                $totalCents = 0;
+                foreach ($build->components as $comp) {
+                    if ($comp->variant && $comp->variant->prices->isNotEmpty()) {
+                        $latestPrice = $comp->variant->prices->sortByDesc('valid_from')->first();
+                        if ($latestPrice) {
+                            $totalCents += $latestPrice->amount_cents * $comp->quantity;
+                        }
+                    }
+                }
+                
+                $data = $build->toArray();
+                unset($data['components']);
+                $data['total_price_cents'] = $totalCents;
+                
+                return $data;
+            });
 
         return response()->json(["data" => $builds]);
     }
@@ -31,25 +49,25 @@ class PcBuildController extends Controller
         foreach ($build->components as $comp) {
             $variant = $comp->variant;
             if ($variant && $variant->product) {
-               $product = $variant->product;
-               $price = $variant->prices()->orderByDesc('valid_from')->first();
+                $product = $variant->product;
+                $price = $variant->prices()->orderByDesc('valid_from')->first();
 
-               $components[$comp->category] = [
-                   "variant_id" => $variant->id,
-                   "product_id" => $product->id,
-                   "slug" => $variant->slug ?: $product->slug,
-                   "title" => $variant->name ?: $product->name,
-                   "brand" => $product->brand,
-                   "current_price" => $price ? [
-                       "amount_cents" => (int) $price->amount_cents,
-                       "currency" => "ZAR"
-                   ] : null,
-                   "thumbnail" => $variant->thumbnail ?: $product->thumbnail,   
-                   "stock" => [
-                       "status" => $variant->stock_status,
-                       "qty_available" => (int) $variant->stock_qty
-                   ],
-               ];
+                $components[$comp->category] = [
+                    "variant_id" => $variant->id,
+                    "product_id" => $product->id,
+                    "slug" => $variant->slug ?: $product->slug,
+                    "title" => $variant->name ?: $product->name,
+                    "brand" => $product->brand,
+                    "current_price" => $price ? [
+                        "amount_cents" => (int) $price->amount_cents,
+                        "currency" => "ZAR"
+                    ] : null,
+                    "thumbnail" => $variant->thumbnail ?: $product->thumbnail,
+                    "stock" => [
+                        "status" => $variant->stock_status,
+                        "qty_available" => (int) $variant->stock_qty
+                    ],
+                ];
             }
         }
 
@@ -83,7 +101,7 @@ class PcBuildController extends Controller
 
         if ($shareToken && !$saveAsNew) {
             $build = PcBuild::where("share_token", $shareToken)->first();
-            
+
             if ($build && $build->user_id !== $user->id) {
                 $build = new PcBuild();
                 $build->user_id = $user->id;
@@ -97,7 +115,7 @@ class PcBuildController extends Controller
         }
 
         $build->name = $request->input("name");
-        $build->save(); 
+        $build->save();
 
         if ($build->id) {
             PcBuildComponent::where("pc_build_id", $build->id)->delete();
@@ -124,9 +142,8 @@ class PcBuildController extends Controller
 
     public function destroy(string $id)
     {
-        $build = PcBuild::where("id", $id)->where("user_id", Auth::id())->firstOrFail();                                                                        
+        $build = PcBuild::where("id", $id)->where("user_id", Auth::id())->firstOrFail();
         $build->delete();
         return response()->json(["message" => "PC Build successfully deleted"]);
     }
 }
-

@@ -116,6 +116,7 @@ export default function SavedBuilds() {
                             builds.map((build) => (
                                 <div
                                     key={build.id}
+                                    onClick={() => router.push(`/pc-builder?build_id=${build.share_token}`)}
                                     style={{
                                         background: "#fff",
                                         border: "1px solid #eee",
@@ -125,20 +126,30 @@ export default function SavedBuilds() {
                                         justifyContent: "space-between",
                                         alignItems: "center",
                                         boxShadow: "0 2px 8px rgba(0,0,0,0.02)",
+                                        cursor: "pointer",
+                                        transition: "all 0.2s ease",
                                     }}
+                                    onMouseOver={(e) => e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"}
+                                    onMouseOut={(e) => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.02)"}
                                 >
                                     <div>
                                         <h3 style={{ margin: "0 0 8px 0", fontSize: "20px", color: "#222" }}>
                                             {build.name}
                                         </h3>
-                                        <div style={{ color: "#666", fontSize: "14px", display: "flex", gap: "16px" }}>
+                                        <div style={{ color: "#666", fontSize: "14px", display: "flex", gap: "12px", alignItems: "center" }}>
                                             <span>{build.components_count} components</span>
+                                            <span>•</span>
+                                            <span style={{ fontWeight: 600, color: "#1f7a8c" }}>
+                                                R {(build.total_price_cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                            </span>
+                                            <span>•</span>
                                             <span>Last updated: {new Date(build.updated_at).toLocaleDateString()}</span>
                                         </div>
                                     </div>
                                     <div style={{ display: "flex", gap: "12px" }}>
                                         <Link
                                             href={`/pc-builder?build_id=${build.share_token}`}
+                                            onClick={(e) => e.stopPropagation()}
                                             style={{
                                                 padding: "8px 16px",
                                                 background: "#f4f4f6",
@@ -151,7 +162,10 @@ export default function SavedBuilds() {
                                             Edit Build
                                         </Link>
                                         <button
-                                            onClick={() => deleteBuild(build.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteBuild(build.id);
+                                            }}
                                             style={{
                                                 padding: "8px 16px",
                                                 background: "#fff",
