@@ -1229,8 +1229,6 @@ export default function PcBuilder() {
                                                                     "all 0.2s ease",
                                                                 minWidth:
                                                                     "120px",
-                                                                opacity: compatError && !isItemActive ? 0.4 : 1,
-                                                                pointerEvents: compatError && !isItemActive ? "none" : "auto",
                                                             }}
                                                         >
                                                             {isItemActive

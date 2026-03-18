@@ -48,17 +48,20 @@ export function validateBuild(build: PcBuildState): ValidationMessage[] {
 const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
   
   // 1. CPU & Motherboard Socket Validation
-  const cpuSocket = cpu?.normalized_specs?.socket || null;
-  const mbSocket = motherboard?.normalized_specs?.socket || null;
+  const cpuTitle = cpu?.title || '';
+  const mbTitle = motherboard?.title || '';
+
+  const cpuSocket = cpu?.normalized_specs?.socket || (cpuTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4)/i)?.[0] || null);
+  const mbSocket = motherboard?.normalized_specs?.socket || (mbTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4)/i)?.[0] || null);
 
   if (cpuSocket && mbSocket) {
     const cNorm = normalizeStr(cpuSocket);
     const mNorm = normalizeStr(mbSocket);
-    
+
     if (cNorm !== mNorm && !cNorm.includes(mNorm) && !mNorm.includes(cNorm)) {
       messages.push({
         type: 'error',
-        message: `Incompatible Socket! CPU requires ${cpuSocket} but Motherboard is ${mbSocket}.`
+        message: `Incompatible Socket! CPU is ${cpuSocket.toUpperCase()} but Motherboard is ${mbSocket.toUpperCase()}.`
       });
     } else {
       messages.push({
@@ -66,6 +69,19 @@ const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '
         message: `Motherboard and CPU socket match.`
       });
     }
+  } else if (cpuTitle && mbTitle) {
+      // Vendor mismatch fallback
+      const cpuIsIntel = cpuTitle.toLowerCase().includes('intel');
+      const cpuIsAMD = cpuTitle.toLowerCase().includes('amd') || cpuTitle.toLowerCase().includes('ryzen');
+      const mbIsIntel = mbTitle.toLowerCase().includes('intel');
+      const mbIsAMD = mbTitle.toLowerCase().includes('amd') || mbTitle.toLowerCase().includes('ryzen');
+
+      if ((cpuIsIntel && mbIsAMD) || (cpuIsAMD && mbIsIntel)) {
+          messages.push({
+            type: 'error',
+            message: `Brand mismatch! You paired an ${cpuIsIntel ? 'Intel' : 'AMD'} CPU with an ${mbIsIntel ? 'Intel' : 'AMD'} Motherboard.`
+          });
+      }
   }
 
   // 2. CPU Cooler compatibility
@@ -187,7 +203,8 @@ const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '
 }
 
 export function getComponentCompatibility(category: string, product: any, currentBuild: PcBuildState): ValidationMessage | null {
-  const testBuild: PcBuildState = { ...currentBuild };
+  const testBuild: PcBuildState = { ...currentBuild } as PcBuildState;
+  
   if (category === 'cpus') testBuild.cpu = product;
   else if (category === 'motherboards') testBuild.motherboard = product;
   else if (category === 'ram') testBuild.ram = product;
@@ -202,4 +219,7 @@ export function getComponentCompatibility(category: string, product: any, curren
   if (error) return error;
 
   return null;
+
+  return null;
 }
+
