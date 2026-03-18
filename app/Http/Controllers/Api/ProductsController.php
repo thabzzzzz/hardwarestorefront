@@ -251,7 +251,7 @@ class ProductsController extends Controller
                 if (is_array($rawImgs) && count($rawImgs) > 0) {
                     $candidate = $rawImgs[0];
                     if (is_string($candidate) || is_numeric($candidate)) {
-                         $scrapedThumb = trim((string)$candidate, '"');
+                        $scrapedThumb = trim((string)$candidate, '"');
                     }
                 }
             }

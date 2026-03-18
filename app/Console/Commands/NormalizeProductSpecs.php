@@ -29,7 +29,7 @@ class NormalizeProductSpecs extends Command
             $cat = strtolower($variant->product->product_type);
             $rawSpecs = $variant->raw_spec_tables ?? [];
             if (is_string($rawSpecs)) {
-                 $rawSpecs = json_decode($rawSpecs, true) ?? [];
+                $rawSpecs = json_decode($rawSpecs, true) ?? [];
             }
             if (empty($rawSpecs)) {
                 $bar->advance();
@@ -96,7 +96,9 @@ class NormalizeProductSpecs extends Command
                     break;
             }
 
-            $normalized = array_filter($normalized, function($val) { return !is_null($val); });
+            $normalized = array_filter($normalized, function ($val) {
+                return !is_null($val);
+            });
 
             if (empty($normalized)) {
                 $this->info("Skipped (Empty " . $cat . "): " . $variant->id);
@@ -117,18 +119,20 @@ class NormalizeProductSpecs extends Command
         $this->info('Spec normalization complete!');
     }
 
-    private function getValuesByKeywords($specs, $keywords) {
+    private function getValuesByKeywords($specs, $keywords)
+    {
         foreach ($keywords as $kw) {
-             foreach ($specs as $k => $v) {
-                 if (Str::contains($k, $kw)) {
-                     return $v;
-                 }
-             }
+            foreach ($specs as $k => $v) {
+                if (Str::contains($k, $kw)) {
+                    return $v;
+                }
+            }
         }
         return null;
     }
 
-    private function extractSocket($specs) {
+    private function extractSocket($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['socket']);
         if (!$val) return null;
         if (preg_match('/(AM[45]|LGA\s?\d+)/i', $val, $matches)) {
@@ -138,7 +142,8 @@ class NormalizeProductSpecs extends Command
         return $val;
     }
 
-    private function extractIncludedCooler($specs) {
+    private function extractIncludedCooler($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['cooler_device', 'cooling_device']);
         if (!$val) return null;
         if (Str::contains(strtolower($val), ['included', 'wraith', 'intel'])) return true;
@@ -146,7 +151,8 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractMBFormFactor($specs) {
+    private function extractMBFormFactor($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['form_factor']);
         if (!$val) return null;
         if (preg_match('/(ATX|Micro\s?ATX|Mini\s?ITX|E-ATX)/i', $val, $matches)) {
@@ -158,7 +164,8 @@ class NormalizeProductSpecs extends Command
         return $val;
     }
 
-    private function extractMemoryType($specs) {
+    private function extractMemoryType($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['memory_standard', 'memory_type', 'speed', 'memory']);
         if (!$val) return null;
         if (preg_match('/(DDR[45])/i', $val, $matches)) {
@@ -167,7 +174,8 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractMemorySlots($specs) {
+    private function extractMemorySlots($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['number_of_memory_slots']);
         if (!$val) return null;
         if (preg_match('/(\d+)/', $val, $matches)) {
@@ -176,19 +184,21 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractRamModules($specs) {
+    private function extractRamModules($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['capacity']);
         if (!$val) return null;
         if (preg_match('/(\d+)\s*x\s*(\d+)GB/i', $val, $matches)) {
-             return [
-                 'count' => (int) $matches[1],
-                 'size_gb' => (int) $matches[2],
-             ];
+            return [
+                'count' => (int) $matches[1],
+                'size_gb' => (int) $matches[2],
+            ];
         }
         return null;
     }
 
-    private function extractWattage($specs) {
+    private function extractWattage($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['maximum_power']);
         if (!$val) return null;
         if (preg_match('/(\d+)\s*W/', $val, $matches)) {
@@ -197,7 +207,8 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractPSUFormFactor($specs) {
+    private function extractPSUFormFactor($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['type']);
         if (!$val) return null;
         if (preg_match('/(SFX|ATX|TFX)/i', $val, $matches)) {
@@ -206,7 +217,8 @@ class NormalizeProductSpecs extends Command
         return 'ATX';
     }
 
-    private function extractGPULength($specs) {
+    private function extractGPULength($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['max_gpu_length', 'card_dimensions']);
         if (!$val) return null;
         if (preg_match('/^(\d+)\s*mm/i', $val, $matches)) {
@@ -218,16 +230,18 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractRecommendedPSU($specs) {
+    private function extractRecommendedPSU($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['recommended_psu_wattage', 'thermal_design_power', 'suggested_power']);
         if (!$val) return null;
         if (preg_match('/(\d+)\s*W/i', $val, $matches)) {
-             return (int) $matches[1];
+            return (int) $matches[1];
         }
         return null;
     }
 
-    private function extractMaxGPULengthCase($specs) {
+    private function extractMaxGPULengthCase($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['max_gpu_length']);
         if (!$val) return null;
         if (preg_match('/(\d+)\s*mm/i', $val, $matches)) {
@@ -236,7 +250,8 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractMaxPSULengthCase($specs) {
+    private function extractMaxPSULengthCase($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['max_psu_length']);
         if (!$val) return null;
         if (preg_match('/(\d+)\s*mm/i', $val, $matches)) {
@@ -245,7 +260,8 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractCaseMBFormFactors($specs) {
+    private function extractCaseMBFormFactors($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['motherboard_compatibility']);
         if (!$val) return null;
         $allowed = ['ATX', 'Micro ATX', 'Mini ITX', 'E-ATX'];
@@ -253,46 +269,50 @@ class NormalizeProductSpecs extends Command
         $valClean = str_ireplace('micro-atx', 'micro atx', $val);
         $valClean = str_ireplace('mini-itx', 'mini itx', $valClean);
         foreach ($allowed as $a) {
-             if (stripos($valClean, $a) !== false) {
-                 $found[] = $a;
-             }
+            if (stripos($valClean, $a) !== false) {
+                $found[] = $a;
+            }
         }
         return $found;
     }
 
-    private function extractCaseType($specs) {
+    private function extractCaseType($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['type']);
         if (!$val) return null;
         return $val;
     }
 
-    private function extractCoolerSockets($specs) {
+    private function extractCoolerSockets($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['socket']);
         if (!$val) return null;
         $found = [];
         if (preg_match_all('/(AM[45]|LGA\s?\d+)/i', $val, $matches)) {
-             foreach ($matches[1] as $m) {
-                 $socket = strtoupper(trim($m));
-                 $socket = preg_replace('/LGA(\d+)/', 'LGA $1', $socket);
-                 $found[] = $socket;
-             }
+            foreach ($matches[1] as $m) {
+                $socket = strtoupper(trim($m));
+                $socket = preg_replace('/LGA(\d+)/', 'LGA $1', $socket);
+                $found[] = $socket;
+            }
         }
         return array_unique($found);
     }
 
-    private function extractCoolerType($specs) {
+    private function extractCoolerType($specs)
+    {
         $val = $this->getValuesByKeywords($specs, ['type', 'radiator', 'water']);
         if (!$val) return 'Air';
         if (stripos($val, 'Liquid') !== false || stripos($val, 'AIO') !== false) return 'AIO';
         return 'Air';
     }
 
-    private function extractCoolerSize($specs) {
-         $val = $this->getValuesByKeywords($specs, ['radiator_size', 'fan_size', 'max_cpu_cooler_height']);
-         if (!$val) return null;
-         if (preg_match('/(\d+)\s*mm/i', $val, $matches)) {
-             return (int) $matches[1];
-         }
-         return null;
+    private function extractCoolerSize($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['radiator_size', 'fan_size', 'max_cpu_cooler_height']);
+        if (!$val) return null;
+        if (preg_match('/(\d+)\s*mm/i', $val, $matches)) {
+            return (int) $matches[1];
+        }
+        return null;
     }
 }

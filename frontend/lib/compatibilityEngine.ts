@@ -51,8 +51,8 @@ const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '
   const cpuTitle = cpu?.title || '';
   const mbTitle = motherboard?.title || '';
 
-  const cpuSocket = cpu?.normalized_specs?.socket || (cpuTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4)/i)?.[0] || null);
-  const mbSocket = motherboard?.normalized_specs?.socket || (mbTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4)/i)?.[0] || null);
+  const cpuSocket = cpu?.normalized_specs?.socket || (cpuTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4|sWRX8|SP3)/i)?.[0] || null);
+  const mbSocket = motherboard?.normalized_specs?.socket || (mbTitle.match(/(AM[345]|LGA[\s-]?\w+|sTRX4|TR4|sWRX8|SP3)/i)?.[0] || null);
 
   if (cpuSocket && mbSocket) {
     const cNorm = normalizeStr(cpuSocket);
@@ -71,10 +71,14 @@ const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '
     }
   } else if (cpuTitle && mbTitle) {
       // Vendor mismatch fallback
-      const cpuIsIntel = cpuTitle.toLowerCase().includes('intel');
-      const cpuIsAMD = cpuTitle.toLowerCase().includes('amd') || cpuTitle.toLowerCase().includes('ryzen');
-      const mbIsIntel = mbTitle.toLowerCase().includes('intel');
-      const mbIsAMD = mbTitle.toLowerCase().includes('amd') || mbTitle.toLowerCase().includes('ryzen');
+      const cpuIsIntel = cpuTitle.toLowerCase().includes('intel') || cpuTitle.toLowerCase().includes('core i');
+      const cpuIsAMD = cpuTitle.toLowerCase().includes('amd') || cpuTitle.toLowerCase().includes('ryzen') || cpuTitle.toLowerCase().includes('threadripper');
+      
+      const intelChipsets = /([HZb]\d[169]0|X299|Z590|Z690|Z790|Z890|B760)/i;
+      const amdChipsets = /([ABX]\d[257]0|TRX[45]0|WRX[89]0)/i;
+      
+      const mbIsIntel = mbTitle.toLowerCase().includes('intel') || intelChipsets.test(mbTitle);
+      const mbIsAMD = mbTitle.toLowerCase().includes('amd') || amdChipsets.test(mbTitle);
 
       if ((cpuIsIntel && mbIsAMD) || (cpuIsAMD && mbIsIntel)) {
           messages.push({
@@ -214,9 +218,11 @@ export function getComponentCompatibility(category: string, product: any, curren
   else if (category === 'coolers') testBuild.cpu_cooler = product;
   else return null;
 
-  const messages = validateBuild(testBuild);
-  const error = messages.find((m) => m.type === 'error');
-  if (error) return error;
+  const baselineMessages = validateBuild(currentBuild);
+  const newMessages = validateBuild(testBuild);
+  const baselineErrors = baselineMessages.filter(m => m.type === 'error').map(m => m.message);
+  const newError = newMessages.find(m => m.type === 'error' && !baselineErrors.includes(m.message));
+  if (newError) return newError;
 
   return null;
 

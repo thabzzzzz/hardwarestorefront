@@ -28,11 +28,11 @@ class PcBuildController extends Controller
                         }
                     }
                 }
-                
+
                 $data = $build->toArray();
                 unset($data['components']);
                 $data['total_price_cents'] = $totalCents;
-                
+
                 return $data;
             });
 
@@ -51,7 +51,7 @@ class PcBuildController extends Controller
             if ($variant && $variant->product) {
                 $product = $variant->product;
                 $price = $variant->prices()->orderByDesc('valid_from')->first();
-                
+
                 $thumbnailModel = $variant->images()->where('role', 'thumbnail')->first() ?? $variant->product->images()->where('role', 'thumbnail')->first() ?? $variant->images()->first();
                 $scrapedThumb = $variant->images()->where('role', 'scraped')->first() ?? $variant->product->images()->where('role', 'scraped')->first();
                 $scrapedThumbPath = $scrapedThumb ? $scrapedThumb->path : null;
