@@ -493,7 +493,7 @@ export default function PcBuilder() {
                 </div>
 
                 {/* BUDGET TRACKER */}
-                {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} />}
+                {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} />}
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (

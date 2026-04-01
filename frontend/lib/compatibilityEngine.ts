@@ -215,17 +215,12 @@ export function getComponentCompatibility(category: string, product: any, curren
   else if (category === 'gpus') testBuild.gpu = product;
   else if (category === 'psus') testBuild.psu = product;
   else if (category === 'cases') testBuild.case = product;
-  else if (category === 'coolers') testBuild.system_cooling = product;
+  else if (category === 'coolers') testBuild.cpu_cooler = product;
   else return null;
 
-  const baselineMessages = validateBuild(currentBuild);
-  const newMessages = validateBuild(testBuild);
-  const baselineErrors = baselineMessages.filter(m => m.type === 'error').map(m => m.message);
-  const newError = newMessages.find(m => m.type === 'error' && !baselineErrors.includes(m.message));
-  if (newError) return newError;
-
-  return null;
+  const messages = validateBuild(testBuild);
+  const error = messages.find((m) => m.type === 'error');
+  if (error) return error;
 
   return null;
 }
-
