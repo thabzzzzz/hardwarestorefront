@@ -51,7 +51,7 @@ const CategoryImageMap: Record<string, string> = {
 const CATEGORIES = [
     { id: "cases", name: "Chassis" },
     { id: "cpus", name: "CPU" },
-    { id: "coolers", name: "CPU Cooler" },
+    { id: "coolers", name: "System Cooling" },
     { id: "motherboards", name: "Motherboard" },
     { id: "ram", name: "Memory" },
     { id: "gpus", name: "Graphics Card" },
@@ -318,7 +318,7 @@ export default function PcBuilder() {
         gpu: selectedComponents["gpus"],
         psu: selectedComponents["psus"],
         case: selectedComponents["cases"],
-        cpu_cooler: selectedComponents["coolers"],
+        system_cooling: selectedComponents["coolers"],
     });
 
     const errorCount = validationMessages.filter(m => m.type === 'error').length;
@@ -949,7 +949,7 @@ export default function PcBuilder() {
                                             gpu: selectedComponents["gpus"],
                                             psu: selectedComponents["psus"],
                                             case: selectedComponents["cases"],
-                                            cpu_cooler: selectedComponents["coolers"],
+                                            system_cooling: selectedComponents["coolers"],
                                         })
                                         : null;
                                         

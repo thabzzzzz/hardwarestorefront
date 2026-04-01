@@ -37,13 +37,13 @@ export type PcBuildState = {
   gpu?: BuildComponent;
   psu?: BuildComponent;
   case?: BuildComponent;
-  cpu_cooler?: BuildComponent;
+  system_cooling?: BuildComponent;
 };
 
 export function validateBuild(build: PcBuildState): ValidationMessage[] {
   const messages: ValidationMessage[] = [];
 
-  const { cpu, motherboard, ram, gpu, psu, case: pcCase, cpu_cooler } = build;
+  const { cpu, motherboard, ram, gpu, psu, case: pcCase, system_cooling } = build;
 
 const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
   
@@ -89,21 +89,21 @@ const normalizeStr = (s?: string) => s ? s.toLowerCase().replace(/[^a-z0-9]/g, '
   }
 
   // 2. CPU Cooler compatibility
-  if (cpu_cooler?.normalized_specs?.supported_sockets && motherboard?.normalized_specs?.socket) {
-    if (!cpu_cooler.normalized_specs.supported_sockets.includes(motherboard.normalized_specs.socket)) {
+  if (system_cooling?.normalized_specs?.supported_sockets && motherboard?.normalized_specs?.socket) {
+    if (!system_cooling.normalized_specs.supported_sockets.includes(motherboard.normalized_specs.socket)) {
       messages.push({
         type: 'error',
-        message: `CPU Cooler does not support socket ${motherboard.normalized_specs.socket}. Supported: ${cpu_cooler.normalized_specs.supported_sockets.join(', ')}`
+        message: `CPU Cooler does not support socket ${motherboard.normalized_specs.socket}. Supported: ${system_cooling.normalized_specs.supported_sockets.join(', ')}`
       });
     }
   }
 
-  // Warning if no cooler is included with CPU and no cooler is selected
-  if (cpu && !cpu_cooler) {
+  // Warning if no cooler is included with CPU
+  if (cpu) {
     if (cpu.normalized_specs?.includes_cooler === false) {
        messages.push({
          type: 'warning',
-         message: 'This CPU does not include a stock cooler. You need to add a CPU Cooler.'
+         message: 'This CPU does not include a stock cooler. Because this store currently only stocks system cooling fans, please ensure to purchase a compatible CPU cooler independently.'
        });
     }
   }
@@ -215,7 +215,7 @@ export function getComponentCompatibility(category: string, product: any, curren
   else if (category === 'gpus') testBuild.gpu = product;
   else if (category === 'psus') testBuild.psu = product;
   else if (category === 'cases') testBuild.case = product;
-  else if (category === 'coolers') testBuild.cpu_cooler = product;
+  else if (category === 'coolers') testBuild.system_cooling = product;
   else return null;
 
   const baselineMessages = validateBuild(currentBuild);
