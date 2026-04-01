@@ -78,7 +78,16 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
                                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
                                 onMouseEnter={() => setHoveredCategory(sec.key)}
                                 onMouseLeave={() => setHoveredCategory(null)}
-                                onClick={() => setActiveCategory && sec.key !== 'free' && setActiveCategory(sec.key)}
+                                onClick={() => {
+                                    if (setActiveCategory && sec.key !== 'free') {
+                                        setActiveCategory(sec.key);
+                                        // Scroll to part picker
+                                        const picker = document.getElementById('part-picker');
+                                        if (picker) {
+                                            picker.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }
+                                    }
+                                }}
                                 style={{
                                     background: sec.color,
                                     height: "100%",

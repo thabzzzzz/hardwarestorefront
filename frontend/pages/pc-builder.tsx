@@ -544,7 +544,7 @@ export default function PcBuilder() {
                     </div>
                 )}
 
-                <div style={{ display: "flex", gap: "24px", flex: 1 }}>
+                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "100px" }}>
                     {/* Left Sidebar - Categories */}
                     <div
                         style={{
