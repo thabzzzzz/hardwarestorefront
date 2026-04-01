@@ -121,6 +121,7 @@ export default function PcBuilder() {
     const cart = useCart();
     const [activeProfile, setActiveProfile] = useState<any>(null);
     const [activeCategory, setActiveCategory] = useState("cases");
+    const [isModified, setIsModified] = useState(false);
     const [selectedComponents, setSelectedComponents] = useState<
         Record<string, any>
     >({});
@@ -128,7 +129,8 @@ export default function PcBuilder() {
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
         setSelectedComponents(profile.seed);
-        setBuildName(profile.name + ' Build');
+        setBuildName(profile.name === 'Start from Scratch' ? 'My Custom Build' : profile.name + ' Build');
+        setIsModified(profile.isCustom ? true : false);
     };
 
     const [productsCache, setProductsCache] = useState<Record<string, any[]>>({});
@@ -296,6 +298,7 @@ export default function PcBuilder() {
     }, [activeCategory, productsCache]);
 
     const handleSelectToggle = (category: string, product: any) => {
+        setIsModified(true);
         setSelectedComponents((prev) => {
             const isCurrentlySelected =
                 prev[category]?.variant_id === product.variant_id;
@@ -313,6 +316,7 @@ export default function PcBuilder() {
 
     const handleRemove = (e: React.MouseEvent, category: string) => {
         e.stopPropagation();
+        setIsModified(true);
         setSelectedComponents((prev) => {
             const newSelection = { ...prev };
             delete newSelection[category];
@@ -414,15 +418,8 @@ export default function PcBuilder() {
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
                         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            <EditIcon 
-                                fontSize="small" 
-                                style={{ color: "#aaa", cursor: "pointer" }} 
-                                onClick={() => buildNameInputRef.current?.focus()} 
-                            />
-                            <input 
-                                ref={buildNameInputRef}
-                                type="text" 
-                                value={buildName} 
+                            {isModified && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
+                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified} 
                                 onChange={(e) => setBuildName(e.target.value)}
                                 placeholder="My Build 1"
                                 style={{
@@ -434,17 +431,14 @@ export default function PcBuilder() {
                                     backgroundColor: "transparent",
                                     outline: "none",
                                     transition: "all 0.2s",
-                                    cursor: "pointer",
-                                    width: "300px"
+                                    cursor: isModified ? "text" : "default",
+                                    width: "400px",
+                                    textOverflow: "ellipsis",
+                                    overflow: "hidden",
+                                    whiteSpace: "nowrap",
                                 }}
-                                onFocus={(e) => {
-                                    e.target.style.backgroundColor = "#fff";
-                                    e.target.style.border = "1px solid #1f7a8c";
-                                }}
-                                onBlur={(e) => {
-                                    e.target.style.backgroundColor = "transparent";
-                                    e.target.style.border = "1px solid transparent";
-                                }}
+                                onFocus={(e) => { if(isModified) { e.target.style.backgroundColor = "#fff"; e.target.style.border = "1px solid #1f7a8c"; } }}
+                                onBlur={(e) => { if(isModified) { e.target.style.backgroundColor = "transparent"; e.target.style.border = "1px solid transparent"; } }}
                             />
                         </div>
                     </div>
@@ -471,6 +465,7 @@ export default function PcBuilder() {
                                 {isSaving ? "Saving..." : "Save Build"}
                             </button>
                             
+                            
                             {shareToken && (
                                 <button
                                     onClick={() => handleSave(true)}
@@ -490,6 +485,80 @@ export default function PcBuilder() {
                             )}
                         </div>
                     )}
+                       
+                    <div style={{ display: "flex", gap: "12px", marginLeft: user ? "16px" : "auto" }}>
+                        {(isModified || (activeProfile && activeProfile.isCustom)) && (
+                            <button
+                                onClick={() => {
+                                    if(confirm('Are you sure you want to clear your current parts?')) {
+                                        setSelectedComponents({});
+                                        setIsModified(true);
+                                    }
+                                }}
+                                style={{
+                                    padding: "0 24px",
+                                    backgroundColor: "transparent",
+                                    color: "#d32f2f",
+                                    border: "1px solid rgba(211, 47, 47, 0.5)",
+                                    borderRadius: "10px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    fontSize: "14px",
+                                    height: "44px",
+                                    textTransform: "none",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    transition: "all 0.2s"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.border = "1px solid #d32f2f";
+                                    e.currentTarget.style.backgroundColor = "rgba(211, 47, 47, 0.04)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.border = "1px solid rgba(211, 47, 47, 0.5)";
+                                    e.currentTarget.style.backgroundColor = "transparent";
+                                }}
+                            >
+                                Clear Parts
+                            </button>
+                        )}
+                        <button
+                            onClick={() => {
+                                if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
+                                    setActiveProfile(null);
+                                    router.replace('/pc-builder', undefined, { shallow: true });
+                                }
+                            }}
+                            style={{
+                                padding: "0 24px",
+                                backgroundColor: "transparent",
+                                color: "#1f7a8c",
+                                border: "1px solid rgba(31, 122, 140, 0.5)",
+                                borderRadius: "10px",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                height: "44px",
+                                textTransform: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.2s"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.border = "1px solid #1f7a8c";
+                                e.currentTarget.style.backgroundColor = "rgba(31, 122, 140, 0.04)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.border = "1px solid rgba(31, 122, 140, 0.5)";
+                                e.currentTarget.style.backgroundColor = "transparent";
+                            }}
+                        >
+                            <ArrowBackIcon style={{ marginRight: "6px", fontSize: "18px" }} />
+                            Change Tier
+                        </button>
+                    </div>
                 </div>
 
                 {/* BUDGET TRACKER */}
