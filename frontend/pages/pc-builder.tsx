@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -22,6 +23,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle.js";
 import InfoIcon from "@mui/icons-material/Info.js";
 
 import { validateBuild, ValidationMessage, getComponentCompatibility } from "../lib/compatibilityEngine";
+import { Onboarding } from "../components/pcbuilder/Onboarding";
+import { BudgetTracker } from "../components/pcbuilder/BudgetTracker";
+import { AllocationSidebar } from "../components/pcbuilder/AllocationSidebar";
 
 const CategoryIconMap: Record<string, any> = {
     cases: ComputerIcon,
@@ -115,10 +119,17 @@ export default function PcBuilder() {
     const { user } = useAuth();
     const router = useRouter();
     const cart = useCart();
+    const [activeProfile, setActiveProfile] = useState<any>(null);
     const [activeCategory, setActiveCategory] = useState("cases");
     const [selectedComponents, setSelectedComponents] = useState<
         Record<string, any>
     >({});
+
+    const handleProfileSelect = (profile: any) => {
+        setActiveProfile(profile);
+        setSelectedComponents(profile.seed);
+        setBuildName(profile.name + ' Build');
+    };
 
     const [productsCache, setProductsCache] = useState<Record<string, any[]>>({});
     const [loadingCategory, setLoadingCategory] = useState(false);
@@ -311,6 +322,19 @@ export default function PcBuilder() {
 
     const activeProducts = productsCache[activeCategory] || [];
 
+    const sortedActiveProducts = useMemo(() => {
+        const items = [...activeProducts];
+        const selectedId = selectedComponents[activeCategory]?.variant_id;
+        if (!selectedId) return items;
+        
+        const selectedIndex = items.findIndex(p => p.variant_id === selectedId);
+        if (selectedIndex > -1) {
+            const [selected] = items.splice(selectedIndex, 1);
+            items.unshift(selected);
+        }
+        return items;
+    }, [activeProducts, selectedComponents, activeCategory]);
+
     const validationMessages = validateBuild({
         cpu: selectedComponents["cpus"],
         motherboard: selectedComponents["motherboards"],
@@ -374,6 +398,7 @@ export default function PcBuilder() {
                     </div>
                 )}
 
+                {!activeProfile && !router.query.build_id ? <Onboarding onSelectProfile={handleProfileSelect} /> : <React.Fragment>
                 <div
                     style={{
                         paddingBottom: "16px",
@@ -466,6 +491,9 @@ export default function PcBuilder() {
                         </div>
                     )}
                 </div>
+
+                {/* BUDGET TRACKER */}
+                {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} />}
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (
@@ -939,9 +967,10 @@ export default function PcBuilder() {
                                 >
                                     Loading components...
                                 </div>
-                            ) : activeProducts.length > 0 ? (
-                                activeProducts.map((product: any) => {
-                                    const compatError = !selectedComponents[activeCategory]
+                            ) : sortedActiveProducts.length > 0 ? (
+                                <AnimatePresence mode="popLayout">
+                                    {sortedActiveProducts.map((product: any) => {
+                                        const compatError = !selectedComponents[activeCategory]
                                         ? getComponentCompatibility(activeCategory, product, {
                                             cpu: selectedComponents["cpus"],
                                             motherboard: selectedComponents["motherboards"],
@@ -959,7 +988,12 @@ export default function PcBuilder() {
                                     const specs = getSpecs(product);
 
                                     return (
-                                        <div
+                                        <motion.div
+                                            layout
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             key={product.variant_id}
                                             style={{
                                                 display: "flex",
@@ -1238,9 +1272,10 @@ export default function PcBuilder() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     );
-                                })
+                                })}
+                                </AnimatePresence>
                             ) : (
                                 <div
                                     style={{
@@ -1285,7 +1320,11 @@ export default function PcBuilder() {
                             )}
                         </div>
                     </div>
+
+                    {/* Right Sidebar - Allocation Guide */}
+                    {activeProfile && <AllocationSidebar activeProfile={activeProfile} selectedComponents={selectedComponents} />}
                 </div>
+            </React.Fragment>}
             </main>
 
             {/* Bottom Sticky Bar */}

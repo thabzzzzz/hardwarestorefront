@@ -15,6 +15,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "@mui/icons-material": "^7.3.7"
+        "@mui/icons-material": "^7.3.7",
+        "framer-motion": "^12.38.0"
     }
 }
