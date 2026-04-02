@@ -638,7 +638,8 @@ export default function PcBuilder() {
                             gap: "8px",
                             position: "sticky",
                             top: "270px",
-                            height: "fit-content",
+                            maxHeight: "calc(100vh - 300px)",
+                            overflowY: "auto",
                         }}
                     >
                         {CATEGORIES.map((cat) => {
