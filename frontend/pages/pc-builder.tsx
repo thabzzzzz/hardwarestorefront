@@ -405,25 +405,15 @@ export default function PcBuilder() {
                 {!activeProfile && !router.query.build_id ? <Onboarding onSelectProfile={handleProfileSelect} /> : <React.Fragment>
                 <div
                     style={{
-                        position: "sticky",
-                        top: "var(--brand-height, 73px)",
-                        zIndex: 100,
-                        backgroundColor: "#f4f4f6",
-                        padding: "24px 24px 0px 24px",
-                        margin: "-24px -24px 0 -24px",
+                        paddingBottom: "16px",
+                        color: "#333",
+                        fontWeight: 700,
+                        fontSize: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
                     }}
                 >
-                    <div
-                        style={{
-                            paddingBottom: "16px",
-                            color: "#333",
-                            fontWeight: 700,
-                            fontSize: "24px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between"
-                        }}
-                    >
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
@@ -572,7 +562,20 @@ export default function PcBuilder() {
                 </div>
 
                 {/* BUDGET TRACKER */}
-                {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} />}
+                <div
+                    style={{
+                        position: "sticky",
+                        top: "var(--brand-height, 73px)",
+                        zIndex: 100,
+                        backgroundColor: "#f4f4f6", // Match main bg 
+                        paddingBottom: "8px",       // A little padding below
+                        paddingTop: "8px",
+                        margin: "0 -24px",          // Span edge to edge if needed, or keep to normal. Let's pad left/right
+                        paddingLeft: "24px",
+                        paddingRight: "24px"
+                    }}
+                >
+                    {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} />}
                 </div>
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
@@ -624,7 +627,7 @@ export default function PcBuilder() {
                     </div>
                 )}
 
-                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "240px" }}>
+                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "220px" }}>
                     {/* Left Sidebar - Categories */}
                     <div
                         style={{
@@ -634,8 +637,8 @@ export default function PcBuilder() {
                             flexDirection: "column",
                             gap: "8px",
                             position: "sticky",
-                            top: "220px", 
-                            maxHeight: "calc(100vh - 240px)",
+                            top: "180px", 
+                            maxHeight: "calc(100vh - 200px)",
                             overflowY: "auto",
                             paddingRight: "8px", // add slight padding for scrollbar
                         }}
