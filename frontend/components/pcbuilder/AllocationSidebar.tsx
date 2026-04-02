@@ -27,7 +27,7 @@ export const AllocationSidebar = ({ activeProfile, selectedComponents }: any) =>
                 gap: '20px',
                 height: 'fit-content',
                 position: 'sticky',
-                top: '24px'
+                top: '220px'
             }}
         >
             <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0, color: '#333' }}>

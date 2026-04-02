@@ -405,15 +405,25 @@ export default function PcBuilder() {
                 {!activeProfile && !router.query.build_id ? <Onboarding onSelectProfile={handleProfileSelect} /> : <React.Fragment>
                 <div
                     style={{
-                        paddingBottom: "16px",
-                        color: "#333",
-                        fontWeight: 700,
-                        fontSize: "24px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between"
+                        position: "sticky",
+                        top: "var(--brand-height, 73px)",
+                        zIndex: 100,
+                        backgroundColor: "#f4f4f6",
+                        padding: "24px 24px 0px 24px",
+                        margin: "-24px -24px 0 -24px",
                     }}
                 >
+                    <div
+                        style={{
+                            paddingBottom: "16px",
+                            color: "#333",
+                            fontWeight: 700,
+                            fontSize: "24px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between"
+                        }}
+                    >
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
@@ -563,6 +573,7 @@ export default function PcBuilder() {
 
                 {/* BUDGET TRACKER */}
                 {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} />}
+                </div>
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (
@@ -613,7 +624,7 @@ export default function PcBuilder() {
                     </div>
                 )}
 
-                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "100px" }}>
+                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "240px" }}>
                     {/* Left Sidebar - Categories */}
                     <div
                         style={{
@@ -622,6 +633,11 @@ export default function PcBuilder() {
                             display: "flex",
                             flexDirection: "column",
                             gap: "8px",
+                            position: "sticky",
+                            top: "220px", 
+                            maxHeight: "calc(100vh - 240px)",
+                            overflowY: "auto",
+                            paddingRight: "8px", // add slight padding for scrollbar
                         }}
                     >
                         {CATEGORIES.map((cat) => {
