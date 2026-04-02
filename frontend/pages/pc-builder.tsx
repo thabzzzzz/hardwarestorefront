@@ -580,7 +580,7 @@ export default function PcBuilder() {
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (
-                    <div style={{ marginBottom: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <div style={{ marginTop: "24px", marginBottom: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
                         {validationMessages.map((msg, idx) => {
                             const isError = msg.type === "error";
                             const isWarning = msg.type === "warning";
@@ -627,7 +627,7 @@ export default function PcBuilder() {
                     </div>
                 )}
 
-                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "220px" }}>
+                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "270px", marginTop: "24px" }}>
                     {/* Left Sidebar - Categories */}
                     <div
                         style={{
@@ -637,10 +637,8 @@ export default function PcBuilder() {
                             flexDirection: "column",
                             gap: "8px",
                             position: "sticky",
-                            top: "180px", 
-                            maxHeight: "calc(100vh - 200px)",
-                            overflowY: "auto",
-                            paddingRight: "8px", // add slight padding for scrollbar
+                            top: "270px",
+                            height: "fit-content",
                         }}
                     >
                         {CATEGORIES.map((cat) => {

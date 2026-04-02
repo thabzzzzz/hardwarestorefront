@@ -48,7 +48,7 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
 
 
     return (
-        <div style={{ marginBottom: "24px", background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+        <div style={{ marginBottom: "0px", background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "15px" }}>
                 <span style={{ fontWeight: 600, color: "#333" }}>
                     {activeProfile?.name} Target: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(targetBudget / 100).toLocaleString()}</span>
