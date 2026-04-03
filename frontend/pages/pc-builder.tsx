@@ -640,6 +640,7 @@ export default function PcBuilder() {
                             top: "270px",
                             maxHeight: "calc(100vh - 380px)",
                             overflowY: "auto",
+                            overscrollBehavior: "contain",
                         }}
                     >
                         {CATEGORIES.map((cat) => {
