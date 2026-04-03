@@ -638,7 +638,7 @@ export default function PcBuilder() {
                             gap: "8px",
                             position: "sticky",
                             top: "270px",
-                            maxHeight: "calc(100vh - 300px)",
+                            maxHeight: "calc(100vh - 380px)",
                             overflowY: "auto",
                         }}
                     >
@@ -653,6 +653,7 @@ export default function PcBuilder() {
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
                                     style={{
+                                        flexShrink: 0,
                                         display: "flex",
                                         alignItems: "center",
                                         padding: "12px",
