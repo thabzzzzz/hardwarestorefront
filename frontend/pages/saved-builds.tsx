@@ -104,7 +104,7 @@ export default function SavedBuilds() {
                         <h1 style={{ fontSize: "28px", color: "#111" }}>
                             My Saved Builds
                         </h1>
-                        <Link href="/pc-builder" style={{ padding: "8px 16px", backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}>Create New Build</Link>
+                        <Link href="/pc-builder" style={{ padding: "14px 16px", backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}>Create New Build</Link>
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>

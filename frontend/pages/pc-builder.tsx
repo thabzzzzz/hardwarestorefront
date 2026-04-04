@@ -468,29 +468,17 @@ export default function PcBuilder() {
                                     }
                                 }}
                                 style={{
-                                    padding: "0 24px",
-                                    backgroundColor: "transparent",
-                                    color: "#d32f2f",
-                                    border: "1px solid rgba(211, 47, 47, 0.5)",
-                                    borderRadius: "10px",
-                                    fontWeight: 700,
-                                    cursor: "pointer",
-                                    fontSize: "14px",
-                                    height: "44px",
-                                    textTransform: "none",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    transition: "all 0.2s"
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.border = "1px solid #d32f2f";
-                                    e.currentTarget.style.backgroundColor = "rgba(211, 47, 47, 0.04)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.border = "1px solid rgba(211, 47, 47, 0.5)";
-                                    e.currentTarget.style.backgroundColor = "transparent";
-                                }}
+                                padding: "14px 16px",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px"
+                            }}
                             >
                                 Clear Parts
                             </button>
@@ -502,14 +490,17 @@ export default function PcBuilder() {
                                     onClick={() => handleSave(true)}
                                     disabled={isSaving}
                                     style={{
-                                        padding: "8px 16px",
-                                        backgroundColor: "#f4f4f6",
-                                        color: "#1f7a8c",
-                                        border: "1px solid #1f7a8c",
-                                        borderRadius: "8px",
-                                        fontWeight: 600,
-                                        cursor: isSaving ? "not-allowed" : "pointer"
-                                    }}
+                                            padding: "14px 16px",
+                                            backgroundColor: "#1f7a8c",
+                                            color: "white",
+                                            border: "none",
+                                            borderRadius: "8px",
+                                            fontWeight: 600,
+                                            cursor: isSaving ? "not-allowed" : "pointer",
+                                            display: "inline-flex",
+                                            alignItems: "center",
+                                            gap: "6px"
+                                        }}
                                 >
                                     Save as New
                                 </button>
@@ -518,16 +509,16 @@ export default function PcBuilder() {
                                 onClick={() => handleSave(false)}
                                 disabled={isSaving}
                                 style={{
-                                    padding: "8px 16px",
+                                    padding: "14px 16px",
                                     backgroundColor: "#1f7a8c",
                                     color: "white",
                                     border: "none",
                                     borderRadius: "8px",
                                     fontWeight: 600,
                                     cursor: isSaving ? "not-allowed" : "pointer",
-                                    display: "flex",
+                                    display: "inline-flex",
                                     alignItems: "center",
-                                    gap: "8px"
+                                    gap: "6px"
                                 }}
                             >
                                 <SaveIcon fontSize="small" />
@@ -538,26 +529,16 @@ export default function PcBuilder() {
                         <button
                             onClick={() => setIsModalOpen(true)}
                             style={{
-                                padding: "0 24px",
-                                backgroundColor: "transparent",
-                                color: "#333",
-                                border: "1px solid #ccc",
-                                borderRadius: "10px",
-                                fontWeight: 700,
+                                padding: "14px 16px",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: 600,
                                 cursor: "pointer",
-                                fontSize: "14px",
-                                height: "44px",
-                                marginRight: "8px",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.2s"
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = "#e0e0e0";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = "transparent";
+                                gap: "6px"
                             }}
                         >
                             <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
@@ -571,28 +552,16 @@ export default function PcBuilder() {
                                 }
                             }}
                             style={{
-                                padding: "0 24px",
-                                backgroundColor: "transparent",
-                                color: "#1f7a8c",
-                                border: "1px solid rgba(31, 122, 140, 0.5)",
-                                borderRadius: "10px",
-                                fontWeight: 700,
+                                padding: "14px 16px",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: 600,
                                 cursor: "pointer",
-                                fontSize: "14px",
-                                height: "44px",
-                                textTransform: "none",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.2s"
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.border = "1px solid #1f7a8c";
-                                e.currentTarget.style.backgroundColor = "rgba(31, 122, 140, 0.04)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.border = "1px solid rgba(31, 122, 140, 0.5)";
-                                e.currentTarget.style.backgroundColor = "transparent";
+                                gap: "6px"
                             }}
                         >
                             <ArrowBackIcon style={{ marginRight: "6px", fontSize: "18px" }} />
