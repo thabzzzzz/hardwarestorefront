@@ -462,9 +462,14 @@ export default function PcBuilder() {
                         {(isModified || (activeProfile && activeProfile.isCustom)) && (
                             <button
                                 onClick={() => {
-                                    if(confirm('Are you sure you want to clear your current parts?')) {
+                                    if (activeProfile && !activeProfile.isCustom) {
+                                        setSelectedComponents(activeProfile.seed || {});
+                                        setIsModified(false);
+                                        toast.success("Build reset to default parts");
+                                    } else {
                                         setSelectedComponents({});
                                         setIsModified(true);
+                                        toast.success("Build parts cleared");
                                     }
                                 }}
                                 style={{
@@ -489,7 +494,7 @@ export default function PcBuilder() {
                                 e.currentTarget.style.boxShadow = "none";
                             }}
                             >
-                                Clear Parts
+                                {activeProfile && !activeProfile.isCustom ? "Reset to Defaults" : "Clear Parts"}
                             </button>
                         )}
                         {user && (
