@@ -220,7 +220,7 @@ export default function PcBuilder() {
 
     const handleSave = async (saveAsNew = false) => {
         if (!user) {
-            alert("Please log in to save builds");
+            toast.error("Please log in to save builds");
             return;
         }
 
@@ -251,14 +251,14 @@ export default function PcBuilder() {
                 const data = await res.json();
                 setShareToken(data.share_token);
                 setBuildName(data.name);
-                alert("Build saved successfully!");
+                toast.success(saveAsNew ? "Build saved as new successfully!" : "Build saved successfully!");
                 router.replace(`/pc-builder?build_id=${data.share_token}`, undefined, { shallow: true });
             } else {
-                alert("Failed to save build");
+                toast.error("Failed to save build");
             }
         } catch(e) {
             console.error("Failed to save build", e);
-            alert("Error saving build");
+            toast.error("Error saving build");
         } finally {
             setIsSaving(false);
         }
