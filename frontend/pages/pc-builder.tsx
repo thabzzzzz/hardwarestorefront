@@ -468,16 +468,25 @@ export default function PcBuilder() {
                                     }
                                 }}
                                 style={{
-                                padding: "14px 16px",
-                                backgroundColor: "#1f7a8c",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px"
+                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                    backgroundColor: "#1f7a8c",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    transition: "all 0.15s ease-in-out"
+                                }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
                             }}
                             >
                                 Clear Parts
@@ -490,7 +499,7 @@ export default function PcBuilder() {
                                     onClick={() => handleSave(true)}
                                     disabled={isSaving}
                                     style={{
-                                            padding: "14px 16px",
+                                            padding: "17px 16px", height: "54px", boxSizing: "border-box",
                                             backgroundColor: "#1f7a8c",
                                             color: "white",
                                             border: "none",
@@ -499,7 +508,16 @@ export default function PcBuilder() {
                                             cursor: isSaving ? "not-allowed" : "pointer",
                                             display: "inline-flex",
                                             alignItems: "center",
-                                            gap: "6px"
+                                            gap: "6px",
+                                            transition: "all 0.15s ease-in-out"
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.transform = "translateY(-2px)";
+                                            e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.transform = "translateY(0)";
+                                            e.currentTarget.style.boxShadow = "none";
                                         }}
                                 >
                                     Save as New
@@ -509,7 +527,7 @@ export default function PcBuilder() {
                                 onClick={() => handleSave(false)}
                                 disabled={isSaving}
                                 style={{
-                                    padding: "14px 16px",
+                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
                                     backgroundColor: "#1f7a8c",
                                     color: "white",
                                     border: "none",
@@ -518,7 +536,16 @@ export default function PcBuilder() {
                                     cursor: isSaving ? "not-allowed" : "pointer",
                                     display: "inline-flex",
                                     alignItems: "center",
-                                    gap: "6px"
+                                    gap: "6px",
+                                    transition: "all 0.15s ease-in-out"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-2px)";
+                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.boxShadow = "none";
                                 }}
                             >
                                 <SaveIcon fontSize="small" />
@@ -529,7 +556,7 @@ export default function PcBuilder() {
                         <button
                             onClick={() => setIsModalOpen(true)}
                             style={{
-                                padding: "14px 16px",
+                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
                                 color: "white",
                                 border: "none",
@@ -538,7 +565,16 @@ export default function PcBuilder() {
                                 cursor: "pointer",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: "6px"
+                                gap: "6px",
+                                transition: "all 0.15s ease-in-out"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
                             }}
                         >
                             <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
@@ -552,7 +588,7 @@ export default function PcBuilder() {
                                 }
                             }}
                             style={{
-                                padding: "14px 16px",
+                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
                                 color: "white",
                                 border: "none",
@@ -561,7 +597,16 @@ export default function PcBuilder() {
                                 cursor: "pointer",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: "6px"
+                                gap: "6px",
+                                transition: "all 0.15s ease-in-out"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
                             }}
                         >
                             <ArrowBackIcon style={{ marginRight: "6px", fontSize: "18px" }} />
@@ -866,43 +911,6 @@ export default function PcBuilder() {
                                     color: "#333",
                                 }}
                             >
-                                <div
-                                    style={{
-                                        width: "24px",
-                                        height: "24px",
-                                        color: "#666",
-                                    }}
-                                >
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <rect
-                                            x="2"
-                                            y="3"
-                                            width="20"
-                                            height="14"
-                                            rx="2"
-                                            ry="2"
-                                        ></rect>
-                                        <line
-                                            x1="8"
-                                            y1="21"
-                                            x2="16"
-                                            y2="21"
-                                        ></line>
-                                        <line
-                                            x1="12"
-                                            y1="17"
-                                            x2="12"
-                                            y2="21"
-                                        ></line>
-                                    </svg>
-                                </div>
                                 <h2
                                     style={{
                                         fontSize: "18px",

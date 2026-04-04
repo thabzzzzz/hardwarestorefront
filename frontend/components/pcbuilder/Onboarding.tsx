@@ -26,9 +26,9 @@ export const Onboarding = ({ onSelectProfile }: any) => {
                     <motion.div
                         key={profile.id}
                         initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.1 * i, type: "spring", stiffness: 100 }}
-                        whileHover={{ scale: 1.05, boxShadow: "0px 10px 40px rgba(31, 122, 140, 0.2)" }}
+                        animate={{ opacity: 1, scale: 1, transition: { delay: 0.1 * i, type: "spring", stiffness: 100 } }}
+                        transition={{ duration: 0.15, ease: "easeInOut" }}
+                        whileHover={{ y: -2, boxShadow: "0 6px 12px rgba(31, 122, 140, 0.4)" }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => onSelectProfile(profile)}
                         style={{
@@ -64,9 +64,9 @@ export const Onboarding = ({ onSelectProfile }: any) => {
                 {/* Custom Build Card */}
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.1 * Object.values(BUILD_PROFILES).length, type: "spring", stiffness: 100 }}
-                    whileHover={{ scale: 1.05, boxShadow: "0px 10px 40px rgba(31, 122, 140, 0.2)" }}
+                    animate={{ opacity: 1, scale: 1, transition: { delay: 0.1 * Object.values(BUILD_PROFILES).length, type: "spring", stiffness: 100 } }}
+                    transition={{ duration: 0.15, ease: "easeInOut" }}
+                    whileHover={{ y: -2, boxShadow: "0 6px 12px rgba(31, 122, 140, 0.4)" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => onSelectProfile({ id: "custom", name: "Custom Build", isCustom: true, targetBudget: 0, allocation: {} })}
                     style={{
