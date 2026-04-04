@@ -18,11 +18,11 @@ export const AllocationModal = ({ isOpen, onClose, activeProfile, selectedCompon
     const COMPONENT_NAMES: Record<string, string> = {
         gpus: "Graphics Card", cpus: "Processor", motherboards: "Motherboard",
         cases: "Chassis", psus: "Power Supply", memory: "Memory", storage: "Storage",
-        coolers: "Cooling", "system-coolers": "System Cooling", ssds: "SSD", hdds: "HDD", os: "Operating System"
+        coolers: "Cooling", "system-coolers": "System Cooling", ssds: "SSD", hdds: "HDD", os: "Operating System", ram: "RAM"
     };
 
     const sections = activeProfile.allocation || {};
-    const targetTotal = activeProfile.targetBudget;
+    const targetTotal = (activeProfile.targetBudget || 0) / 100;
 
     return (
         <AnimatePresence>

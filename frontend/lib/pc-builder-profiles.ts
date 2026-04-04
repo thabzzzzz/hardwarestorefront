@@ -6,7 +6,7 @@ export const BUILD_PROFILES: Record<string, any> = {
     "description": "Basic entry-level 1080p gaming and light work.",
     "allocation": {
       "gpus": {
-        "percent": 35,
+        "percent": 20,
         "note": "The largest single chunk of a gaming budget should always go to the GPU. For an entry-level build, this buys a dependable 1080p card that hits 60FPS on medium settings."
       },
       "cpus": {
@@ -14,7 +14,7 @@ export const BUILD_PROFILES: Record<string, any> = {
         "note": "A budget 6-core processor provides the best price-to-performance ratio, ensuring the system can handle modern gaming and daily tasks without bottlenecking basic graphics cards."
       },
       "ram": {
-        "percent": 10,
+        "percent": 25,
         "note": "16GB of memory is the absolute baseline. Allocating about 10% of the budget secures a reliable dual-channel kit to keep modern games and apps feeling snappy."
       }
     },
@@ -276,15 +276,15 @@ export const BUILD_PROFILES: Record<string, any> = {
     "description": "The sweet spot for 1080p High / 1440p Medium gaming.",
     "allocation": {
       "gpus": {
-        "percent": 45,
+        "percent": 30,
         "note": "Most of your budget goes towards pushing higher frame rates for a smooth 1440p or high 1080p gaming experience."
       },
       "cpus": {
-        "percent": 20,
+        "percent": 15,
         "note": "A capable mid-range CPU is necessary to prevent bottlenecking the graphics card while multi-tasking."
       },
       "ram": {
-        "percent": 10,
+        "percent": 20,
         "note": "32GB of RAM is the standard for modern gaming, preventing stutters and allowing background applications to run comfortably."
       }
     },
@@ -530,15 +530,15 @@ export const BUILD_PROFILES: Record<string, any> = {
     "description": "Max settings 1440p and solid 4K gaming ready.",
     "allocation": {
       "gpus": {
-        "percent": 50,
+        "percent": 30,
         "note": "The bulk of a high-end gaming budget should be invested in the GPU to handle max settings at 1440p or comfortable 4K frame rates."
       },
       "cpus": {
-        "percent": 15,
+        "percent": 20,
         "note": "Top-tier processors ensure high refresh rate monitors are fully utilized by eliminating CPU bottlenecks in computationally heavy games."
       },
       "ram": {
-        "percent": 5,
+        "percent": 20,
         "note": "While 32GB is still entirely sufficient, allocating a small percentage here affords you high-speed, low-latency kits to squeeze out extra frames."
       }
     },
@@ -803,15 +803,15 @@ export const BUILD_PROFILES: Record<string, any> = {
     "description": "Designed for massive compute payloads, video rendering, and multitasking.",
     "allocation": {
       "gpus": {
-        "percent": 30,
+        "percent": 35,
         "note": "A powerful GPU is crucial for hardware-accelerated video rendering, 3D viewport rendering, and complex AI workloads."
       },
       "cpus": {
-        "percent": 30,
+        "percent": 20,
         "note": "High core counts directly translate to drastically reduced compile and export times in highly multi-threaded professional applications."
       },
       "ram": {
-        "percent": 15,
+        "percent": 20,
         "note": "Working with heavy video formats, massive datasets, and complex 3D scenes often requires massive pools of RAM to prevent page-filing."
       }
     },
