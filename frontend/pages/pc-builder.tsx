@@ -457,50 +457,8 @@ export default function PcBuilder() {
                         </div>
                     </div>
                     
-                    {user && (
-                        <div style={{ display: "flex", gap: "12px" }}>
-                            <button
-                                onClick={() => handleSave(false)}
-                                disabled={isSaving}
-                                style={{
-                                    padding: "8px 16px",
-                                    backgroundColor: "#1f7a8c",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                    cursor: isSaving ? "not-allowed" : "pointer",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px"
-                                }}
-                            >
-                                <SaveIcon fontSize="small" />
-                                {isSaving ? "Saving..." : "Save Build"}
-                            </button>
-                            
-                            
-                            {shareToken && (
-                                <button
-                                    onClick={() => handleSave(true)}
-                                    disabled={isSaving}
-                                    style={{
-                                        padding: "8px 16px",
-                                        backgroundColor: "#f4f4f6",
-                                        color: "#1f7a8c",
-                                        border: "1px solid #1f7a8c",
-                                        borderRadius: "8px",
-                                        fontWeight: 600,
-                                        cursor: isSaving ? "not-allowed" : "pointer"
-                                    }}
-                                >
-                                    Save as New
-                                </button>
-                            )}
-                        </div>
-                    )}
-                       
-                    <div style={{ display: "flex", gap: "12px", marginLeft: user ? "16px" : "auto" }}>
+                    
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginLeft: "auto" }}>
                         {(isModified || (activeProfile && activeProfile.isCustom)) && (
                             <button
                                 onClick={() => {
@@ -536,6 +494,46 @@ export default function PcBuilder() {
                             >
                                 Clear Parts
                             </button>
+                        )}
+                        {user && (
+                            <React.Fragment>
+                                {shareToken && (
+                                <button
+                                    onClick={() => handleSave(true)}
+                                    disabled={isSaving}
+                                    style={{
+                                        padding: "8px 16px",
+                                        backgroundColor: "#f4f4f6",
+                                        color: "#1f7a8c",
+                                        border: "1px solid #1f7a8c",
+                                        borderRadius: "8px",
+                                        fontWeight: 600,
+                                        cursor: isSaving ? "not-allowed" : "pointer"
+                                    }}
+                                >
+                                    Save as New
+                                </button>
+                            )}
+                                <button
+                                onClick={() => handleSave(false)}
+                                disabled={isSaving}
+                                style={{
+                                    padding: "8px 16px",
+                                    backgroundColor: "#1f7a8c",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    cursor: isSaving ? "not-allowed" : "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "8px"
+                                }}
+                            >
+                                <SaveIcon fontSize="small" />
+                                {isSaving ? "Saving..." : "Save Build"}
+                            </button>
+                            </React.Fragment>
                         )}
                         <button
                             onClick={() => setIsModalOpen(true)}
