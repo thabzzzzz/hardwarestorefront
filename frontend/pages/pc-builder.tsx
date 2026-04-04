@@ -128,7 +128,7 @@ export default function PcBuilder() {
 
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
-        setSelectedComponents(profile.seed);
+        setSelectedComponents(profile.seed || {});
         setBuildName(profile.name === 'Start from Scratch' ? 'My Custom Build' : profile.name + ' Build');
         setIsModified(profile.isCustom ? true : false);
     };
@@ -264,8 +264,21 @@ export default function PcBuilder() {
     };
 
     // Calculate total
-    const totalPrice = Object.values(selectedComponents).reduce((sum, item) => {
-        const priceCents = item.current_price?.amount_cents || 0;
+    const handleUpdateTargetBudget = (newTarget: number) => {
+        if (!activeProfile) return;
+        const newProfile = { ...activeProfile, targetBudget: newTarget, isCustom: true };
+        
+        if (!activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
+            newProfile.name = `Custom ${activeProfile.name}`;
+            setBuildName(`Custom ${activeProfile.name} Build`);
+        }
+        
+        setActiveProfile(newProfile);
+        setIsModified(true);
+    };
+
+    const totalPrice = Object.values(selectedComponents || {}).reduce((sum, item: any) => {
+        const priceCents = item?.current_price?.amount_cents || item?.price?.amount_cents || 0;
         return sum + priceCents / 100;
     }, 0);
 
@@ -575,7 +588,7 @@ export default function PcBuilder() {
                         paddingRight: "24px"
                     }}
                 >
-                    {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} />}
+                    {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} onUpdateBudget={handleUpdateTargetBudget} />}
                 </div>
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}

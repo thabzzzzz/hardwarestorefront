@@ -1,21 +1,41 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile, setActiveCategory }: any) => {
+import EditIcon from '@mui/icons-material/Edit.js';
+
+export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile, setActiveCategory, onUpdateBudget }: any) => {
     const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
+    const [isEditingBudget, setIsEditingBudget] = React.useState(false);
+    const [budgetInput, setBudgetInput] = React.useState((targetBudget / 100).toString());
+
+    React.useEffect(() => {
+        setBudgetInput((targetBudget / 100).toString());
+    }, [targetBudget]);
+
+    const handleBudgetSubmit = (e: React.KeyboardEvent | React.FocusEvent) => {
+        if (e.type === 'keydown' && (e as React.KeyboardEvent).key !== 'Enter') return;
+        setIsEditingBudget(false);
+        const parsed = parseFloat(budgetInput.replace(/,/g, ''));
+        if (!isNaN(parsed) && parsed >= 0) {
+            onUpdateBudget?.(parsed * 100);
+        } else {
+            setBudgetInput((targetBudget / 100).toString());
+        }
+    };
     const totalCents = Object.values(selectedComponents).reduce((sum: number, part: any): number => {
         if (!part) return sum;
         return sum + (part.current_price?.amount_cents || part.price?.amount_cents || 0);
     }, 0) as number;
 
-    const percentTotal = Math.min(((totalCents as number) / targetBudget) * 100, 100);
-    const isOver = (totalCents as number) > targetBudget;
+    const effectiveTotalCents = targetBudget > 0 ? targetBudget : Math.max(totalCents as number, 1);
+    const percentTotal = targetBudget > 0 ? Math.min(((totalCents as number) / targetBudget) * 100, 100) : (totalCents > 0 ? 100 : 0);
+    const isOver = targetBudget === 0 ? false : (totalCents as number) > targetBudget;
 
     const sections = Object.keys(selectedComponents).map(key => {
         const item = selectedComponents[key];
         if (!item) return null;
         const price = item.current_price?.amount_cents || item.price?.amount_cents || 0;
-        const pct = (price / targetBudget) * 100;
+        const pct = (price / effectiveTotalCents) * 100;
         if (pct === 0) return null;
         
         let color = '#4caf50';
@@ -27,16 +47,17 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
         if (key === 'cases') { color = '#607d8b'; label = 'CASE'; }
         if (key === 'psus') { color = '#795548'; label = 'PSU'; }
         if (key === 'ssds') { color = '#009688'; label = 'SSD'; }
+        if (key === 'hdds') { color = '#3f51b5'; label = 'HDD'; }
         if (key === 'coolers') { color = '#00bcd4'; label = 'SYSTEM COOLING'; }
 
         return { key, pct, label, color };
     }).filter(Boolean);
 
-    const totalPct = sections.reduce((acc, sec: any) => acc + sec.pct, 0);
-    const remainingPct = 100 - totalPct;
-    
+const totalPct = sections.reduce((acc, sec: any) => acc + sec.pct, 0);
+    const remainingPct = Math.max(0, 100 - totalPct);
+
     const displaySections = [...sections];
-    if (remainingPct > 0.1) {
+    if (targetBudget > 0 && remainingPct > 0.1) {
         displaySections.push({
             key: 'free',
             pct: remainingPct,
@@ -50,12 +71,44 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
     return (
         <div style={{ marginBottom: "0px", background: "white", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px", fontSize: "15px" }}>
-                <span style={{ fontWeight: 600, color: "#333" }}>
-                    {activeProfile?.name} Target: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(targetBudget / 100).toLocaleString()}</span>
+                <span style={{ fontWeight: 600, color: "#333", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span>{activeProfile?.name} Target:</span>
+                    {isEditingBudget ? (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <span style={{ fontWeight: 800, fontSize: "16px", marginRight: "4px" }}>R</span>
+                            <input
+                                autoFocus
+                                type="text"
+                                value={budgetInput}
+                                onChange={(e) => setBudgetInput(e.target.value.replace(/[^0-9.]/g, ''))}
+                                onBlur={handleBudgetSubmit}
+                                onKeyDown={handleBudgetSubmit}
+                                style={{
+                                    fontWeight: 800,
+                                    fontSize: "16px",
+                                    width: "100px",
+                                    padding: "2px 6px",
+                                    borderRadius: "4px",
+                                    border: "1px solid #1f7a8c",
+                                    outline: "none"
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            style={{ display: "flex", alignItems: "center", cursor: "pointer", gap: "4px" }}
+                            onClick={() => setIsEditingBudget(true)}
+                        >
+                            <span style={{ fontWeight: 800, fontSize: "16px" }}>
+                                {targetBudget === 0 ? "Unlimited" : `R ${(targetBudget / 100).toLocaleString()}`}
+                            </span>
+                            <EditIcon fontSize="small" style={{ color: "#aaa", fontSize: "14px" }} />
+                        </div>
+                    )}
                 </span>
-                <span style={{ fontWeight: 700, color: isOver ? "#d32f2f" : "#2e7d32" }}>
+                <span style={{ fontWeight: 700, color: isOver && targetBudget > 0 ? "#d32f2f" : "#2e7d32" }}>
                     Total: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(totalCents / 100).toLocaleString()}</span>
-                    {isOver && " (Over Budget)"}
+                    {isOver && targetBudget > 0 && " (Over Budget)"}
                 </span>
             </div>
             

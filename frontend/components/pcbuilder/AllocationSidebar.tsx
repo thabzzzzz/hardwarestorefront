@@ -4,6 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 export const AllocationSidebar = ({ activeProfile, selectedComponents }: any) => {
     if (!activeProfile) return null;
 
+    const COMPONENT_NAMES: Record<string, string> = {
+        gpus: "Graphics Card",
+        cpus: "Processor",
+        motherboards: "Motherboard",
+        cases: "Chassis",
+        psus: "Power Supply",
+        memory: "Memory",
+        storage: "Storage",
+        coolers: "Cooling",
+        "system-coolers": "System Cooling",
+        ssds: "SSD",
+        hdds: "HDD",
+        os: "Operating System"
+    };
+
     const sections = activeProfile.allocation;
     const targetTotal = activeProfile.targetBudget;
 
@@ -54,7 +69,7 @@ export const AllocationSidebar = ({ activeProfile, selectedComponents }: any) =>
                     return (
                         <div key={key} style={{ border: '1px solid #eee', borderRadius: '12px', padding: '16px', position: 'relative' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
-                                <span style={{ fontWeight: 700, textTransform: 'capitalize', color: '#444' }}>{key}</span>
+                                <span style={{ fontWeight: 700, textTransform: 'capitalize', color: '#444' }}>{COMPONENT_NAMES[key.toLowerCase()] || key}</span>
                                 <span style={{ fontSize: '0.8rem', fontWeight: 600, color: statusColor, background: `${statusColor}11`, padding: '4px 8px', borderRadius: '4px' }}>
                                     {currentCost > 0 ? statusText : 'Missing'}
                                 </span>

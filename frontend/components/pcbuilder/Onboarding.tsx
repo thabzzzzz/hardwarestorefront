@@ -60,6 +60,45 @@ export const Onboarding = ({ onSelectProfile }: any) => {
                         </div>
                     </motion.div>
                 ))}
+
+                {/* Custom Build Card */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.1 * Object.values(BUILD_PROFILES).length, type: "spring", stiffness: 100 }}
+                    whileHover={{ scale: 1.05, boxShadow: "0px 10px 40px rgba(31, 122, 140, 0.2)" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => onSelectProfile({ id: "custom", name: "Custom Build", isCustom: true, targetBudget: 0, allocation: {} })}
+                    style={{
+                        background: '#fff',
+                        borderRadius: '16px',
+                        padding: '30px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        border: '2px solid #1f7a8c',
+                        position: 'relative',
+                        overflow: 'hidden'
+                    }}
+                >
+                    <div>
+                        <h3 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 12px', color: '#333' }}>
+                            Start from Scratch
+                        </h3>
+                        <p style={{ color: '#777', fontSize: '1rem', lineHeight: '1.5', margin: '0 0 24px' }}>
+                            Build your own custom PC from the ground up without any predefined components or budget constraints. Complete flexibility and full control over your choices.
+                        </p>
+                    </div>
+
+                    <div style={{ marginTop: 'auto', background: '#e3f2fd', padding: '16px', borderRadius: '8px' }}>
+                        <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#1f7a8c', fontWeight: 600 }}>Custom Build</span>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1f7a8c', marginTop: '4px' }}>
+                            Full Control
+                        </div>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
