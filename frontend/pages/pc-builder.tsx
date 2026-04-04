@@ -25,7 +25,7 @@ import InfoIcon from "@mui/icons-material/Info.js";
 import { validateBuild, ValidationMessage, getComponentCompatibility } from "../lib/compatibilityEngine";
 import { Onboarding } from "../components/pcbuilder/Onboarding";
 import { BudgetTracker } from "../components/pcbuilder/BudgetTracker";
-import { AllocationSidebar } from "../components/pcbuilder/AllocationSidebar";
+import { AllocationModal } from "../components/pcbuilder/AllocationModal";
 
 const CategoryIconMap: Record<string, any> = {
     cases: ComputerIcon,
@@ -121,6 +121,7 @@ export default function PcBuilder() {
     const cart = useCart();
     const [activeProfile, setActiveProfile] = useState<any>(null);
     const [activeCategory, setActiveCategory] = useState("cases");
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModified, setIsModified] = useState(false);
     const [selectedComponents, setSelectedComponents] = useState<
         Record<string, any>
@@ -536,6 +537,34 @@ export default function PcBuilder() {
                                 Clear Parts
                             </button>
                         )}
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            style={{
+                                padding: "0 24px",
+                                backgroundColor: "transparent",
+                                color: "#333",
+                                border: "1px solid #ccc",
+                                borderRadius: "10px",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                fontSize: "14px",
+                                height: "44px",
+                                marginRight: "8px",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                transition: "all 0.2s"
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = "#e0e0e0";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = "transparent";
+                            }}
+                        >
+                            <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
+                            Info
+                        </button>
                         <button
                             onClick={() => {
                                 if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
@@ -1423,8 +1452,8 @@ export default function PcBuilder() {
                         </div>
                     </div>
 
-                    {/* Right Sidebar - Allocation Guide */}
-                    {activeProfile && <AllocationSidebar activeProfile={activeProfile} selectedComponents={selectedComponents} />}
+                    {/* Allocation Modal */}
+                    <AllocationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} activeProfile={activeProfile} selectedComponents={selectedComponents} />
                 </div>
             </React.Fragment>}
             </main>
