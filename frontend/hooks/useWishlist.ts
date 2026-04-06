@@ -91,15 +91,8 @@ export default function useWishlist() {
   }
 
   function persistAndNotify(nextItems: WishlistEntry[]) {
-    // Merge with remote to avoid overwriting concurrent tab changes.
-    const remote = loadFromStorage()
-    const nextMap = new Map(nextItems.map(i => [String(i.id), i]))
-    const merged: WishlistEntry[] = [...nextItems]
-    for (const r of remote) {
-      const key = String(r.id)
-      if (!nextMap.has(key)) merged.push(r)
-    }
-    storeItems = merged
+    // Simple save - previous merge logic prevented removals
+    storeItems = nextItems
     saveToStorage(storeItems)
     notifySubscribers()
   }

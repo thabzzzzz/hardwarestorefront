@@ -21,6 +21,8 @@ import EditIcon from "@mui/icons-material/Edit.js";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem.js";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle.js";
 import InfoIcon from "@mui/icons-material/Info.js";
+import RefreshIcon from "@mui/icons-material/Refresh.js";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline.js";
 
 import { validateBuild, ValidationMessage, getComponentCompatibility } from "../lib/compatibilityEngine";
 import { Onboarding } from "../components/pcbuilder/Onboarding";
@@ -494,7 +496,17 @@ export default function PcBuilder() {
                                 e.currentTarget.style.boxShadow = "none";
                             }}
                             >
-                                {activeProfile && !activeProfile.isCustom ? "Reset to Defaults" : "Clear Parts"}
+                                {activeProfile && !activeProfile.isCustom ? (
+                                    <>
+                                        <RefreshIcon fontSize="small" />
+                                        Reset to Defaults
+                                    </>
+                                ) : (
+                                    <>
+                                        <DeleteOutlineIcon fontSize="small" />
+                                        Clear Parts
+                                    </>
+                                )}
                             </button>
                         )}
                         {user && (
@@ -525,6 +537,7 @@ export default function PcBuilder() {
                                             e.currentTarget.style.boxShadow = "none";
                                         }}
                                 >
+                                    <SaveIcon fontSize="small" />
                                     Save as New
                                 </button>
                             )}

@@ -74,15 +74,8 @@ export default function useCart() {
   }, [])
 
   function persistAndNotify(nextItems: CartEntry[]) {
-    // Merge with any remote changes to reduce cross-tab overwrite races.
-    const remote = loadFromStorage()
-    const nextMap = new Map(nextItems.map(i => [String(i.id), i]))
-    const merged: CartEntry[] = [...nextItems]
-    for (const r of remote) {
-      const key = String(r.id)
-      if (!nextMap.has(key)) merged.push(r)
-    }
-    storeItems = merged
+    // Simple save - previous merge logic prevented removals
+    storeItems = nextItems
     saveToStorage(storeItems)
     notifySubscribers()
   }
