@@ -147,39 +147,6 @@ export function BuilderWorkspace() {
 
     const buildNameInputRef = useRef<HTMLInputElement>(null);
 
-    // Initial load of build if query token exists
-    useEffect(() => {
-        if (!router.isReady) return;
-        const token = router.query.build_id as string;
-        if (token && token !== shareToken) {
-            fetchBuild(token);
-        } else if (!token && shareToken) {
-            // User navigated away from a saved build back to the clean builder root
-            setBuildName("My Build 1");
-            setShareToken("");
-            setSelectedComponents({});
-            setBuildAuthorId(null);
-        }
-    }, [router.isReady, router.query.build_id, shareToken]);
-
-    const fetchBuild = async (token: string) => {
-        setIsLoadingBuild(true);
-        try {
-            const res = await fetch(`${API_BASE}/api/pc-builds/${token}`);
-            if (res.ok) {
-                const data = await res.json();
-                setBuildName(data.name || "My Build 1");
-                setShareToken(data.share_token);
-                setSelectedComponents(data.components || {});
-                setBuildAuthorId(data.user_id);
-            }
-        } catch(e) {
-            console.error("Failed to load build", e);
-        } finally {
-            setIsLoadingBuild(false);
-        }
-    };
-
     const handleAddAllToCart = () => {
         let addedCount = 0;
         let outOfStockCount = 0;
@@ -254,7 +221,7 @@ export function BuilderWorkspace() {
                 setShareToken(data.share_token);
                 setBuildName(data.name);
                 toast.success(saveAsNew ? "Build saved as new successfully!" : "Build saved successfully!");
-                router.replace(`/pc-builder?build_id=${data.share_token}`, undefined, { shallow: true });
+                router.replace(`/build/${data.share_token}`, undefined, { shallow: true });
             } else {
                 toast.error("Failed to save build");
             }
