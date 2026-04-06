@@ -51,7 +51,7 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
         if (key === 'coolers') { color = '#00bcd4'; label = 'SYSTEM COOLING'; }
 
         return { key, pct, label, color };
-    }).filter(Boolean);
+    }).filter(Boolean) as any[];
 
 const totalPct = sections.reduce((acc, sec: any) => acc + sec.pct, 0);
     const remainingPct = Math.max(0, 100 - totalPct);

@@ -215,7 +215,7 @@ export function getComponentCompatibility(category: string, product: any, curren
   else if (category === 'gpus') testBuild.gpu = product;
   else if (category === 'psus') testBuild.psu = product;
   else if (category === 'cases') testBuild.case = product;
-  else if (category === 'coolers') testBuild.cpu_cooler = product;
+  else if (category === 'coolers') testBuild.system_cooling = product;
   else return null;
 
   const messages = validateBuild(testBuild);

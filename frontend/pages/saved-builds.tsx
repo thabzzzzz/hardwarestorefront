@@ -116,7 +116,7 @@ export default function SavedBuilds() {
                             builds.map((build) => (
                                 <div
                                     key={build.id}
-                                    onClick={() => router.push(`/pc-builder?build_id=${build.share_token}`)}
+                                    onClick={() => router.push(`/build/${build.share_token}`)}
                                     style={{
                                         background: "#fff",
                                         border: "1px solid #eee",
@@ -148,7 +148,7 @@ export default function SavedBuilds() {
                                     </div>
                                     <div style={{ display: "flex", gap: "12px" }}>
                                         <Link
-                                            href={`/pc-builder?build_id=${build.share_token}`}
+                                            href={`/build/${build.share_token}`}
                                             onClick={(e) => e.stopPropagation()}
                                             style={{
                                                 padding: "8px 16px",
