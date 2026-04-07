@@ -588,33 +588,36 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             </button>
                             </React.Fragment>
                         )}
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            style={{
-                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                backgroundColor: "#1f7a8c",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                transition: "all 0.15s ease-in-out"
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
-                                e.currentTarget.style.boxShadow = "none";
-                            }}
-                        >
-                            <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
-                            Info
-                        </button>
+                        {/* Only show Info if not a saved build and not a custom layout */}
+                        {(!shareToken && activeProfile && !activeProfile.isCustom) && (
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                style={{
+                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                    backgroundColor: "#1f7a8c",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    transition: "all 0.15s ease-in-out"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-2px)";
+                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.boxShadow = "none";
+                                }}
+                            >
+                                <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
+                                Info
+                            </button>
+                        )}
                     </div>
                 </div>
 

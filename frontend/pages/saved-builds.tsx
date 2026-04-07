@@ -141,8 +141,14 @@ export default function SavedBuilds() {
                                         cursor: "pointer",
                                         transition: "all 0.2s ease",
                                     }}
-                                    onMouseOver={(e) => e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.06)"}
-                                    onMouseOut={(e) => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.02)"}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = "translateY(-2px)";
+                                        e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.2)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = "translateY(0)";
+                                        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.02)";
+                                    }}
                                 >
                                     <div>
                                         <h3 style={{ margin: "0 0 8px 0", fontSize: "20px", color: "#222" }}>
