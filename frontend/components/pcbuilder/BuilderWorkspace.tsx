@@ -370,11 +370,11 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         <Link
                             href="/saved-builds"
                             style={{
-                                padding: "8px 16px",
-                                backgroundColor: "#e2e8f0",
-                                color: "#475569",
-                                border: "1px solid #cbd5e1",
-                                borderRadius: "6px",
+                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
                                 fontWeight: 600,
                                 cursor: "pointer",
                                 display: "inline-flex",
@@ -384,8 +384,14 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 fontSize: "14px",
                                 transition: "all 0.15s ease-in-out"
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#cbd5e1"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
+                            }}
                         >
                             <ArrowBackIcon style={{ fontSize: "18px" }} />
                             Back to Saved Builds
@@ -401,11 +407,11 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 }
                             }}
                             style={{
-                                padding: "8px 16px",
-                                backgroundColor: "#e2e8f0",
-                                color: "#475569",
-                                border: "1px solid #cbd5e1",
-                                borderRadius: "6px",
+                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "8px",
                                 fontWeight: 600,
                                 cursor: "pointer",
                                 display: "inline-flex",
@@ -414,8 +420,14 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 fontSize: "14px",
                                 transition: "all 0.15s ease-in-out"
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#cbd5e1"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
+                            }}
                         >
                             <ArrowBackIcon style={{ fontSize: "18px" }} />
                             Change Tier

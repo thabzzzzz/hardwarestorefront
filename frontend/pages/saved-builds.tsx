@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import AddIcon from "@mui/icons-material/Add.js";
 import Header from "../components/header/header";
 import styles from "../styles/home.module.css";
 import { useAuth } from "../hooks/useAuth";
@@ -104,7 +105,18 @@ export default function SavedBuilds() {
                         <h1 style={{ fontSize: "28px", color: "#111" }}>
                             My Saved Builds
                         </h1>
-                        <Link href="/pc-builder" style={{ padding: "20px 16px", lineHeight: 1, backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600 }}>Create New Build</Link>
+                        <Link href="/pc-builder" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "17px 16px", height: "54px", boxSizing: "border-box", backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600, transition: "all 0.15s ease-in-out" }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = "translateY(-2px)";
+                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = "none";
+                            }}>
+                            <AddIcon style={{ fontSize: "20px" }} />
+                            Create New Build
+                        </Link>
                     </div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
