@@ -81,6 +81,7 @@ class PcBuildController extends Controller
             "share_token" => $build->share_token,
             "name" => $build->name,
             "user_id" => $build->user_id,
+            "target_budget" => $build->target_budget,
             "author_name" => $build->user ? $build->user->name : "Anonymous",
             "components" => $components,
         ]);
@@ -92,7 +93,8 @@ class PcBuildController extends Controller
             "name" => "required|string|max:255",
             "components" => "array",
             "share_token" => "nullable|string",
-            "save_as_new" => "boolean"
+            "save_as_new" => "boolean",
+            "target_budget" => "nullable|integer"
         ]);
 
         $user = Auth::user();
@@ -120,6 +122,7 @@ class PcBuildController extends Controller
         }
 
         $build->name = $request->input("name");
+        $build->target_budget = $request->input("target_budget");
         $build->save();
 
         if ($build->id) {

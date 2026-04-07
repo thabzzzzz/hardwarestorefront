@@ -1,0 +1,4 @@
+                            {isModified && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
+                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified} 
+                                onChange={(e) => setBuildName(e.target.value)}
+                                placeholder="My Build 1"

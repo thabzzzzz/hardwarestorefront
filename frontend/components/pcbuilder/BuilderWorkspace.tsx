@@ -212,7 +212,8 @@ export function BuilderWorkspace() {
                     name: buildName,
                     components: componentsMap,
                     share_token: shareToken,
-                    save_as_new: saveAsNew
+                    save_as_new: saveAsNew,
+                    target_budget: activeProfile?.targetBudget ?? 0
                 })
             });
 
@@ -233,18 +234,19 @@ export function BuilderWorkspace() {
         }
     };
 
+const markAsCustomModified = () => {
+        setIsModified(true);
+        if (activeProfile && !activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
+            setActiveProfile({ ...activeProfile, isCustom: true, name: `Custom ${activeProfile.name}` });
+            setBuildName(`Custom ${activeProfile.name} Build`);
+        }
+    };
+
     // Calculate total
     const handleUpdateTargetBudget = (newTarget: number) => {
         if (!activeProfile) return;
-        const newProfile = { ...activeProfile, targetBudget: newTarget, isCustom: true };
-        
-        if (!activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
-            newProfile.name = `Custom ${activeProfile.name}`;
-            setBuildName(`Custom ${activeProfile.name} Build`);
-        }
-        
-        setActiveProfile(newProfile);
-        setIsModified(true);
+        setActiveProfile(prev => ({ ...prev, targetBudget: newTarget, isCustom: true }));
+        markAsCustomModified();
     };
 
     const totalPrice = Object.values(selectedComponents || {}).reduce((sum, item: any) => {
@@ -281,7 +283,7 @@ export function BuilderWorkspace() {
     }, [activeCategory, productsCache]);
 
     const handleSelectToggle = (category: string, product: any) => {
-        setIsModified(true);
+        markAsCustomModified();
         setSelectedComponents((prev) => {
             const isCurrentlySelected =
                 prev[category]?.variant_id === product.variant_id;
@@ -299,7 +301,7 @@ export function BuilderWorkspace() {
 
     const handleRemove = (e: React.MouseEvent, category: string) => {
         e.stopPropagation();
-        setIsModified(true);
+        markAsCustomModified();
         setSelectedComponents((prev) => {
             const newSelection = { ...prev };
             delete newSelection[category];
@@ -401,9 +403,9 @@ export function BuilderWorkspace() {
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
                         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            {isModified && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
-                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified} 
-                                onChange={(e) => setBuildName(e.target.value)}
+                            {(isModified || shareToken) && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
+                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken} 
+                                onChange={(e) => { setBuildName(e.target.value); setIsModified(true); }}
                                 placeholder="My Build 1"
                                 style={{
                                     fontSize: "20px",
@@ -437,7 +439,7 @@ export function BuilderWorkspace() {
                                         toast.success("Build reset to default parts");
                                     } else {
                                         setSelectedComponents({});
-                                        setIsModified(true);
+                                        markAsCustomModified();
                                         toast.success("Build parts cleared");
                                     }
                                 }}
@@ -565,6 +567,7 @@ export function BuilderWorkspace() {
                             <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
                             Info
                         </button>
+                        {(!shareToken && !buildAuthorId) && (
                         <button
                             onClick={() => {
                                 if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
@@ -597,6 +600,7 @@ export function BuilderWorkspace() {
                             <ArrowBackIcon style={{ marginRight: "6px", fontSize: "18px" }} />
                             Change Tier
                         </button>
+                        )}
                     </div>
                 </div>
 

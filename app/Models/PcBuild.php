@@ -11,6 +11,7 @@ class PcBuild extends Model
         'name',
         'description',
         'total_price',
+        'target_budget',
         'share_token',
     ];
 
