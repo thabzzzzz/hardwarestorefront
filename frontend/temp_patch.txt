@@ -1,0 +1,14 @@
+const markAsCustomModified = () => {
+        setIsModified(true);
+        if (activeProfile && !activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
+            setActiveProfile({ ...activeProfile, isCustom: true, name: `Custom ${activeProfile.name}` });
+            setBuildName(`Custom ${activeProfile.name} Build`);
+        }
+    };
+
+    // Calculate total
+    const handleUpdateTargetBudget = (newTarget: number) => {
+        if (!activeProfile) return;
+        setActiveProfile(prev => ({ ...prev, targetBudget: newTarget, isCustom: true }));
+        markAsCustomModified();
+    };

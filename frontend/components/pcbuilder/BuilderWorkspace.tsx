@@ -234,19 +234,20 @@ export function BuilderWorkspace() {
         }
     };
 
-const markAsCustomModified = () => {
+const markAsCustomModified = (extraUpdates: any = {}) => {
         setIsModified(true);
         if (activeProfile && !activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
-            setActiveProfile({ ...activeProfile, isCustom: true, name: `Custom ${activeProfile.name}` });
+            setActiveProfile((prev: any) => ({ ...prev, ...extraUpdates, isCustom: true, name: `Custom ${prev.name}` }));
             setBuildName(`Custom ${activeProfile.name} Build`);
+        } else if (Object.keys(extraUpdates).length > 0) {
+            setActiveProfile((prev: any) => ({ ...prev, ...extraUpdates, isCustom: true }));
         }
     };
 
     // Calculate total
     const handleUpdateTargetBudget = (newTarget: number) => {
         if (!activeProfile) return;
-        setActiveProfile(prev => ({ ...prev, targetBudget: newTarget, isCustom: true }));
-        markAsCustomModified();
+        markAsCustomModified({ targetBudget: newTarget });
     };
 
     const totalPrice = Object.values(selectedComponents || {}).reduce((sum, item: any) => {
