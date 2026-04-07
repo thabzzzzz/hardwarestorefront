@@ -48,8 +48,11 @@ export function useAuth() {
     fetchUser();
   }, []);
 
-  const login = async () => {
+  const login = async (redirectUrl?: string) => {
     try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('authRedirect', redirectUrl || window.location.pathname);
+      }
       const res = await fetch(`${API_BASE}/api/auth/google/redirect`);
       const data = await res.json();
       if (data.url) {
@@ -77,6 +80,9 @@ export function useAuth() {
     }
     
     localStorage.removeItem('auth_token');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('builder_draft');
+    }
     setUser(null);
     window.location.reload();
   };

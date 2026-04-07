@@ -22,8 +22,14 @@ export default function AuthCallback() {
 
     if (token) {
       localStorage.setItem('auth_token', String(token));
-      // redirect to home
-      router.push('/');
+      // Try to redirect back to where they started from
+      const redirectUrl = localStorage.getItem('authRedirect');
+      if (redirectUrl) {
+          localStorage.removeItem('authRedirect');
+          router.push(redirectUrl);
+      } else {
+          router.push('/');
+      }
     } else {
       // no token, no error
       router.push('/');

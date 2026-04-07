@@ -54,6 +54,43 @@ export function BuilderProvider({ children }: { children: ReactNode }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [compatibilityMode, setCompatibilityMode] = useState<"strict" | "mixed">("mixed");
 
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    // DRAFT PERSISTENCE (auto-recover state before/after login)
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            const savedDraft = sessionStorage.getItem("builder_draft");
+            if (savedDraft) {
+                try {
+                    const data = JSON.parse(savedDraft);
+                    if (data.activeProfile) setActiveProfile(data.activeProfile);
+                    if (data.selectedComponents) setSelectedComponents(data.selectedComponents);
+                    if (data.buildName) setBuildName(data.buildName);
+                    if (data.shareToken) setShareToken(data.shareToken);
+                    if (data.isModified) setIsModified(data.isModified);
+                    if (data.buildAuthorId !== undefined) setBuildAuthorId(data.buildAuthorId);
+                } catch (e) {
+                    console.error("Failed to parse builder draft", e);
+                }
+            }
+            setIsHydrated(true);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        if (typeof window !== "undefined" && isHydrated) {
+            const draft = {
+                activeProfile,
+                selectedComponents,
+                buildName,
+                shareToken,
+                isModified,
+                buildAuthorId
+            };
+            sessionStorage.setItem("builder_draft", JSON.stringify(draft));
+        }
+    }, [activeProfile, selectedComponents, buildName, shareToken, isModified, buildAuthorId, isHydrated]);
+
     return (
         <BuilderContext.Provider
             value={{
