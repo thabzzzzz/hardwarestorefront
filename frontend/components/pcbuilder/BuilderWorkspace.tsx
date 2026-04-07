@@ -381,8 +381,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 alignItems: "center",
                                 gap: "6px",
                                 textDecoration: "none",
+                                transition: "all 0.15s ease-in-out",
+                                fontFamily: "inherit",
                                 fontSize: "14px",
-                                transition: "all 0.15s ease-in-out"
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "translateY(-2px)";
@@ -417,8 +418,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "6px",
+                                transition: "all 0.15s ease-in-out",
+                                fontFamily: "inherit",
                                 fontSize: "14px",
-                                transition: "all 0.15s ease-in-out"
                             }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "translateY(-2px)";
@@ -502,7 +504,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "6px",
-                                    transition: "all 0.15s ease-in-out"
+                                    transition: "all 0.15s ease-in-out",
+                                    fontFamily: "inherit",
+                                    fontSize: "14px",
                                 }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "translateY(-2px)";
@@ -572,7 +576,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "6px",
-                                    transition: "all 0.15s ease-in-out"
+                                    transition: "all 0.15s ease-in-out",
+                                    fontFamily: "inherit",
+                                    fontSize: "14px",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = "translateY(-2px)";
@@ -603,7 +609,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     display: "inline-flex",
                                     alignItems: "center",
                                     gap: "6px",
-                                    transition: "all 0.15s ease-in-out"
+                                    transition: "all 0.15s ease-in-out",
+                                    fontFamily: "inherit",
+                                    fontSize: "14px",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.transform = "translateY(-2px)";
