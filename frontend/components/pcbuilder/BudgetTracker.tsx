@@ -100,14 +100,14 @@ const totalPct = sections.reduce((acc, sec: any) => acc + sec.pct, 0);
                             onClick={() => setIsEditingBudget(true)}
                         >
                             <span style={{ fontWeight: 800, fontSize: "16px" }}>
-                                {targetBudget === 0 ? "Unlimited" : `R ${(targetBudget / 100).toLocaleString()}`}
+                                {targetBudget === 0 ? "Unlimited" : `R ${(targetBudget / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                             </span>
                             <EditIcon fontSize="small" style={{ color: "#aaa", fontSize: "14px" }} />
                         </div>
                     )}
                 </span>
                 <span style={{ fontWeight: 700, color: isOver && targetBudget > 0 ? "#d32f2f" : "#2e7d32" }}>
-                    Total: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(totalCents / 100).toLocaleString()}</span>
+                    Total: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(totalCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                     {isOver && targetBudget > 0 && " (Over Budget)"}
                 </span>
             </div>
@@ -206,7 +206,7 @@ const totalPct = sections.reduce((acc, sec: any) => acc + sec.pct, 0);
                                         zIndex: 100,
                                         pointerEvents: "none"
                                     }}>
-                                        R {((targetBudget - totalCents) / 100).toLocaleString()} Remaining
+                                        R {((targetBudget - totalCents) / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Remaining
                                     </div>
                                 )}
                             </motion.div>
