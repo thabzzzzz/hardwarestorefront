@@ -365,28 +365,63 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     paddingBottom: "120px",
                 }}
             >
-                {user && shareToken && (
-                    <div style={{ marginBottom: "16px" }}>
+                <div style={{ marginBottom: "16px", display: "flex", gap: "12px" }}>
+                    {user && shareToken && (
                         <Link
                             href="/saved-builds"
                             style={{
+                                padding: "8px 16px",
+                                backgroundColor: "#e2e8f0",
+                                color: "#475569",
+                                border: "1px solid #cbd5e1",
+                                borderRadius: "6px",
+                                fontWeight: 600,
+                                cursor: "pointer",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: "8px",
-                                color: "#1f7a8c",
+                                gap: "6px",
                                 textDecoration: "none",
-                                fontWeight: 600,
-                                fontSize: "15px",
-                                transition: "opacity 0.2s",
+                                fontSize: "14px",
+                                transition: "all 0.15s ease-in-out"
                             }}
-                            onMouseOver={(e) => (e.currentTarget.style.opacity = "0.8")}
-                            onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#cbd5e1"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
                         >
-                            <ArrowBackIcon fontSize="small" />
+                            <ArrowBackIcon style={{ fontSize: "18px" }} />
                             Back to Saved Builds
                         </Link>
-                    </div>
-                )}
+                    )}
+
+                    {(!shareToken && !buildAuthorId) && (
+                        <button
+                            onClick={() => {
+                                if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
+                                    setActiveProfile(null);
+                                    router.replace('/pc-builder', undefined, { shallow: true });
+                                }
+                            }}
+                            style={{
+                                padding: "8px 16px",
+                                backgroundColor: "#e2e8f0",
+                                color: "#475569",
+                                border: "1px solid #cbd5e1",
+                                borderRadius: "6px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                fontSize: "14px",
+                                transition: "all 0.15s ease-in-out"
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#cbd5e1"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#e2e8f0"}
+                        >
+                            <ArrowBackIcon style={{ fontSize: "18px" }} />
+                            Change Tier
+                        </button>
+                    )}
+                </div>
 
                 <React.Fragment>
                 <div
@@ -568,40 +603,6 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
                             Info
                         </button>
-                        {(!shareToken && !buildAuthorId) && (
-                        <button
-                            onClick={() => {
-                                if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
-                                    setActiveProfile(null);
-                                    router.replace('/pc-builder', undefined, { shallow: true });
-                                }
-                            }}
-                            style={{
-                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                backgroundColor: "#1f7a8c",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: "6px",
-                                transition: "all 0.15s ease-in-out"
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
-                                e.currentTarget.style.boxShadow = "none";
-                            }}
-                        >
-                            <ArrowBackIcon style={{ marginRight: "6px", fontSize: "18px" }} />
-                            Change Tier
-                        </button>
-                        )}
                     </div>
                 </div>
 
