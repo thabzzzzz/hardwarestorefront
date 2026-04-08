@@ -26,6 +26,7 @@ import RefreshIcon from "@mui/icons-material/Refresh.js";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline.js";
 
 import { validateBuild, ValidationMessage, getComponentCompatibility } from "../../lib/compatibilityEngine";
+import { BUILD_PROFILES } from "../../lib/pc-builder-profiles";
 
 import { BudgetTracker } from "./BudgetTracker";
 import { AllocationModal } from "./AllocationModal";
@@ -483,15 +484,21 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         {(isModified || (activeProfile && activeProfile.isCustom)) && (
                             <button
                                 onClick={() => {
-                                    if (activeProfile && !activeProfile.isCustom) {
-                                        setSelectedComponents(activeProfile.seed || {});
-                                        setIsModified(false);
-                                        toast.success("Build reset to default parts");
-                                    } else {
-                                        setSelectedComponents({});
-                                        markAsCustomModified();
-                                        toast.success("Build parts cleared");
+                                    if (activeProfile && activeProfile.id && activeProfile.id !== 'custom') {
+                                        const baseProfile = BUILD_PROFILES[activeProfile.id.replace('custom_', '')];
+                                        if (baseProfile) {
+                                            setActiveProfile(JSON.parse(JSON.stringify(baseProfile)));
+                                            setSelectedComponents(baseProfile.seed || {});
+                                            setBuildName(baseProfile.name);
+                                            setIsModified(false);
+                                            toast.success("Reverted back to base configuration");
+                                            return;
+                                        }
                                     }
+                                    
+                                    setSelectedComponents({});
+                                    markAsCustomModified();
+                                    toast.success("Build parts cleared");
                                 }}
                                 style={{
                                     padding: "17px 16px", height: "54px", boxSizing: "border-box",
@@ -517,7 +524,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 e.currentTarget.style.boxShadow = "none";
                             }}
                             >
-                                {activeProfile && !activeProfile.isCustom ? (
+                                {activeProfile && activeProfile.id && activeProfile.id !== 'custom' ? (
                                     <>
                                         <RefreshIcon fontSize="small" />
                                         Reset to Defaults

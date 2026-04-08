@@ -333,7 +333,16 @@ export default function Header(): JSX.Element {
             </div>
             
             <div className={styles.navItem}>
-              <Link href="/pc-builder" className={styles.navLabel} style={{textDecoration:'none', color:'#1f7a8c', fontWeight: 700, cursor: 'pointer'}}>
+              <Link 
+                href="/pc-builder" 
+                className={styles.navLabel} 
+                style={{textDecoration:'none', color:'#1f7a8c', fontWeight: 700, cursor: 'pointer'}}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.removeItem("builder_draft");
+                  }
+                }}
+              >
                 PC Builder
               </Link>
             </div>
@@ -472,7 +481,16 @@ export default function Header(): JSX.Element {
                   </div>
                 </div>
 
-                <Link href="/pc-builder" className={styles.mobileSummary} style={{color:'#1f7a8c', textDecoration:'none', fontWeight: 600, display: 'block', marginTop: '16px', marginBottom: '8px', cursor: 'pointer'}}>
+                <Link 
+                  href="/pc-builder" 
+                  className={styles.mobileSummary} 
+                  style={{color:'#1f7a8c', textDecoration:'none', fontWeight: 600, display: 'block', marginTop: '16px', marginBottom: '8px', cursor: 'pointer'}}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      sessionStorage.removeItem("builder_draft");
+                    }
+                  }}
+                >
                   PC Builder
                 </Link>
 

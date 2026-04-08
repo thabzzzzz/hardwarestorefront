@@ -105,7 +105,14 @@ export default function SavedBuilds() {
                         <h1 style={{ fontSize: "28px", color: "#111" }}>
                             My Saved Builds
                         </h1>
-                        <Link href="/pc-builder" style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "17px 16px", height: "54px", boxSizing: "border-box", backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600, transition: "all 0.15s ease-in-out" }}
+                        <Link 
+                            href="/pc-builder" 
+                            style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "17px 16px", height: "54px", boxSizing: "border-box", backgroundColor: "#1f7a8c", color: "white", borderRadius: "8px", textDecoration: "none", fontWeight: 600, transition: "all 0.15s ease-in-out" }}
+                            onClick={() => {
+                                if (typeof window !== 'undefined') {
+                                    sessionStorage.removeItem("builder_draft");
+                                }
+                            }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = "translateY(-2px)";
                                 e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
