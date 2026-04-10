@@ -136,8 +136,11 @@ export function BuilderWorkspace() {
         shareToken, setShareToken,
         isSaving, setIsSaving,
         isLoadingBuild, setIsLoadingBuild,
-        buildAuthorId, setBuildAuthorId
+        buildAuthorId, setBuildAuthorId,
+        searchQuery, setSearchQuery
     } = useBuilder();
+
+    const [sortOrder, setSortOrder] = useState("recommended");
 
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
@@ -314,17 +317,33 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
     const activeProducts = productsCache[activeCategory] || [];
 
     const sortedActiveProducts = useMemo(() => {
-        const items = [...activeProducts];
-        const selectedId = selectedComponents[activeCategory]?.variant_id;
+        let items = [...activeProducts];
+
+        if (searchQuery.trim().length > 0) {
+            const query = searchQuery.toLowerCase();
+            items = items.filter(p => 
+                (p.title && p.title.toLowerCase().includes(query)) ||
+                (p.brand && p.brand.toLowerCase().includes(query)) ||
+                (p.model && p.model.toLowerCase().includes(query))
+            );
+        }
+
+        if (sortOrder === "price_asc") {
+            items.sort((a, b) => (a.current_price?.amount_cents || 0) - (b.current_price?.amount_cents || 0));
+        } else if (sortOrder === "price_desc") {
+            items.sort((a, b) => (b.current_price?.amount_cents || 0) - (a.current_price?.amount_cents || 0));
+        }
+
+        const selectedId = selectedComponents[activeCategory]?.variant_id;      
         if (!selectedId) return items;
-        
+
         const selectedIndex = items.findIndex(p => p.variant_id === selectedId);
         if (selectedIndex > -1) {
             const [selected] = items.splice(selectedIndex, 1);
             items.unshift(selected);
         }
         return items;
-    }, [activeProducts, selectedComponents, activeCategory]);
+    }, [activeProducts, selectedComponents, activeCategory, searchQuery, sortOrder]);
 
     const validationMessages = validateBuild({
         cpu: selectedComponents["cpus"],
@@ -969,6 +988,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 <input
                                     type="text"
                                     placeholder="Quick Filter"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     style={{
                                         padding: "8px 14px",
                                         border: "1px solid #ccc",
@@ -1056,6 +1077,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     </svg>
                                 </div>
                                 <select
+                                    value={sortOrder}
+                                    onChange={(e) => setSortOrder(e.target.value)}
                                     style={{
                                         padding: "8px 14px",
                                         border: "1px solid #ccc",
@@ -1065,9 +1088,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                         outline: "none",
                                     }}
                                 >
-                                    <option>Most popular</option>
-                                    <option>Price: Low to High</option>
-                                    <option>Price: High to Low</option>
+                                    <option value="recommended">Recommended</option>
+                                    <option value="price_asc">Price: Low to High</option>
+                                    <option value="price_desc">Price: High to Low</option>
                                 </select>
                             </div>
                         </div>
@@ -1515,28 +1538,6 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             gap: "24px",
                         }}
                     >
-                        <label
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px",
-                                cursor: "pointer",
-                                fontSize: "14px",
-                                color: "#333",
-                                fontWeight: 600,
-                            }}
-                        >
-                            <input
-                                type="checkbox"
-                                style={{
-                                    width: "18px",
-                                    height: "18px",
-                                    accentColor: "#1f7a8c",
-                                }}
-                            />
-                            Build it for me!
-                        </label>
-
                         <button
                             style={{
                                 padding: "12px 32px",
