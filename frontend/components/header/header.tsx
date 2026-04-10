@@ -22,7 +22,7 @@ export default function Header(): JSX.Element {
   const [atTop, setAtTop] = useState<boolean>(true)
   const [topbarHeight, setTopbarHeight] = useState<number>(0)
   const [brandHeight, setBrandHeight] = useState<number>(0)
-  const { user, login, logout } = useAuth()
+  const { user, loading, login, logout } = useAuth()
 
   useEffect(() => {
     function updateHeights() {
@@ -219,7 +219,9 @@ export default function Header(): JSX.Element {
         </div>
         <div ref={topbarRef} className={styles.topbar}>
           <div className={styles.topbarLeft}>
-            {user ? (
+            {loading ? (
+              <span style={{ display: 'inline-block', width: '80px', opacity: 0 }}>...</span>
+            ) : user ? (
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#666' }}>
                 {user.name} 
                 <span style={{margin: '0 4px', opacity: 0.5}}>|</span>
