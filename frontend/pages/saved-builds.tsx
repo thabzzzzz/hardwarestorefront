@@ -233,7 +233,7 @@ export default function SavedBuilds() {
                                                 e.currentTarget.style.backgroundColor = "transparent";
                                             }}
                                         >
-                                            
+                                            Delete
                                         </button>
                                     </div>
                                 </div>
