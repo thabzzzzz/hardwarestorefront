@@ -1540,18 +1540,32 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     >
                         <button
                             style={{
-                                padding: "12px 32px",
-                                backgroundColor: "#111",
-                                color: "#fff",
+                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                backgroundColor: "#1f7a8c",
+                                color: "white",
                                 border: "none",
-                                borderRadius: "6px",
-                                fontSize: "15px",
-                                fontWeight: 700,
-                                cursor: "pointer",
-                                display: "flex",
+                                borderRadius: "8px",
+                                fontWeight: 600,
+                                cursor: totalPrice > 0 ? "pointer" : "not-allowed",
+                                display: "inline-flex",
                                 alignItems: "center",
-                                gap: "8px",
+                                gap: "6px",
+                                transition: "all 0.15s ease-in-out",
+                                fontFamily: "inherit",
+                                fontSize: "14px",
                                 opacity: totalPrice > 0 ? 1 : 0.5,
+                            }}
+                            onMouseEnter={(e) => {
+                                if (totalPrice > 0) {
+                                    e.currentTarget.style.transform = "translateY(-2px)";
+                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (totalPrice > 0) {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.boxShadow = "none";
+                                }
                             }}
                             onClick={handleAddAllToCart} disabled={totalPrice === 0}
                         >
