@@ -369,6 +369,25 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
         >
             <Head>
                 <title>PC Builder | WiredWorkshop</title>
+                <style>{`
+                    .builder-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; }
+                    .builder-layout-row { display: flex; gap: 24px; flex: 1; margin-top: 24px; scroll-margin-top: 270px; }
+                    .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 270px; max-height: calc(100vh - 380px); overflow-y: auto; overscroll-behavior: contain; }
+                    .builder-catalog { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; padding-right: 24px; }
+                    
+                    @media (max-width: 900px) {
+                        .builder-layout-row { flex-direction: column; }
+                        .builder-sidebar { width: 100%; position: static; max-height: none; overflow-y: visible; top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+                        .builder-catalog { padding-right: 0; min-height: 400px; }
+                        .builder-filters-row { flex-direction: column; align-items: stretch !important; gap: 12px; }
+                        .builder-filter-input { width: 100% !important; }
+                        .builder-product-card { flex-direction: column; align-items: stretch !important; padding: 16px !important; gap: 16px !important; }
+                        .builder-card-image { width: 100px !important; height: 100px !important; align-self: center; }
+                    }
+                    @media (max-width: 480px) {
+                        .builder-sidebar { grid-template-columns: 1fr; }
+                    }
+                `}</style>
             </Head>
 
             
@@ -459,6 +478,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
                 <React.Fragment>
                 <div
+                    className="builder-header-row"
                     style={{
                         paddingBottom: "16px",
                         color: "#333",
@@ -466,15 +486,17 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         fontSize: "24px",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between"
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: "16px"
                     }}
                 >
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                         <span>System Builder</span>
                         <span style={{color: "#ccc"}}>|</span>
                         <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                             {(isModified || shareToken) && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
-                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken} 
+                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken}
                                 onChange={(e) => { setBuildName(e.target.value); setIsModified(true); }}
                                 placeholder="My Build 1"
                                 style={{
@@ -487,7 +509,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     outline: "none",
                                     transition: "all 0.2s",
                                     cursor: isModified ? "text" : "default",
-                                    width: "400px",
+                                    width: "100%",
+                                    maxWidth: "400px",
                                     textOverflow: "ellipsis",
                                     overflow: "hidden",
                                     whiteSpace: "nowrap",
@@ -721,20 +744,13 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     </div>
                 )}
 
-                <div id="part-picker" style={{ display: "flex", gap: "24px", flex: 1, scrollMarginTop: "270px", marginTop: "24px" }}>
+                <div id="part-picker" className="builder-layout-row" style={{}}>
                     {/* Left Sidebar - Categories */}
                     <div
+                        className="builder-sidebar"
                         style={{
-                            width: "340px",
-                            flexShrink: 0,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "8px",
-                            position: "sticky",
-                            top: "270px",
-                            maxHeight: "calc(100vh - 380px)",
-                            overflowY: "auto",
-                            overscrollBehavior: "contain",
+                            backgroundColor: "transparent",
+                            margin: 0
                         }}
                     >
                         {CATEGORIES.map((cat) => {
@@ -921,15 +937,12 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
                     {/* Right Pane - Product Selection */}
                     <div
+                        className="builder-catalog"
                         style={{
-                            flex: 1,
                             backgroundColor: "#fff",
                             border: "1px solid #e0e0e0",
                             borderRadius: "8px",
                             overflow: "hidden",
-                            display: "flex",
-                            flexDirection: "column",
-                            minHeight: "600px",
                         }}
                     >
                         {/* Header */}
@@ -979,10 +992,12 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             </div>
 
                             <div
+                                className="builder-filters-row"
                                 style={{
                                     display: "flex",
                                     gap: "12px",
                                     alignItems: "center",
+                                    flexWrap: "wrap",
                                 }}
                             >
                                 <input
@@ -990,12 +1005,14 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                     placeholder="Quick Filter"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="builder-filter-input"
                                     style={{
                                         padding: "8px 14px",
                                         border: "1px solid #ccc",
                                         borderRadius: "5px",
                                         fontSize: "13px",
                                         width: "200px",
+                                        maxWidth: "100%",
                                         outline: "none",
                                     }}
                                 />
@@ -1145,8 +1162,10 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                             key={product.variant_id}
+                                            className="builder-product-card"
                                             style={{
                                                 display: "flex",
+                                                flexWrap: "wrap",
                                                 padding: "24px",
                                                 border: isItemActive
                                                     ? "1px solid #1f7a8c"
@@ -1163,6 +1182,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                             }}
                                         >
                                             <div
+                                                className="builder-card-image"
                                                 style={{
                                                     width: "140px",
                                                     height: "140px",
