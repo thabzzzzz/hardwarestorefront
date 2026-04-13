@@ -141,6 +141,7 @@ export function BuilderWorkspace() {
     } = useBuilder();
 
     const [sortOrder, setSortOrder] = useState("recommended");
+    const [activeTab, setActiveTab] = useState<"edit" | "overview">("edit");
 
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
@@ -477,6 +478,53 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 </div>
 
                 <React.Fragment>
+
+                {/* PILL TABS */}
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+                    <div style={{
+                        display: "inline-flex",
+                        background: "#e0e4e8",
+                        padding: "4px",
+                        borderRadius: "12px",
+                        gap: "4px"
+                    }}>
+                        <button
+                            onClick={() => setActiveTab("overview")}
+                            style={{
+                                padding: "8px 32px",
+                                background: activeTab === "overview" ? "#1f7a8c" : "transparent",
+                                color: activeTab === "overview" ? "#fff" : "#555",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontSize: "15px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                boxShadow: activeTab === "overview" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
+                            }}
+                        >
+                            Overview
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("edit")}
+                            style={{
+                                padding: "8px 32px",
+                                background: activeTab === "edit" ? "#1f7a8c" : "transparent",
+                                color: activeTab === "edit" ? "#fff" : "#555",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontSize: "15px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                boxShadow: activeTab === "edit" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
+                            }}
+                        >
+                            Components
+                        </button>
+                    </div>
+                </div>
+
                 <div
                     className="builder-header-row"
                     style={{
@@ -679,6 +727,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 </div>
 
                 {/* BUDGET TRACKER */}
+                <div style={{ display: activeTab === "overview" ? "block" : "none" }}>
                 <div
                     style={{
                         position: "sticky",
@@ -693,6 +742,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     }}
                 >
                     {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} onUpdateBudget={handleUpdateTargetBudget} />}
+                </div>
                 </div>
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
@@ -939,6 +989,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     <div
                         className="builder-catalog"
                         style={{
+                            display: activeTab === "edit" ? "flex" : "none",
                             backgroundColor: "#fff",
                             border: "1px solid #e0e0e0",
                             borderRadius: "8px",

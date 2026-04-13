@@ -15,7 +15,7 @@ const API_BASE = typeof window === 'undefined'
   ? (process.env.SERVER_API_BASE_URL || 'http://web')
   : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
 
-export default function Header(): JSX.Element {
+export default function Header({ hideSearchOnMobile = false }: { hideSearchOnMobile?: boolean }): JSX.Element {
   const topbarRef = useRef<HTMLDivElement | null>(null)
   const brandRef = useRef<HTMLDivElement | null>(null)
   const profileRef = useRef<HTMLDivElement | null>(null)
@@ -188,7 +188,7 @@ export default function Header(): JSX.Element {
               </Link>
             </div>
           </div>
-          <div className={styles.mobileRow2}>
+          <div className={styles.mobileRow2} style={{ display: hideSearchOnMobile ? 'none' : undefined }}>
               <div className={styles.searchBoxMobile}>
               <TextField
                 placeholder="Search..."

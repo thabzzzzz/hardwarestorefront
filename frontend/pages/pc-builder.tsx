@@ -29,7 +29,7 @@ function BuilderApp() {
 export default function PcBuilder() {
     return (
         <div>
-            <Header />
+            <Header hideSearchOnMobile={true} />
             <Head>
                 <title>PC Builder | Select a Tier</title>
             </Head>
