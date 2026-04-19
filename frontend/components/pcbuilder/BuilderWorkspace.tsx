@@ -761,50 +761,178 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
                 {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (
-                    <div style={{ marginTop: "24px", marginBottom: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                        {validationMessages.map((msg, idx) => {
-                            const isError = msg.type === "error";
-                            const isWarning = msg.type === "warning";
-                            const isSuccess = msg.type === "success";
-
-                            let Icon = InfoIcon;
-                            let bgColor = "#e3f2fd";
-                            let borderColor = "#90caf9";
-                            let textColor = "#0277bd";
-
-                            if (isError) {
-                                Icon = ReportProblemIcon;
-                                bgColor = "#ffebee"; // red-ish
-                                borderColor = "#ff8a80";
-                                textColor = "#c62828";
-                            } else if (isWarning) {
-                                Icon = ReportProblemIcon;
-                                bgColor = "#fff3e0"; // orange-ish
-                                borderColor = "#ffb74d";
-                                textColor = "#e65100";
-                            } else if (isSuccess) {
-                                Icon = CheckCircleIcon;
-                                bgColor = "#e8f5e9";
-                                borderColor = "#81c784";
-                                textColor = "#2e7d32";
+                    <div 
+                        className={`compatibility-warnings-container ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''}`}
+                        style={{ marginTop: "24px", marginBottom: "24px" }}
+                    >
+                        <style>{`
+                            /* Default desktop view: snackbars visible, stepper hidden */
+                            .desktop-alerts { display: flex; flex-direction: column; gap: 8px; }
+                            .mobile-stepper-view { display: none; }
+                            
+                            @media (max-width: 900px) {
+                                /* On mobile: snackbars hidden, stepper visible */
+                                .desktop-alerts { display: none !important; }
+                                .mobile-stepper-view { display: flex; flex-direction: column; gap: 12px; }
                             }
+                        `}</style>
+                        
+                        {/* Desktop Alerts (Snackbars) */}
+                        <div className="desktop-alerts">
+                            {validationMessages.map((msg, idx) => {
+                                const isError = msg.type === "error";
+                                const isWarning = msg.type === "warning";
+                                const isSuccess = msg.type === "success";
 
-                            return (
-                                <div key={idx} style={{
-                                    display: "flex", alignItems: "center", gap: "12px",
-                                    padding: "12px 16px",
-                                    backgroundColor: bgColor,
-                                    border: `1px solid ${borderColor}`,
-                                    borderRadius: "8px",
-                                    color: textColor,
-                                    fontSize: "15px",
-                                    fontWeight: 500
-                                }}>
-                                    <Icon fontSize="small" />
-                                    {msg.message}
+                                let Icon = InfoIcon;
+                                let bgColor = "#e3f2fd";
+                                let borderColor = "#90caf9";
+                                let textColor = "#0277bd";
+
+                                if (isError) {
+                                    Icon = ReportProblemIcon;
+                                    bgColor = "#ffebee"; // red-ish
+                                    borderColor = "#ff8a80";
+                                    textColor = "#c62828";
+                                } else if (isWarning) {
+                                    Icon = ReportProblemIcon;
+                                    bgColor = "#fff3e0"; // orange-ish
+                                    borderColor = "#ffb74d";
+                                    textColor = "#e65100";
+                                } else if (isSuccess) {
+                                    Icon = CheckCircleIcon;
+                                    bgColor = "#e8f5e9";
+                                    borderColor = "#81c784";
+                                    textColor = "#2e7d32";
+                                }
+
+                                return (
+                                    <div key={idx} style={{
+                                        display: "flex", alignItems: "center", gap: "12px",
+                                        padding: "12px 16px",
+                                        backgroundColor: bgColor,
+                                        border: `1px solid ${borderColor}`,
+                                        borderRadius: "8px",
+                                        color: textColor,
+                                        fontSize: "15px",
+                                        fontWeight: 500
+                                    }}>
+                                        <Icon fontSize="small" />
+                                        {msg.message}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Mobile Stepper View */}
+                        <div className="mobile-stepper-view">
+                            {/* Health Stepper Bar */}
+                            <div style={{ 
+                                display: "flex", 
+                                gap: "8px", 
+                                alignItems: "flex-end",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                flexWrap: "wrap",
+                                paddingBottom: "4px"
+                            }}>
+                                {validationMessages.map((msg, idx) => {
+                                    const lower = msg.message.toLowerCase();
+                                    let shortLabel = "Status";
+                                    if (lower.includes("socket") || lower.includes("brand")) shortLabel = "Socket";
+                                    else if (lower.includes("memory") || lower.includes("ram") || lower.includes("slots")) shortLabel = "Memory";
+                                    else if (lower.includes("case") || lower.includes("form factor") || lower.includes("length") || lower.includes("fits")) shortLabel = "Case Fit";
+                                    else if (lower.includes("power") || lower.includes("wattage") || lower.includes("psu")) shortLabel = "Power";
+                                    else if (lower.includes("cooler") || lower.includes("cooling")) shortLabel = "Cooling";
+
+                                    const isError = msg.type === "error";
+                                    const isWarning = msg.type === "warning";
+                                    const isSuccess = msg.type === "success";
+
+                                    let barColor = "#e0e0e0";
+                                    let dotColor = "transparent";
+                                    let textColor = "#666";
+
+                                    if (isError) {
+                                        barColor = "#ef4444"; // red
+                                        dotColor = "#ef4444";
+                                        textColor = "#ef4444";
+                                    } else if (isWarning) {
+                                        barColor = "#f59e0b"; // yellow
+                                        dotColor = "#f59e0b";
+                                        textColor = "#f59e0b";
+                                    } else if (isSuccess) {
+                                        barColor = "#22c55e"; // green
+                                        dotColor = "#22c55e";
+                                        textColor = "#15803d";
+                                    }
+
+                                    return (
+                                        <div key={`step-${idx}`} style={{ 
+                                            flex: "1 1 0",
+                                            minWidth: "18%", // allow wrap if more than 5
+                                            display: "flex", 
+                                            flexDirection: "column", 
+                                            alignItems: "center", 
+                                            gap: "4px" 
+                                        }}>
+                                            <span style={{ 
+                                                fontSize: "11px", 
+                                                fontWeight: 600, 
+                                                color: textColor,
+                                                whiteSpace: "nowrap",
+                                                textAlign: "center"
+                                            }}>
+                                                {shortLabel}
+                                            </span>
+                                            <div style={{
+                                                width: "4px",
+                                                height: "4px",
+                                                borderRadius: "50%",
+                                                backgroundColor: dotColor,
+                                                marginBottom: "2px"
+                                            }}></div>
+                                            <div style={{ 
+                                                width: "100%", 
+                                                height: "6px", 
+                                                backgroundColor: barColor,
+                                                borderRadius: "4px"
+                                            }} />
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Only show messages for Errors and Warnings on Mobile */}
+                            {validationMessages.filter(msg => msg.type === 'error' || msg.type === 'warning').length > 0 && (
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                    {validationMessages.filter(msg => msg.type === 'error' || msg.type === 'warning').map((msg, idx) => {
+                                        const isError = msg.type === "error";
+                                        
+                                        const bgColor = isError ? "#ffebee" : "#fff3e0";
+                                        const borderColor = isError ? "#ff8a80" : "#ffb74d";
+                                        const textColor = isError ? "#c62828" : "#e65100";
+                                        const Icon = isError ? ReportProblemIcon : ReportProblemIcon;
+                                        
+                                        return (
+                                            <div key={`err-${idx}`} style={{
+                                                display: "flex", alignItems: "center", gap: "8px",
+                                                padding: "8px 12px",
+                                                backgroundColor: bgColor,
+                                                border: `1px solid ${borderColor}`,
+                                                borderRadius: "6px",
+                                                color: textColor,
+                                                fontSize: "13px",
+                                                fontWeight: 500
+                                            }}>
+                                                <Icon style={{ fontSize: "16px" }} />
+                                                <span style={{ lineHeight: "1.3" }}>{msg.message}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                            );
-                        })}
+                            )}
+                        </div>
                     </div>
                 )}
 
