@@ -86,7 +86,8 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
                 .donut-text-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
 
                 @media (max-width: 900px) {
-                    .budget-tracker-header { flex-direction: column; align-items: flex-start; }
+                    .budget-tracker-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+                    .budget-metric-container { flex-direction: column !important; align-items: flex-start !important; gap: 2px !important; }
                     .budget-tracker-container { padding: 16px; }
                     .budget-desktop-view { display: none; }
                     .budget-mobile-view { display: block; padding-bottom: 8px; }
@@ -96,7 +97,7 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
                 }
             `}</style>
             <div className="budget-tracker-header">
-                <span style={{ fontWeight: 600, color: "#333", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <span className="budget-metric-container" style={{ fontWeight: 600, color: "#333", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                     <span>{activeProfile?.name} Target:</span>
                     {isEditingBudget ? (
                         <div style={{ display: "flex", alignItems: "center" }}> 
@@ -130,9 +131,12 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
                         </div>
                     )}
                 </span>
-                <span style={{ fontWeight: 700, color: isOver && targetBudget > 0 ? "#d32f2f" : "#2e7d32" }}>
-                    Total: <span style={{ fontWeight: 800, fontSize: "16px" }}>R {(totalCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-                    {isOver && targetBudget > 0 && " (Over Budget)"}
+                <span className="budget-metric-container" style={{ fontWeight: 700, color: isOver && targetBudget > 0 ? "#d32f2f" : "#2e7d32", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                    <span>Total:</span>
+                    <span style={{ fontWeight: 800, fontSize: "16px", display: "flex", alignItems: "center" }}>
+                        R {(totalCents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {isOver && targetBudget > 0 && <span style={{ fontSize: "14px", fontWeight: 600, marginLeft: "6px" }}>(Over Budget)</span>}
+                    </span>
                 </span>
             </div>
 

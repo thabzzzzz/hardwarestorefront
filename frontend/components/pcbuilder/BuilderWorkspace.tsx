@@ -376,7 +376,21 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 270px; max-height: calc(100vh - 380px); overflow-y: auto; overscroll-behavior: contain; }
                     .builder-catalog { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; padding-right: 24px; }
                     
+                    /* Desktop rules: Tabs hidden, catalog and tracker always on */
+                    .mobile-only-tabs { display: none !important; }
+                    .responsive-budget-hidden, .responsive-budget-visible { display: block !important; }
+                    .responsive-catalog-hidden, .responsive-catalog-visible { display: flex !important; }
+                .responsive-sidebar-hidden { display: flex !important; }
+
                     @media (max-width: 900px) {
+                        /* Mobile rules: Toggle visibility based on activeTab */
+                        .mobile-only-tabs { display: flex !important; }
+                        .responsive-budget-hidden { display: none !important; }
+                        .responsive-budget-visible { display: block !important; }
+                        .responsive-catalog-hidden { display: none !important; }
+                        .responsive-catalog-visible { display: flex !important; }
+                .responsive-sidebar-hidden { display: none !important; }
+                        
                         .builder-layout-row { flex-direction: column; }
                         .builder-sidebar { width: 100%; position: static; max-height: none; overflow-y: visible; top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
                         .builder-catalog { padding-right: 0; min-height: 400px; }
@@ -480,7 +494,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 <React.Fragment>
 
                 {/* PILL TABS */}
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+                <div className="mobile-only-tabs" style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
                     <div style={{
                         display: "inline-flex",
                         background: "#e0e4e8",
@@ -727,7 +741,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 </div>
 
                 {/* BUDGET TRACKER */}
-                <div style={{ display: activeTab === "overview" ? "block" : "none" }}>
+                <div className={activeTab === "overview" ? "responsive-budget-visible" : "responsive-budget-hidden"}>
                 <div
                     style={{
                         position: "sticky",
@@ -797,7 +811,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 <div id="part-picker" className="builder-layout-row" style={{}}>
                     {/* Left Sidebar - Categories */}
                     <div
-                        className="builder-sidebar"
+                        className={`builder-sidebar ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''}`}
                         style={{
                             backgroundColor: "transparent",
                             margin: 0
@@ -987,9 +1001,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
                     {/* Right Pane - Product Selection */}
                     <div
-                        className="builder-catalog"
+                        className={`builder-catalog ${activeTab === "edit" ? "responsive-catalog-visible" : "responsive-catalog-hidden"}`}
                         style={{
-                            display: activeTab === "edit" ? "flex" : "none",
                             backgroundColor: "#fff",
                             border: "1px solid #e0e0e0",
                             borderRadius: "8px",
