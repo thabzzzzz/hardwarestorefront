@@ -456,10 +456,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     {(!shareToken && !buildAuthorId) && (
                         <button
                             onClick={() => {
-                                if (!isModified || confirm('You will lose your custom changes. Are you sure you want to go back?')) {
-                                    setActiveProfile(null);
-                                    router.replace('/pc-builder', undefined, { shallow: true });
-                                }
+                                setActiveProfile(null);
+                                router.replace('/pc-builder', undefined, { shallow: true });
                             }}
                             style={{
                                 padding: "17px 16px", height: "54px", boxSizing: "border-box",

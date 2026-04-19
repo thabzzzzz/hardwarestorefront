@@ -27,7 +27,7 @@ export const BudgetTracker = ({ selectedComponents, targetBudget, activeProfile,
         return sum + (part.current_price?.amount_cents || part.price?.amount_cents || 0);
     }, 0) as number;
 
-    const effectiveTotalCents = targetBudget > 0 ? targetBudget : Math.max(totalCents as number, 1);
+    const effectiveTotalCents = Math.max(targetBudget, totalCents as number, 1);
     const percentTotal = targetBudget > 0 ? Math.min(((totalCents as number) / targetBudget) * 100, 100) : (totalCents > 0 ? 100 : 0);
     const isOver = targetBudget === 0 ? false : (totalCents as number) > targetBudget;
 
