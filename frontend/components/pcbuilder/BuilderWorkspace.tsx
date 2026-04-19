@@ -503,23 +503,6 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         gap: "4px"
                     }}>
                         <button
-                            onClick={() => setActiveTab("overview")}
-                            style={{
-                                padding: "8px 32px",
-                                background: activeTab === "overview" ? "#1f7a8c" : "transparent",
-                                color: activeTab === "overview" ? "#fff" : "#555",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontSize: "15px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                boxShadow: activeTab === "overview" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
-                            }}
-                        >
-                            Overview
-                        </button>
-                        <button
                             onClick={() => setActiveTab("edit")}
                             style={{
                                 padding: "8px 32px",
@@ -535,6 +518,23 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             }}
                         >
                             Components
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("overview")}
+                            style={{
+                                padding: "8px 32px",
+                                background: activeTab === "overview" ? "#1f7a8c" : "transparent",
+                                color: activeTab === "overview" ? "#fff" : "#555",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontSize: "15px",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                boxShadow: activeTab === "overview" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
+                            }}
+                        >
+                            Overview
                         </button>
                     </div>
                 </div>
