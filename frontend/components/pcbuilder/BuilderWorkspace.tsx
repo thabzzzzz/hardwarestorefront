@@ -21,6 +21,8 @@ import PowerIcon from "@mui/icons-material/Power.js";
 import EditIcon from "@mui/icons-material/Edit.js";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem.js";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle.js";
+import MoreVertIcon from "@mui/icons-material/MoreVert.js";
+import CloseIcon from "@mui/icons-material/Close.js";
 import InfoIcon from "@mui/icons-material/Info.js";
 import RefreshIcon from "@mui/icons-material/Refresh.js";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline.js";
@@ -142,6 +144,7 @@ export function BuilderWorkspace() {
 
     const [sortOrder, setSortOrder] = useState("recommended");
     const [activeTab, setActiveTab] = useState<"edit" | "overview">("edit");
+    const [isFabOpen, setIsFabOpen] = useState(false);
 
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
@@ -359,6 +362,107 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
     const errorCount = validationMessages.filter(m => m.type === 'error').length;
     const warningCount = validationMessages.filter(m => m.type === 'warning').length;
 
+    
+        const renderActionButtons = (isFab: boolean) => {
+            const btnStyle: React.CSSProperties = isFab 
+                ? {
+                    padding: "10px 16px", minHeight: "44px", boxSizing: "border-box", 
+                    backgroundColor: "#1f7a8c", color: "white", border: "none", borderRadius: "22px",
+                    fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center",
+                    gap: "6px", transition: "all 0.15s ease-in-out", fontFamily: "inherit", fontSize: "14px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)", whiteSpace: "nowrap" as const
+                }
+                : {
+                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                    backgroundColor: "#1f7a8c", color: "white", border: "none", borderRadius: "8px",
+                    fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center",
+                    gap: "6px", transition: "all 0.15s ease-in-out", fontFamily: "inherit", fontSize: "14px",
+                };
+    
+            // We can capture the mouse events:
+            const hoverEffects = isFab ? {
+                // Mobile buttons don't really need hover translateY, but they get active state
+                onMouseEnter: (e: any) => {},
+                onMouseLeave: (e: any) => {}
+            } : {
+                onMouseEnter: (e: any) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                },
+                onMouseLeave: (e: any) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                }
+            };
+    
+            return (
+                <React.Fragment>
+                    {(isModified || (activeProfile && activeProfile.isCustom)) && (
+                        <button
+                            onClick={() => {
+                                if (activeProfile && activeProfile.id && activeProfile.id !== 'custom') {
+                                    const baseProfile = BUILD_PROFILES[activeProfile.id.replace('custom_', '')];
+                                    if (baseProfile) {
+                                        setActiveProfile(JSON.parse(JSON.stringify(baseProfile)));
+                                        setSelectedComponents(baseProfile.seed || {});
+                                        setBuildName(baseProfile.name);
+                                        setIsModified(false);
+                                        toast.success("Reverted back to base configuration");
+                                        return;
+                                    }
+                                }
+                                setSelectedComponents({});
+                                markAsCustomModified();
+                                toast.success("Build parts cleared");
+                                if (isFab) setIsFabOpen(false);
+                            }}
+                            style={btnStyle}
+                            {...hoverEffects}
+                        >
+                            {activeProfile && activeProfile.id && activeProfile.id !== 'custom' ? (
+                                <><RefreshIcon fontSize="small" /> Reset to Defaults</>
+                            ) : (
+                                <><DeleteOutlineIcon fontSize="small" /> Clear Parts</>
+                            )}
+                        </button>
+                    )}
+    
+                    {user && (
+                        <React.Fragment>
+                            {shareToken && (
+                                <button
+                                    onClick={() => { handleSave(true); if(isFab) setIsFabOpen(false); }}
+                                    disabled={isSaving}
+                                    style={{ ...btnStyle, cursor: isSaving ? "not-allowed" : "pointer" }}
+                                    {...hoverEffects}
+                                >
+                                    <SaveIcon fontSize="small" /> Save as New
+                                </button>
+                            )}
+                            <button
+                                onClick={() => { handleSave(false); if(isFab) setIsFabOpen(false); }}
+                                disabled={isSaving}
+                                style={{ ...btnStyle, cursor: isSaving ? "not-allowed" : "pointer" }}
+                                {...hoverEffects}
+                            >
+                                <SaveIcon fontSize="small" /> {isSaving ? "Saving..." : "Save Build"}
+                            </button>
+                        </React.Fragment>
+                    )}
+    
+                    {(!shareToken && activeProfile && !activeProfile.isCustom) && (
+                        <button
+                            onClick={() => { setIsModalOpen(true); if(isFab) setIsFabOpen(false); }}
+                            style={btnStyle}
+                            {...hoverEffects}
+                        >
+                            <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} /> Info
+                        </button>
+                    )}
+                </React.Fragment>
+            );
+        };
+    
     return (
         <div
             style={{
@@ -371,6 +475,43 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
             <Head>
                 <title>PC Builder | WiredWorkshop</title>
                 <style>{`
+                        /* Floating Action Button (FAB) styles */
+                        .fab-wrapper { display: none !important; }
+    
+                        @media (max-width: 900px) {
+                            .desktop-action-btns { display: none !important; }
+                            .fab-wrapper { display: block !important; }
+                            
+                            .fab-overlay {
+                                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                                background: rgba(0,0,0,0.5); z-index: 9998;
+                                opacity: 0; pointer-events: none; transition: opacity 0.2s;
+                            }
+                            .fab-overlay.open { opacity: 1; pointer-events: auto; }
+                            
+                            .fab-container {
+                                position: fixed; bottom: 160px; right: 24px; z-index: 9999;
+                                display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
+                            }
+                            
+                            .fab-menu {
+                                display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+                                transform: translateY(20px) scale(0.9); opacity: 0; pointer-events: none;
+                                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s;
+                                transform-origin: bottom right;
+                            }
+                            .fab-menu.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+                            
+                            .fab-trigger {
+                                width: 56px; height: 56px; border-radius: 28px;
+                                background-color: #1f7a8c; color: white; border: none;
+                                box-shadow: 0 4px 12px rgba(31,122,140,0.4);
+                                display: flex; align-items: center; justify-content: center;
+                                cursor: pointer; transition: transform 0.2s, background-color 0.2s;
+                            }
+                            .fab-trigger:active { transform: scale(0.95); }
+                        }
+    
                     .builder-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; }
                     .builder-layout-row { display: flex; gap: 24px; flex: 1; margin-top: 24px; scroll-margin-top: 270px; }
                     .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 270px; max-height: calc(100vh - 380px); overflow-y: auto; overscroll-behavior: contain; }
@@ -582,160 +723,10 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     </div>
                     
                     
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginLeft: "auto" }}>
-                        {(isModified || (activeProfile && activeProfile.isCustom)) && (
-                            <button
-                                onClick={() => {
-                                    if (activeProfile && activeProfile.id && activeProfile.id !== 'custom') {
-                                        const baseProfile = BUILD_PROFILES[activeProfile.id.replace('custom_', '')];
-                                        if (baseProfile) {
-                                            setActiveProfile(JSON.parse(JSON.stringify(baseProfile)));
-                                            setSelectedComponents(baseProfile.seed || {});
-                                            setBuildName(baseProfile.name);
-                                            setIsModified(false);
-                                            toast.success("Reverted back to base configuration");
-                                            return;
-                                        }
-                                    }
-                                    
-                                    setSelectedComponents({});
-                                    markAsCustomModified();
-                                    toast.success("Build parts cleared");
-                                }}
-                                style={{
-                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                    backgroundColor: "#1f7a8c",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    transition: "all 0.15s ease-in-out",
-                                    fontFamily: "inherit",
-                                    fontSize: "14px",
-                                }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
-                                e.currentTarget.style.boxShadow = "none";
-                            }}
-                            >
-                                {activeProfile && activeProfile.id && activeProfile.id !== 'custom' ? (
-                                    <>
-                                        <RefreshIcon fontSize="small" />
-                                        Reset to Defaults
-                                    </>
-                                ) : (
-                                    <>
-                                        <DeleteOutlineIcon fontSize="small" />
-                                        Clear Parts
-                                    </>
-                                )}
-                            </button>
-                        )}
-                        {user && (
-                            <React.Fragment>
-                                {shareToken && (
-                                <button
-                                    onClick={() => handleSave(true)}
-                                    disabled={isSaving}
-                                    style={{
-                                            padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                            backgroundColor: "#1f7a8c",
-                                            color: "white",
-                                            border: "none",
-                                            borderRadius: "8px",
-                                            fontWeight: 600,
-                                            cursor: isSaving ? "not-allowed" : "pointer",
-                                            display: "inline-flex",
-                                            alignItems: "center",
-                                            gap: "6px",
-                                            transition: "all 0.15s ease-in-out"
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.transform = "translateY(-2px)";
-                                            e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.transform = "translateY(0)";
-                                            e.currentTarget.style.boxShadow = "none";
-                                        }}
-                                >
-                                    <SaveIcon fontSize="small" />
-                                    Save as New
-                                </button>
-                            )}
-                                <button
-                                onClick={() => handleSave(false)}
-                                disabled={isSaving}
-                                style={{
-                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                    backgroundColor: "#1f7a8c",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                    cursor: isSaving ? "not-allowed" : "pointer",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    transition: "all 0.15s ease-in-out",
-                                    fontFamily: "inherit",
-                                    fontSize: "14px",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-2px)";
-                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "none";
-                                }}
-                            >
-                                <SaveIcon fontSize="small" />
-                                {isSaving ? "Saving..." : "Save Build"}
-                            </button>
-                            </React.Fragment>
-                        )}
-                        {/* Only show Info if not a saved build and not a custom layout */}
-                        {(!shareToken && activeProfile && !activeProfile.isCustom) && (
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                style={{
-                                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                                    backgroundColor: "#1f7a8c",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    display: "inline-flex",
-                                    alignItems: "center",
-                                    gap: "6px",
-                                    transition: "all 0.15s ease-in-out",
-                                    fontFamily: "inherit",
-                                    fontSize: "14px",
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.currentTarget.style.transform = "translateY(-2px)";
-                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.currentTarget.style.transform = "translateY(0)";
-                                    e.currentTarget.style.boxShadow = "none";
-                                }}
-                            >
-                                <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} />
-                                Info
-                            </button>
-                        )}
-                    </div>
+                    
+                        <div className="desktop-action-btns" style={{ display: "flex", alignItems: "center", gap: "12px", marginLeft: "auto" }}>
+                            {renderActionButtons(false)}
+                        </div>
                 </div>
 
                 {/* BUDGET TRACKER */}
@@ -1798,6 +1789,26 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     </div>
                 </div>
             </div>
-        </div>
+        
+                {/* Mobile Floating Action Button */}
+                <div className="fab-wrapper">
+                    <div 
+                        className={`fab-overlay ${isFabOpen ? 'open' : ''}`} 
+                        onClick={() => setIsFabOpen(false)}
+                    />
+                    <div className="fab-container">
+                        <div className={`fab-menu ${isFabOpen ? 'open' : ''}`}>
+                            {renderActionButtons(true)}
+                        </div>
+                        <button 
+                            className="fab-trigger"
+                            onClick={() => setIsFabOpen(!isFabOpen)}
+                            aria-label="Toggle Actions"
+                        >
+                            {isFabOpen ? <CloseIcon style={{ fontSize: "24px" }} /> : <MoreVertIcon style={{ fontSize: "24px" }} />}
+                        </button>
+                    </div>
+                </div>
+    </div>
     );
 }
