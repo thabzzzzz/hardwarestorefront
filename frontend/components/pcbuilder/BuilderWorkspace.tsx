@@ -488,12 +488,12 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 opacity: 0; pointer-events: none; transition: opacity 0.2s;
                             }
                             .fab-overlay.open { opacity: 1; pointer-events: auto; }
-                            
+
                             .fab-container {
-                                position: fixed; bottom: 160px; right: 24px; z-index: 9999;
+                                position: fixed; bottom: 100px; right: 24px; z-index: 9999;
                                 display: flex; flex-direction: column; align-items: flex-end; gap: 16px;
                             }
-                            
+
                             .fab-menu {
                                 display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
                                 transform: translateY(20px) scale(0.9); opacity: 0; pointer-events: none;
@@ -534,6 +534,12 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         
                         .mobile-total-label { font-size: 12px !important; }
                         .mobile-total-price { font-size: 16px !important; }
+                        
+                        .builder-header-row { font-size: 18px !important; }
+                        .mobile-header-input { font-size: 16px !important; padding-left: 0 !important; }
+                        
+                        .mobile-header-title-container { flex-direction: column !important; align-items: flex-start !important; gap: 0px !important; }
+                        .mobile-hide { display: none !important; }
 
                         .builder-layout-row { flex-direction: column; }
                         .builder-sidebar { width: 100%; position: static; max-height: none; overflow-y: visible; top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
@@ -695,12 +701,12 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         gap: "16px"
                     }}
                 >
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+                    <div className="mobile-header-title-container" style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                         <span>System Builder</span>
-                        <span style={{color: "#ccc"}}>|</span>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <span className="mobile-hide" style={{color: "#ccc"}}>|</span>
+                        <div className="mobile-header-input-container" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                             {(isModified || shareToken) && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
-                            <input ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken}
+                            <input className="mobile-header-input" ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken}
                                 onChange={(e) => { setBuildName(e.target.value); setIsModified(true); }}
                                 placeholder="My Build 1"
                                 style={{
