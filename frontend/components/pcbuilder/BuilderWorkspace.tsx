@@ -532,6 +532,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .responsive-catalog-visible { display: flex !important; }
                 .responsive-sidebar-hidden { display: none !important; }
                         
+                        .mobile-total-label { font-size: 12px !important; }
+                        .mobile-total-price { font-size: 16px !important; }
+
                         .builder-layout-row { flex-direction: column; }
                         .builder-sidebar { width: 100%; position: static; max-height: none; overflow-y: visible; top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
                         .builder-catalog { padding-right: 0; min-height: 400px; }
@@ -1709,6 +1712,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         }}
                     >
                         <span
+                            className="mobile-total-label"
                             style={{
                                 fontSize: "16px",
                                 color: "#555",
@@ -1718,6 +1722,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             Total
                         </span>
                         <span
+                            className="mobile-total-price"
                             style={{
                                 fontSize: "28px",
                                 fontWeight: 800,
