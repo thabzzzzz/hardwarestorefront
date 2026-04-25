@@ -146,6 +146,29 @@ export function BuilderWorkspace() {
     const [activeTab, setActiveTab] = useState<"edit" | "overview">("edit");
     const [isFabOpen, setIsFabOpen] = useState(false);
 
+    // Mobile Drawers
+    const [isCategoryDrawerOpen, setIsCategoryDrawerOpen] = useState(false);
+    const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+
+    // Reset filters and search when category changes
+    useEffect(() => {
+        setSearchQuery("");
+        setSortOrder("recommended");
+    }, [activeCategory, setSearchQuery]);
+
+    // Ensure body scroll is locked when a drawer is open
+    useEffect(() => {
+        if (isCategoryDrawerOpen || isFilterDrawerOpen) {
+            document.body.style.overflow = "hidden";
+            setIsFabOpen(false); // Hide FAB when drawers open
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [isCategoryDrawerOpen, isFilterDrawerOpen]);
+
+    const hideFab = isCategoryDrawerOpen || isFilterDrawerOpen;
+
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
         setSelectedComponents(profile.seed || {});
@@ -523,29 +546,93 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     .responsive-catalog-hidden, .responsive-catalog-visible { display: flex !important; }
                 .responsive-sidebar-hidden { display: flex !important; }
 
+                    /* Offcanvas Mobile Drawers */
+                    .mobile-drawer-overlay {
+                        position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10000;
+                        background-color: rgba(0,0,0,0); pointer-events: none; transition: background-color 0.3s ease;
+                    }
+                    .mobile-drawer-overlay.drawer-open { background-color: rgba(0,0,0,0.5); pointer-events: auto; }
+
+                    .mobile-filter-drawer {
+                        position: fixed; top: 0; bottom: 0; z-index: 10001;
+                        background-color: #2b2b2b; color: #fff; overflow-y: auto; overflow-x: hidden;
+                        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+                        width: 85%; max-width: 320px; right: 0; transform: translateX(100%); box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+                        display: flex; flex-direction: column;
+                    }
+                    .mobile-filter-drawer.drawer-open { transform: translateX(0); }
+
+                    /* Desktop header visibility */
+                    .mobile-sticky-catalog-header { display: none; }
+                    .desktop-filters { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
                     @media (max-width: 900px) {
                         /* Mobile rules: Toggle visibility based on activeTab */
                         .mobile-only-tabs { display: flex !important; }
                         .responsive-budget-hidden { display: none !important; }
                         .responsive-budget-visible { display: block !important; }
                         .responsive-catalog-hidden { display: none !important; }
-                        .responsive-catalog-visible { display: flex !important; }
-                .responsive-sidebar-hidden { display: none !important; }
+                        .responsive-catalog-visible { display: flex !important; flex: 1; }
                         
-                        .mobile-total-label { font-size: 12px !important; }
+                        /* Sidebar overrides for Drawer mode on Mobile */
+                        /* Reset desktop styles for sidebar to become the drawer content */
+                        .builder-sidebar {
+                            position: fixed !important; top: 0 !important; left: 0 !important; bottom: 0 !important;
+                            width: 85% !important; max-width: 360px !important; z-index: 10001 !important;
+                            background-color: #212529 !important; /* dark theme drawer like the image */
+                            padding: 0 !important; margin: 0 !important; overflow-y: auto !important;
+                            transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
+                            display: flex !important; flex-direction: column; gap: 0 !important;
+                            border-right: none !important; box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
+                        }
+                        .builder-sidebar.drawer-open { transform: translateX(0); }
+                        .responsive-sidebar-hidden { display: flex !important; } /* We handle hiding purely via the drawer toggle, since it persists on both tabs if opened, though the button isn't on budget tab. */
+                        
+                        /* Darker categories styling for the mobile drawer */
+                        .builder-sidebar > div {
+                            background-color: transparent !important; border: none !important; border-bottom: 1px solid #333 !important; color: #fff !important; 
+                            border-radius: 0 !important; padding: 16px 20px !important; flex-shrink: 0 !important;
+                        }
+                        /* Active state styling in drawer */
+                        .builder-sidebar > div.active-cat {
+                            border-left: 4px solid rgb(234, 179, 8) !important; /* Highlight analogous to wootware */
+                            background-color: #2b2b2b !important;
+                        }
+                        .builder-sidebar > div > div:nth-child(2) { background-color: transparent !important; border: none !important; }
+                        .builder-sidebar > div > div:nth-child(3) > div:first-child { color: #fff !important; }
+                        .builder-sidebar > div > div:nth-child(3) > div:last-child { color: #aaa !important; }
+                        
+                        .mobile-total-label { font-size: 16px !important; }
                         .mobile-total-price { font-size: 16px !important; }
+                        .mobile-add-btn { height: 44px !important; padding: 10px 16px !important; font-size: 14px !important; }
                         
                         .builder-header-row { font-size: 18px !important; }
-                        .mobile-header-input { font-size: 16px !important; padding-left: 0 !important; }
+                        .mobile-header-input { font-size: 16px !important; padding-left: 0 !important; color: #fff !important; }
                         
                         .mobile-header-title-container { flex-direction: column !important; align-items: flex-start !important; gap: 0px !important; }
+                        .mobile-header-title-container span { color: #fff !important; }
                         .mobile-hide { display: none !important; }
 
                         .builder-layout-row { flex-direction: column; }
-                        .builder-sidebar { width: 100%; position: static; max-height: none; overflow-y: visible; top: auto; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-                        .builder-catalog { padding-right: 0; min-height: 400px; }
-                        .builder-filters-row { flex-direction: column; align-items: stretch !important; gap: 12px; }
-                        .builder-filter-input { width: 100% !important; }
+                        .builder-catalog { margin-top: -12px; padding-right: 0; min-height: 400px; border: none !important; }
+                        
+                        /* Catalog Header for Mobile */
+                        .desktop-filters { display: none !important; }
+                        .desktop-catalog-header { display: none !important; }
+                        .mobile-sticky-catalog-header {
+                            display: flex; justify-content: space-between; align-items: center;
+                            position: sticky; top: 0px; z-index: 99;
+                            background-color: #2b2b2b; color: #fff; padding: 16px 20px;
+                            margin: -24px -24px 16px -24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+
+                        /* Drawer Headers */
+                        .mobile-drawer-header {
+                            display: flex; justify-content: space-between; align-items: center;
+                            padding: 20px; border-bottom: 1px solid #333; background-color: #212529; font-weight: bold; font-size: 18px; color: #fff; position: sticky; top: 0; z-index: 2;
+                        }
+
+                        /* Product Cards overrides */
                         .builder-product-card { flex-direction: column; align-items: stretch !important; padding: 16px !important; gap: 16px !important; }
                         .builder-card-image { width: 100px !important; height: 100px !important; align-self: center; }
                     }
@@ -757,7 +844,6 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 </div>
                 </div>
 
-                {/* COMPATIBILITY ENGINE WARNINGS */}
                 {validationMessages.length > 0 && (
                     <div 
                         className={`compatibility-warnings-container ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''}`}
@@ -934,15 +1020,24 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     </div>
                 )}
 
+                <div 
+                    className={`mobile-drawer-overlay ${isCategoryDrawerOpen || isFilterDrawerOpen ? 'drawer-open' : ''}`}
+                    onClick={() => { setIsCategoryDrawerOpen(false); setIsFilterDrawerOpen(false); }}
+                />
+
                 <div id="part-picker" className="builder-layout-row" style={{}}>
                     {/* Left Sidebar - Categories */}
                     <div
-                        className={`builder-sidebar ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''}`}
+                        className={`builder-sidebar ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''} ${isCategoryDrawerOpen ? 'drawer-open' : ''}`}
                         style={{
                             backgroundColor: "transparent",
                             margin: 0
                         }}
                     >
+                        <div className="mobile-only-tabs mobile-drawer-header">
+                            <span>Select a Category</span>
+                            <CloseIcon style={{ cursor: 'pointer' }} onClick={() => setIsCategoryDrawerOpen(false)} />
+                        </div>
                         {CATEGORIES.map((cat) => {
                             const isSelected = activeCategory === cat.id;
                             const selectedItem = selectedComponents[cat.id];
@@ -952,7 +1047,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             return (
                                 <div
                                     key={cat.id}
-                                    onClick={() => setActiveCategory(cat.id)}
+                                    onClick={() => { setActiveCategory(cat.id); setIsCategoryDrawerOpen(false); }}
+                                    className={isSelected ? 'active-cat' : ''}
                                     style={{
                                         flexShrink: 0,
                                         display: "flex",
@@ -1135,8 +1231,62 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             overflow: "hidden",
                         }}
                     >
-                        {/* Header */}
+                        {/* Mobile Header (Sticky inside catalog or page flow) */}
+                        <div className="mobile-sticky-catalog-header">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1 }} onClick={() => setIsCategoryDrawerOpen(true)}>
+                                <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{CATEGORIES.find((c) => c.id === activeCategory)?.name}</span>
+                                <span style={{ backgroundColor: '#444', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#ccc' }}>{activeProducts.length}</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: '#ccc', fontSize: '14px' }} onClick={() => setIsFilterDrawerOpen(true)}>
+                                Filtering
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                            </div>
+                        </div>
+
+                        {/* Right Drawer Filters (Mobile) */}
+                        <div className={`mobile-filter-drawer ${isFilterDrawerOpen ? 'drawer-open' : ''}`}>
+                            <div className="mobile-only-tabs mobile-drawer-header">
+                                <span>Filtering</span>
+                                <CloseIcon style={{ cursor: 'pointer' }} onClick={() => setIsFilterDrawerOpen(false)} />
+                            </div>
+                            
+                            <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
+                                <div>
+                                    <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#ccc" }}>Sort By:</div>
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        style={{
+                                            padding: "10px 14px", border: "1px solid #444", borderRadius: "5px",
+                                            fontSize: "14px", backgroundColor: "#333", color: "#fff", outline: "none", width: "100%"
+                                        }}
+                                    >
+                                        <option value="recommended">Most popular</option>
+                                        <option value="price_asc">Price: Low to High</option>
+                                        <option value="price_desc">Price: High to Low</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#ccc" }}>Quick Filter:</div>
+                                    <input
+                                        type="text"
+                                        placeholder="Quick Filter"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        style={{
+                                            padding: "10px 14px", border: "1px solid #444", borderRadius: "5px",
+                                            fontSize: "14px", width: "100%", outline: "none", backgroundColor: "#333", color: "#fff"
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Desktop Header */}
                         <div
+                            className="desktop-catalog-header"
                             style={{
                                 padding: "16px 24px",
                                 borderBottom: "1px solid #e0e0e0",
@@ -1713,8 +1863,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     <div
                         style={{
                             display: "flex",
-                            alignItems: "center",
-                            gap: "16px",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                            gap: "2px",
                         }}
                     >
                         <span
@@ -1737,8 +1888,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         >
                             R{" "}
                             {totalPrice.toLocaleString("en-ZA", {
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 0,
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
                             })}
                         </span>
                     </div>
@@ -1751,6 +1902,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         }}
                     >
                         <button
+                            className="mobile-add-btn"
                             style={{
                                 padding: "17px 16px", height: "54px", boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
@@ -1802,6 +1954,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
             </div>
         
                 {/* Mobile Floating Action Button */}
+                {!hideFab && (
                 <div className="fab-wrapper">
                     <div 
                         className={`fab-overlay ${isFabOpen ? 'open' : ''}`} 
@@ -1820,6 +1973,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         </button>
                     </div>
                 </div>
+                )}
     </div>
     );
 }
