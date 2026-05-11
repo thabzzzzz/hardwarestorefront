@@ -584,6 +584,10 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
                             display: flex !important; flex-direction: column; gap: 0 !important;
                             border-right: none !important; box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
+                            /* Desktop sidebar uses max-height: calc(100vh - 380px); clear it so the drawer fills the screen */
+                            max-height: none !important;
+                            min-height: 100vh;
+                            min-height: 100dvh;
                         }
                         .builder-sidebar.drawer-open { transform: translateX(0); }
                         .responsive-sidebar-hidden { display: flex !important; } /* We handle hiding purely via the drawer toggle, since it persists on both tabs if opened, though the button isn't on budget tab. */
@@ -607,10 +611,10 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .mobile-add-btn { height: 44px !important; padding: 10px 16px !important; font-size: 14px !important; }
                         
                         .builder-header-row { font-size: 18px !important; }
-                        .mobile-header-input { font-size: 16px !important; padding-left: 0 !important; color: #fff !important; }
+                        .mobile-header-input { font-size: 16px !important; padding-left: 0 !important; color: #333 !important; }
                         
                         .mobile-header-title-container { flex-direction: column !important; align-items: flex-start !important; gap: 0px !important; }
-                        .mobile-header-title-container span { color: #fff !important; }
+                        .mobile-header-title-container span { color: #333 !important; }
                         .mobile-hide { display: none !important; }
 
                         .builder-layout-row { flex-direction: column; }
