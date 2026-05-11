@@ -626,16 +626,70 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .mobile-hide { display: none !important; }
 
                         .builder-layout-row { flex-direction: column; }
-                        .builder-catalog { margin-top: -12px; padding-right: 0; min-height: 400px; border: none !important; }
+                        .builder-catalog {
+                            margin-top: 0 !important;
+                            padding: 12px !important;
+                            min-height: 400px;
+                            border: 1px solid #e0e0e0 !important;
+                            box-sizing: border-box;
+                        }
                         
                         /* Catalog Header for Mobile */
                         .desktop-filters { display: none !important; }
                         .desktop-catalog-header { display: none !important; }
+                        /* Toolbar: 60/40 split, full 8px radius (matches catalog cards), light theme */
                         .mobile-sticky-catalog-header {
-                            display: flex; justify-content: space-between; align-items: center;
-                            position: sticky; top: 0px; z-index: 99;
-                            background-color: #2b2b2b; color: #fff; padding: 16px 20px;
-                            margin: -24px -24px 16px -24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            display: flex !important;
+                            flex-direction: row !important;
+                            align-items: stretch !important;
+                            gap: 8px !important;
+                            position: sticky;
+                            top: 0;
+                            z-index: 99;
+                            box-sizing: border-box;
+                            background-color: #f4f4f6 !important;
+                            color: #333 !important;
+                            padding: 8px !important;
+                            margin: 0 0 12px 0 !important;
+                            border: 1px solid #e0e0e0 !important;
+                            border-radius: 8px !important;
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
+                        }
+                        .mobile-catalog-cat-trigger {
+                            flex: 6 1 0;
+                            min-width: 0;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: flex-start !important;
+                            gap: 8px !important;
+                            cursor: pointer;
+                            background-color: #fff !important;
+                            border: 1px solid #e0e0e0 !important;
+                            border-radius: 8px !important;
+                            padding: 10px 12px !important;
+                            min-height: 44px !important;
+                            box-sizing: border-box !important;
+                            color: #333 !important;
+                            font-weight: 700 !important;
+                            font-size: 15px !important;
+                        }
+                        .mobile-catalog-filter-trigger {
+                            flex: 4 1 0;
+                            min-width: 0;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            gap: 6px !important;
+                            cursor: pointer;
+                            background-color: #fff !important;
+                            border: 1px solid #e0e0e0 !important;
+                            border-radius: 8px !important;
+                            padding: 10px 8px !important;
+                            min-height: 44px !important;
+                            box-sizing: border-box !important;
+                            color: #555 !important;
+                            font-size: 14px !important;
+                            font-weight: 600 !important;
                         }
 
                         /* Filter drawer header — same light chrome as category drawer */
@@ -1256,14 +1310,30 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     >
                         {/* Mobile Header (Sticky inside catalog or page flow) */}
                         <div className="mobile-sticky-catalog-header">
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', flex: 1 }} onClick={() => setIsCategoryDrawerOpen(true)}>
-                                <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{CATEGORIES.find((c) => c.id === activeCategory)?.name}</span>
-                                <span style={{ backgroundColor: '#444', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#ccc' }}>{activeProducts.length}</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <div
+                                className="mobile-catalog-cat-trigger"
+                                onClick={() => setIsCategoryDrawerOpen(true)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsCategoryDrawerOpen(true); } }}
+                            >
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                                    {CATEGORIES.find((c) => c.id === activeCategory)?.name}
+                                </span>
+                                <span style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600, flexShrink: 0 }}>
+                                    {activeProducts.length}
+                                </span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="6 9 12 15 18 9"></polyline></svg>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', color: '#ccc', fontSize: '14px' }} onClick={() => setIsFilterDrawerOpen(true)}>
-                                Filtering
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                            <div
+                                className="mobile-catalog-filter-trigger"
+                                onClick={() => setIsFilterDrawerOpen(true)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsFilterDrawerOpen(true); } }}
+                            >
+                                <span style={{ flexShrink: 0 }}>Filtering</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                             </div>
                         </div>
 
