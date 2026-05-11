@@ -555,10 +555,13 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
                     .mobile-filter-drawer {
                         position: fixed; top: 0; bottom: 0; z-index: 10001;
-                        background-color: #2b2b2b; color: #fff; overflow-y: auto; overflow-x: hidden;
+                        background-color: #f4f4f6; color: #333; overflow-y: auto; overflow-x: hidden;
                         transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
-                        width: 85%; max-width: 320px; right: 0; transform: translateX(100%); box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+                        width: 85%; max-width: 320px; right: 0; transform: translateX(100%);
+                        box-shadow: -4px 0 24px rgba(0,0,0,0.08);
                         display: flex; flex-direction: column;
+                        padding: 0 12px 16px; box-sizing: border-box;
+                        border-left: 1px solid #e0e0e0;
                     }
                     .mobile-filter-drawer.drawer-open { transform: translateX(0); }
 
@@ -635,11 +638,15 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             margin: -24px -24px 16px -24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                         }
 
-                        /* Drawer headers: filter drawer stays dark; category drawer matches light theme */
-                        .mobile-filter-drawer .mobile-drawer-header {
+                        /* Filter drawer header — same light chrome as category drawer */
+                        .mobile-filter-drawer > .mobile-drawer-header {
                             display: flex; justify-content: space-between; align-items: center;
-                            padding: 20px; border-bottom: 1px solid #333; background-color: #212529; font-weight: bold; font-size: 18px; color: #fff; position: sticky; top: 0; z-index: 2;
+                            margin-left: -12px; margin-right: -12px; width: calc(100% + 24px); box-sizing: border-box;
+                            padding: 16px 20px; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;
+                            font-weight: 700; font-size: 18px; color: #333; position: sticky; top: 0; z-index: 2;
+                            box-shadow: 0 1px 0 rgba(0,0,0,0.04);
                         }
+                        .mobile-filter-drawer input::placeholder { color: #888; opacity: 1; }
                         .builder-sidebar > .category-drawer-header {
                             display: flex; justify-content: space-between; align-items: center;
                             margin-left: -12px; margin-right: -12px; width: calc(100% + 24px); box-sizing: border-box;
@@ -1264,18 +1271,19 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         <div className={`mobile-filter-drawer ${isFilterDrawerOpen ? 'drawer-open' : ''}`}>
                             <div className="mobile-only-tabs mobile-drawer-header">
                                 <span>Filtering</span>
-                                <CloseIcon style={{ cursor: 'pointer' }} onClick={() => setIsFilterDrawerOpen(false)} />
+                                <CloseIcon style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.54)' }} onClick={() => setIsFilterDrawerOpen(false)} />
                             </div>
                             
                             <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
                                 <div>
-                                    <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#ccc" }}>Sort By:</div>
+                                    <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "8px", color: "#555" }}>Sort By:</div>
                                     <select
                                         value={sortOrder}
                                         onChange={(e) => setSortOrder(e.target.value)}
                                         style={{
-                                            padding: "10px 14px", border: "1px solid #444", borderRadius: "5px",
-                                            fontSize: "14px", backgroundColor: "#333", color: "#fff", outline: "none", width: "100%"
+                                            padding: "12px 14px", border: "1px solid #e0e0e0", borderRadius: "8px",
+                                            fontSize: "16px", backgroundColor: "#fff", color: "#333", outline: "none", width: "100%",
+                                            boxSizing: "border-box",
                                         }}
                                     >
                                         <option value="recommended">Most popular</option>
@@ -1285,15 +1293,16 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 </div>
                                 
                                 <div>
-                                    <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px", color: "#ccc" }}>Quick Filter:</div>
+                                    <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "8px", color: "#555" }}>Quick Filter:</div>
                                     <input
                                         type="text"
                                         placeholder="Quick Filter"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         style={{
-                                            padding: "10px 14px", border: "1px solid #444", borderRadius: "5px",
-                                            fontSize: "14px", width: "100%", outline: "none", backgroundColor: "#333", color: "#fff"
+                                            padding: "12px 14px", border: "1px solid #e0e0e0", borderRadius: "8px",
+                                            fontSize: "16px", width: "100%", outline: "none", backgroundColor: "#fff", color: "#333",
+                                            boxSizing: "border-box",
                                         }}
                                     />
                                 </div>
