@@ -579,11 +579,11 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .builder-sidebar {
                             position: fixed !important; top: 0 !important; left: 0 !important; bottom: 0 !important;
                             width: 85% !important; max-width: 360px !important; z-index: 10001 !important;
-                            background-color: #212529 !important; /* dark theme drawer like the image */
-                            padding: 0 !important; margin: 0 !important; overflow-y: auto !important;
+                            background-color: #f4f4f6 !important;
+                            padding: 0 12px 16px !important; margin: 0 !important; overflow-y: auto !important; overflow-x: hidden !important;
                             transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1);
-                            display: flex !important; flex-direction: column; gap: 0 !important;
-                            border-right: none !important; box-shadow: 0 0 20px rgba(0,0,0,0.5) !important;
+                            display: flex !important; flex-direction: column; gap: 10px !important;
+                            border-right: 1px solid #e0e0e0 !important; box-shadow: 4px 0 24px rgba(0,0,0,0.08) !important;
                             /* Desktop sidebar uses max-height: calc(100vh - 380px); clear it so the drawer fills the screen */
                             max-height: none !important;
                             min-height: 100vh;
@@ -592,19 +592,24 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .builder-sidebar.drawer-open { transform: translateX(0); }
                         .responsive-sidebar-hidden { display: flex !important; } /* We handle hiding purely via the drawer toggle, since it persists on both tabs if opened, though the button isn't on budget tab. */
                         
-                        /* Darker categories styling for the mobile drawer */
-                        .builder-sidebar > div {
-                            background-color: transparent !important; border: none !important; border-bottom: 1px solid #333 !important; color: #fff !important; 
-                            border-radius: 0 !important; padding: 16px 20px !important; flex-shrink: 0 !important;
+                        /* Category rows: do not override card surface — inline styles provide white cards + teal selection */
+                        .builder-sidebar > div:not(.category-drawer-header) {
+                            background-color: transparent !important;
+                            border: none !important;
+                            border-bottom: none !important;
+                            border-radius: 0 !important;
+                            padding: 0 !important;
+                            flex-shrink: 0 !important;
+                            margin: 0 !important;
                         }
-                        /* Active state styling in drawer */
                         .builder-sidebar > div.active-cat {
-                            border-left: 4px solid rgb(234, 179, 8) !important; /* Highlight analogous to wootware */
-                            background-color: #2b2b2b !important;
+                            border-left: none !important;
+                            background-color: transparent !important;
                         }
-                        .builder-sidebar > div > div:nth-child(2) { background-color: transparent !important; border: none !important; }
-                        .builder-sidebar > div > div:nth-child(3) > div:first-child { color: #fff !important; }
-                        .builder-sidebar > div > div:nth-child(3) > div:last-child { color: #aaa !important; }
+                        .builder-sidebar > div:not(.category-drawer-header) > div:nth-child(2) {
+                            background-color: transparent !important;
+                            border: none !important;
+                        }
                         
                         .mobile-total-label { font-size: 16px !important; }
                         .mobile-total-price { font-size: 16px !important; }
@@ -630,10 +635,17 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             margin: -24px -24px 16px -24px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                         }
 
-                        /* Drawer Headers */
-                        .mobile-drawer-header {
+                        /* Drawer headers: filter drawer stays dark; category drawer matches light theme */
+                        .mobile-filter-drawer .mobile-drawer-header {
                             display: flex; justify-content: space-between; align-items: center;
                             padding: 20px; border-bottom: 1px solid #333; background-color: #212529; font-weight: bold; font-size: 18px; color: #fff; position: sticky; top: 0; z-index: 2;
+                        }
+                        .builder-sidebar > .category-drawer-header {
+                            display: flex; justify-content: space-between; align-items: center;
+                            margin-left: -12px; margin-right: -12px; width: calc(100% + 24px); box-sizing: border-box;
+                            padding: 16px 20px; border-bottom: 1px solid #e0e0e0; background-color: #fafafa;
+                            font-weight: 700; font-size: 18px; color: #333; position: sticky; top: 0; z-index: 2;
+                            box-shadow: 0 1px 0 rgba(0,0,0,0.04);
                         }
 
                         /* Product Cards overrides */
@@ -1038,9 +1050,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             margin: 0
                         }}
                     >
-                        <div className="mobile-only-tabs mobile-drawer-header">
+                        <div className="mobile-only-tabs mobile-drawer-header category-drawer-header">
                             <span>Select a Category</span>
-                            <CloseIcon style={{ cursor: 'pointer' }} onClick={() => setIsCategoryDrawerOpen(false)} />
+                            <CloseIcon style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.54)' }} onClick={() => setIsCategoryDrawerOpen(false)} />
                         </div>
                         {CATEGORIES.map((cat) => {
                             const isSelected = activeCategory === cat.id;
