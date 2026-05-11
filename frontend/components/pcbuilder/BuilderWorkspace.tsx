@@ -538,6 +538,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     .builder-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; }
                     .builder-layout-row { display: flex; gap: 24px; flex: 1; margin-top: 24px; scroll-margin-top: 270px; }
                     .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 270px; max-height: calc(100vh - 380px); overflow-y: auto; overscroll-behavior: contain; }
+                    .builder-catalog-column { flex: 1; display: flex; flex-direction: column; min-width: 0; gap: 0; }
                     .builder-catalog { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; padding-right: 24px; }
                     
                     /* Desktop rules: Tabs hidden, catalog and tracker always on */
@@ -626,12 +627,18 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         .mobile-hide { display: none !important; }
 
                         .builder-layout-row { flex-direction: column; }
+                        .builder-catalog-column {
+                            gap: 12px !important;
+                            width: 100% !important;
+                        }
                         .builder-catalog {
                             margin-top: 0 !important;
                             padding: 12px !important;
                             min-height: 400px;
                             border: 1px solid #e0e0e0 !important;
                             box-sizing: border-box;
+                            flex: 1 1 auto !important;
+                            min-height: 0 !important;
                         }
                         
                         /* Catalog Header for Mobile */
@@ -644,19 +651,32 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             align-items: stretch !important;
                             gap: 8px !important;
                             position: sticky;
-                            top: 0;
+                            top: var(--brand-height, 73px);
                             z-index: 99;
                             box-sizing: border-box;
                             background-color: #f4f4f6 !important;
                             color: #333 !important;
                             padding: 8px !important;
-                            margin: 0 0 12px 0 !important;
+                            margin: 0 !important;
                             border: 1px solid #e0e0e0 !important;
                             border-radius: 8px !important;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.06) !important;
+                            flex-shrink: 0 !important;
+                        }
+                        .mobile-catalog-cat-name {
+                            min-width: 0 !important;
+                            display: -webkit-box !important;
+                            -webkit-line-clamp: 2 !important;
+                            -webkit-box-orient: vertical !important;
+                            overflow: hidden !important;
+                            line-height: 1.25 !important;
+                            word-break: break-word !important;
+                            font-weight: 700 !important;
+                            font-size: 15px !important;
+                            color: #333 !important;
                         }
                         .mobile-catalog-cat-trigger {
-                            flex: 6 1 0;
+                            flex: 7 1 0;
                             min-width: 0;
                             display: flex !important;
                             align-items: center !important;
@@ -666,15 +686,13 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             background-color: #fff !important;
                             border: 1px solid #e0e0e0 !important;
                             border-radius: 8px !important;
-                            padding: 10px 12px !important;
-                            min-height: 44px !important;
+                            padding: 10px 10px !important;
+                            min-height: 48px !important;
                             box-sizing: border-box !important;
                             color: #333 !important;
-                            font-weight: 700 !important;
-                            font-size: 15px !important;
                         }
                         .mobile-catalog-filter-trigger {
-                            flex: 4 1 0;
+                            flex: 3 1 0;
                             min-width: 0;
                             display: flex !important;
                             align-items: center !important;
@@ -685,7 +703,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             border: 1px solid #e0e0e0 !important;
                             border-radius: 8px !important;
                             padding: 10px 8px !important;
-                            min-height: 44px !important;
+                            min-height: 48px !important;
                             box-sizing: border-box !important;
                             color: #555 !important;
                             font-size: 14px !important;
@@ -1298,17 +1316,9 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         })}
                     </div>
 
-                    {/* Right Pane - Product Selection */}
-                    <div
-                        className={`builder-catalog ${activeTab === "edit" ? "responsive-catalog-visible" : "responsive-catalog-hidden"}`}
-                        style={{
-                            backgroundColor: "#fff",
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "8px",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {/* Mobile Header (Sticky inside catalog or page flow) */}
+                    {/* Right column: mobile toolbar sits above the white catalog card (decoupled) */}
+                    <div className="builder-catalog-column">
+                        {activeTab === "edit" && (
                         <div className="mobile-sticky-catalog-header">
                             <div
                                 className="mobile-catalog-cat-trigger"
@@ -1317,10 +1327,10 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 tabIndex={0}
                                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsCategoryDrawerOpen(true); } }}
                             >
-                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                                <span className="mobile-catalog-cat-name">
                                     {CATEGORIES.find((c) => c.id === activeCategory)?.name}
                                 </span>
-                                <span style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600, flexShrink: 0 }}>
+                                <span className="mobile-catalog-count-pill" style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600, flexShrink: 0 }}>
                                     {activeProducts.length}
                                 </span>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -1336,7 +1346,18 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
                             </div>
                         </div>
+                        )}
 
+                    {/* Right Pane - Product Selection */}
+                    <div
+                        className={`builder-catalog ${activeTab === "edit" ? "responsive-catalog-visible" : "responsive-catalog-hidden"}`}
+                        style={{
+                            backgroundColor: "#fff",
+                            border: "1px solid #e0e0e0",
+                            borderRadius: "8px",
+                            overflow: "hidden",
+                        }}
+                    >
                         {/* Right Drawer Filters (Mobile) */}
                         <div className={`mobile-filter-drawer ${isFilterDrawerOpen ? 'drawer-open' : ''}`}>
                             <div className="mobile-only-tabs mobile-drawer-header">
@@ -1924,6 +1945,7 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 </div>
                             )}
                         </div>
+                    </div>
                     </div>
 
                     {/* Allocation Modal */}
