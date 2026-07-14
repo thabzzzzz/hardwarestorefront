@@ -4,6 +4,7 @@ import Header from "../components/header/header";
 import { Onboarding } from "../components/pcbuilder/Onboarding";
 import { BuilderWorkspace } from "../components/pcbuilder/BuilderWorkspace";
 import { BuilderProvider, useBuilder } from "../context/BuilderContext";
+import styles from "./pc-builder.module.css";
 
 function BuilderApp() {
     const { activeProfile, setActiveProfile, setSelectedComponents, setBuildName, setIsModified } = useBuilder();
@@ -20,7 +21,7 @@ function BuilderApp() {
     }
 
     return (
-        <main style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto", minHeight: "80vh" }}>
+        <main className={styles.builderMain}>
             <Onboarding onSelectProfile={handleProfileSelect} />
         </main>
     );

@@ -34,6 +34,15 @@ export default function App({ Component, pageProps, emotionCache = clientSideEmo
     return () => window.removeEventListener('resize', updatePosition)
   }, [])
 
+  // Prevent layout shift from toast notifications
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    document.documentElement.style.overflowY = 'scroll'
+    return () => {
+      document.documentElement.style.overflowY = ''
+    }
+  }, [])
+
   return (
     <CacheProvider value={emotionCache}>
       <ThemeProvider theme={theme}>
@@ -48,11 +57,11 @@ export default function App({ Component, pageProps, emotionCache = clientSideEmo
           <meta name="theme-color" content="#ffffff" />
         </Head>
         <CssBaseline />
+        <Toaster {...(toastPosition ? { position: toastPosition } : {})} />
         <div className={styles.root}>
           <main className={styles.main}>
             <Component {...pageProps} />
           </main>
-          <Toaster {...(toastPosition ? { position: toastPosition } : {})} />
           <Footer />
         </div>
       </ThemeProvider>

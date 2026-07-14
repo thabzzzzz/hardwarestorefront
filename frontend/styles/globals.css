@@ -5,3 +5,15 @@ a{color:inherit;text-decoration:none}
 
 /* Headings should prefer Helvetica */
 h1,h2,h3,h4,h5,h6{font-family:Helvetica, Roboto, Arial, sans-serif;margin:0}
+
+/* Prevent layout shift when scrollbars appear/disappear */
+html {
+  overflow-y: scroll;
+}
+
+/* For browsers that support scrollbar-gutter, use it to reserve space */
+@supports (scrollbar-gutter: stable) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}

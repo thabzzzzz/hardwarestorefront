@@ -27,7 +27,11 @@ import InfoIcon from "@mui/icons-material/Info.js";
 import RefreshIcon from "@mui/icons-material/Refresh.js";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline.js";
 
-import { validateBuild, ValidationMessage, getComponentCompatibility } from "../../lib/compatibilityEngine";
+import {
+    validateBuild,
+    ValidationMessage,
+    getComponentCompatibility,
+} from "../../lib/compatibilityEngine";
 import { BUILD_PROFILES } from "../../lib/pc-builder-profiles";
 
 import { BudgetTracker } from "./BudgetTracker";
@@ -125,21 +129,34 @@ export function BuilderWorkspace() {
     const { user } = useAuth();
     const router = useRouter();
     const cart = useCart();
-    
+
     const {
-        activeProfile, setActiveProfile,
-        activeCategory, setActiveCategory,
-        isModalOpen, setIsModalOpen,
-        isModified, setIsModified,
-        selectedComponents, setSelectedComponents,
-        productsCache, setProductsCache,
-        loadingCategory, setLoadingCategory,
-        buildName, setBuildName,
-        shareToken, setShareToken,
-        isSaving, setIsSaving,
-        isLoadingBuild, setIsLoadingBuild,
-        buildAuthorId, setBuildAuthorId,
-        searchQuery, setSearchQuery
+        activeProfile,
+        setActiveProfile,
+        activeCategory,
+        setActiveCategory,
+        isModalOpen,
+        setIsModalOpen,
+        isModified,
+        setIsModified,
+        selectedComponents,
+        setSelectedComponents,
+        productsCache,
+        setProductsCache,
+        loadingCategory,
+        setLoadingCategory,
+        buildName,
+        setBuildName,
+        shareToken,
+        setShareToken,
+        isSaving,
+        setIsSaving,
+        isLoadingBuild,
+        setIsLoadingBuild,
+        buildAuthorId,
+        setBuildAuthorId,
+        searchQuery,
+        setSearchQuery,
     } = useBuilder();
 
     const [sortOrder, setSortOrder] = useState("recommended");
@@ -164,7 +181,9 @@ export function BuilderWorkspace() {
         } else {
             document.body.style.overflow = "";
         }
-        return () => { document.body.style.overflow = ""; };
+        return () => {
+            document.body.style.overflow = "";
+        };
     }, [isCategoryDrawerOpen, isFilterDrawerOpen]);
 
     const hideFab = isCategoryDrawerOpen || isFilterDrawerOpen;
@@ -172,7 +191,11 @@ export function BuilderWorkspace() {
     const handleProfileSelect = (profile: any) => {
         setActiveProfile(profile);
         setSelectedComponents(profile.seed || {});
-        setBuildName(profile.name === 'Start from Scratch' ? 'My Custom Build' : profile.name + ' Build');
+        setBuildName(
+            profile.name === "Start from Scratch"
+                ? "My Custom Build"
+                : profile.name + " Build",
+        );
         setIsModified(profile.isCustom ? true : false);
     };
 
@@ -184,14 +207,15 @@ export function BuilderWorkspace() {
 
         const products = Object.values(selectedComponents).filter(Boolean);
         if (products.length === 0) {
-            toast('Your build is empty. Select components first.');
+            toast("Your build is empty. Select components first.");
             return;
         }
 
         products.forEach((product) => {
-            if (!product || (!product.product_id && !product.variant_id)) return;
+            if (!product || (!product.product_id && !product.variant_id))
+                return;
 
-            const isOutOfStock = product.stock?.status === 'out_of_stock';
+            const isOutOfStock = product.stock?.status === "out_of_stock";
             if (isOutOfStock) {
                 outOfStockCount++;
                 return;
@@ -199,10 +223,14 @@ export function BuilderWorkspace() {
 
             const entry = {
                 id: String(product.product_id || product.variant_id),
-                title: product.title || product.name || 'Product',
+                title: product.title || product.name || "Product",
                 thumbnail: product.thumbnail || product.clean_thumbnail || null,
-                price: product.current_price ? { amount_cents: product.current_price.amount_cents } : (product.price ? { amount_cents: product.price.amount_cents } : null),
-                stock: product.stock || null
+                price: product.current_price
+                    ? { amount_cents: product.current_price.amount_cents }
+                    : product.price
+                      ? { amount_cents: product.price.amount_cents }
+                      : null,
+                stock: product.stock || null,
             };
 
             cart.addOrUpdate(entry, 1);
@@ -210,11 +238,21 @@ export function BuilderWorkspace() {
         });
 
         if (addedCount > 0 && outOfStockCount === 0) {
-            toast.success('Added ' + addedCount + ' components to your cart!');
+            toast.success("Added " + addedCount + " components to your cart!");
         } else if (addedCount > 0 && outOfStockCount > 0) {
-            toast.success('Added ' + addedCount + ' components to your cart, but ' + outOfStockCount + ' were out of stock.');
+            toast.success(
+                "Added " +
+                    addedCount +
+                    " components to your cart, but " +
+                    outOfStockCount +
+                    " were out of stock.",
+            );
         } else if (outOfStockCount > 0) {
-            toast.error('Could not add components: ' + outOfStockCount + ' items are out of stock.');
+            toast.error(
+                "Could not add components: " +
+                    outOfStockCount +
+                    " items are out of stock.",
+            );
         }
     };
 
@@ -231,33 +269,43 @@ export function BuilderWorkspace() {
                 componentsMap[cat] = selectedComponents[cat].variant_id;
             }
 
-            const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : "";
+            const token =
+                typeof window !== "undefined"
+                    ? localStorage.getItem("auth_token")
+                    : "";
 
             const res = await fetch(`${API_BASE}/api/pc-builds`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                     name: buildName,
                     components: componentsMap,
                     share_token: shareToken,
                     save_as_new: saveAsNew,
-                    target_budget: activeProfile?.targetBudget ?? 0
-                })
+                    target_budget: activeProfile?.targetBudget ?? 0,
+                }),
             });
 
             if (res.ok) {
                 const data = await res.json();
                 setShareToken(data.share_token);
                 setBuildName(data.name);
-                toast.success(saveAsNew ? "Build saved as new successfully!" : "Build saved successfully!");
-                router.replace(`/build/${data.share_token}`, undefined, { shallow: true });
+                toast.success(
+                    saveAsNew
+                        ? "Build saved as new successfully!"
+                        : "Build saved successfully!",
+                );
+                // Don't navigate - just update state to prevent layout shift
+                // router.replace(`/build/${data.share_token}`, undefined, {
+                //     shallow: true,
+                // });
             } else {
                 toast.error("Failed to save build");
             }
-        } catch(e) {
+        } catch (e) {
             console.error("Failed to save build", e);
             toast.error("Error saving build");
         } finally {
@@ -265,13 +313,26 @@ export function BuilderWorkspace() {
         }
     };
 
-const markAsCustomModified = (extraUpdates: any = {}) => {
+    const markAsCustomModified = (extraUpdates: any = {}) => {
         setIsModified(true);
-        if (activeProfile && !activeProfile.isCustom && !activeProfile.name.toLowerCase().includes('custom')) {
-            setActiveProfile((prev: any) => ({ ...prev, ...extraUpdates, isCustom: true, name: `Custom ${prev.name}` }));
+        if (
+            activeProfile &&
+            !activeProfile.isCustom &&
+            !activeProfile.name.toLowerCase().includes("custom")
+        ) {
+            setActiveProfile((prev: any) => ({
+                ...prev,
+                ...extraUpdates,
+                isCustom: true,
+                name: `Custom ${prev.name}`,
+            }));
             setBuildName(`Custom ${activeProfile.name} Build`);
         } else if (Object.keys(extraUpdates).length > 0) {
-            setActiveProfile((prev: any) => ({ ...prev, ...extraUpdates, isCustom: true }));
+            setActiveProfile((prev: any) => ({
+                ...prev,
+                ...extraUpdates,
+                isCustom: true,
+            }));
         }
     };
 
@@ -281,10 +342,16 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
         markAsCustomModified({ targetBudget: newTarget });
     };
 
-    const totalPrice = Object.values(selectedComponents || {}).reduce((sum, item: any) => {
-        const priceCents = item?.current_price?.amount_cents || item?.price?.amount_cents || 0;
-        return sum + priceCents / 100;
-    }, 0);
+    const totalPrice = Object.values(selectedComponents || {}).reduce(
+        (sum, item: any) => {
+            const priceCents =
+                item?.current_price?.amount_cents ||
+                item?.price?.amount_cents ||
+                0;
+            return sum + priceCents / 100;
+        },
+        0,
+    );
 
     useEffect(() => {
         const slug = ENDPOINT_MAP[activeCategory];
@@ -348,29 +415,46 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
 
         if (searchQuery.trim().length > 0) {
             const query = searchQuery.toLowerCase();
-            items = items.filter(p => 
-                (p.title && p.title.toLowerCase().includes(query)) ||
-                (p.brand && p.brand.toLowerCase().includes(query)) ||
-                (p.model && p.model.toLowerCase().includes(query))
+            items = items.filter(
+                (p) =>
+                    (p.title && p.title.toLowerCase().includes(query)) ||
+                    (p.brand && p.brand.toLowerCase().includes(query)) ||
+                    (p.model && p.model.toLowerCase().includes(query)),
             );
         }
 
         if (sortOrder === "price_asc") {
-            items.sort((a, b) => (a.current_price?.amount_cents || 0) - (b.current_price?.amount_cents || 0));
+            items.sort(
+                (a, b) =>
+                    (a.current_price?.amount_cents || 0) -
+                    (b.current_price?.amount_cents || 0),
+            );
         } else if (sortOrder === "price_desc") {
-            items.sort((a, b) => (b.current_price?.amount_cents || 0) - (a.current_price?.amount_cents || 0));
+            items.sort(
+                (a, b) =>
+                    (b.current_price?.amount_cents || 0) -
+                    (a.current_price?.amount_cents || 0),
+            );
         }
 
-        const selectedId = selectedComponents[activeCategory]?.variant_id;      
+        const selectedId = selectedComponents[activeCategory]?.variant_id;
         if (!selectedId) return items;
 
-        const selectedIndex = items.findIndex(p => p.variant_id === selectedId);
+        const selectedIndex = items.findIndex(
+            (p) => p.variant_id === selectedId,
+        );
         if (selectedIndex > -1) {
             const [selected] = items.splice(selectedIndex, 1);
             items.unshift(selected);
         }
         return items;
-    }, [activeProducts, selectedComponents, activeCategory, searchQuery, sortOrder]);
+    }, [
+        activeProducts,
+        selectedComponents,
+        activeCategory,
+        searchQuery,
+        sortOrder,
+    ]);
 
     const validationMessages = validateBuild({
         cpu: selectedComponents["cpus"],
@@ -382,110 +466,181 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
         system_cooling: selectedComponents["coolers"],
     });
 
-    const errorCount = validationMessages.filter(m => m.type === 'error').length;
-    const warningCount = validationMessages.filter(m => m.type === 'warning').length;
+    const errorCount = validationMessages.filter(
+        (m) => m.type === "error",
+    ).length;
+    const warningCount = validationMessages.filter(
+        (m) => m.type === "warning",
+    ).length;
 
-    
-        const renderActionButtons = (isFab: boolean) => {
-            const btnStyle: React.CSSProperties = isFab 
-                ? {
-                    padding: "10px 16px", minHeight: "44px", boxSizing: "border-box", 
-                    backgroundColor: "#1f7a8c", color: "white", border: "none", borderRadius: "22px",
-                    fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center",
-                    gap: "6px", transition: "all 0.15s ease-in-out", fontFamily: "inherit", fontSize: "14px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)", whiteSpace: "nowrap" as const
-                }
-                : {
-                    padding: "17px 16px", height: "54px", boxSizing: "border-box",
-                    backgroundColor: "#1f7a8c", color: "white", border: "none", borderRadius: "8px",
-                    fontWeight: 600, cursor: "pointer", display: "inline-flex", alignItems: "center",
-                    gap: "6px", transition: "all 0.15s ease-in-out", fontFamily: "inherit", fontSize: "14px",
-                };
-    
-            // We can capture the mouse events:
-            const hoverEffects = isFab ? {
-                // Mobile buttons don't really need hover translateY, but they get active state
-                onMouseEnter: (e: any) => {},
-                onMouseLeave: (e: any) => {}
-            } : {
-                onMouseEnter: (e: any) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
-                },
-                onMouseLeave: (e: any) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
-                }
-            };
-    
-            return (
-                <React.Fragment>
-                    {(isModified || (activeProfile && activeProfile.isCustom)) && (
-                        <button
-                            onClick={() => {
-                                if (activeProfile && activeProfile.id && activeProfile.id !== 'custom') {
-                                    const baseProfile = BUILD_PROFILES[activeProfile.id.replace('custom_', '')];
-                                    if (baseProfile) {
-                                        setActiveProfile(JSON.parse(JSON.stringify(baseProfile)));
-                                        setSelectedComponents(baseProfile.seed || {});
-                                        setBuildName(baseProfile.name);
-                                        setIsModified(false);
-                                        toast.success("Reverted back to base configuration");
-                                        return;
-                                    }
+    const renderActionButtons = (isFab: boolean) => {
+        const btnStyle: React.CSSProperties = isFab
+            ? {
+                  padding: "10px 16px",
+                  minHeight: "44px",
+                  boxSizing: "border-box",
+                  backgroundColor: "#1f7a8c",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "22px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  transition: "all 0.15s ease-in-out",
+                  fontFamily: "inherit",
+                  fontSize: "14px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                  whiteSpace: "nowrap" as const,
+              }
+            : {
+                  padding: "17px 16px",
+                  height: "54px",
+                  boxSizing: "border-box",
+                  backgroundColor: "#1f7a8c",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  transition: "all 0.15s ease-in-out",
+                  fontFamily: "inherit",
+                  fontSize: "14px",
+              };
+
+        // We can capture the mouse events:
+        const hoverEffects = isFab
+            ? {
+                  // Mobile buttons don't really need hover translateY, but they get active state
+                  onMouseEnter: (e: any) => {},
+                  onMouseLeave: (e: any) => {},
+              }
+            : {
+                  onMouseEnter: (e: any) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow =
+                          "0 6px 12px rgba(31, 122, 140, 0.4)";
+                  },
+                  onMouseLeave: (e: any) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                  },
+              };
+
+        return (
+            <React.Fragment>
+                {(isModified || (activeProfile && activeProfile.isCustom)) && (
+                    <button
+                        onClick={() => {
+                            if (
+                                activeProfile &&
+                                activeProfile.id &&
+                                activeProfile.id !== "custom"
+                            ) {
+                                const baseProfile =
+                                    BUILD_PROFILES[
+                                        activeProfile.id.replace("custom_", "")
+                                    ];
+                                if (baseProfile) {
+                                    setActiveProfile(
+                                        JSON.parse(JSON.stringify(baseProfile)),
+                                    );
+                                    setSelectedComponents(
+                                        baseProfile.seed || {},
+                                    );
+                                    setBuildName(baseProfile.name);
+                                    setIsModified(false);
+                                    toast.success(
+                                        "Reverted back to base configuration",
+                                    );
+                                    return;
                                 }
-                                setSelectedComponents({});
-                                markAsCustomModified();
-                                toast.success("Build parts cleared");
-                                if (isFab) setIsFabOpen(false);
-                            }}
-                            style={btnStyle}
-                            {...hoverEffects}
-                        >
-                            {activeProfile && activeProfile.id && activeProfile.id !== 'custom' ? (
-                                <><RefreshIcon fontSize="small" /> Reset to Defaults</>
-                            ) : (
-                                <><DeleteOutlineIcon fontSize="small" /> Clear Parts</>
-                            )}
-                        </button>
-                    )}
-    
-                    {user && (
-                        <React.Fragment>
-                            {shareToken && (
-                                <button
-                                    onClick={() => { handleSave(true); if(isFab) setIsFabOpen(false); }}
-                                    disabled={isSaving}
-                                    style={{ ...btnStyle, cursor: isSaving ? "not-allowed" : "pointer" }}
-                                    {...hoverEffects}
-                                >
-                                    <SaveIcon fontSize="small" /> Save as New
-                                </button>
-                            )}
+                            }
+                            setSelectedComponents({});
+                            markAsCustomModified();
+                            toast.success("Build parts cleared");
+                            if (isFab) setIsFabOpen(false);
+                        }}
+                        style={btnStyle}
+                        {...hoverEffects}
+                    >
+                        {activeProfile &&
+                        activeProfile.id &&
+                        activeProfile.id !== "custom" ? (
+                            <>
+                                <RefreshIcon fontSize="small" /> Reset to
+                                Defaults
+                            </>
+                        ) : (
+                            <>
+                                <DeleteOutlineIcon fontSize="small" /> Clear
+                                Parts
+                            </>
+                        )}
+                    </button>
+                )}
+
+                {user && (
+                    <React.Fragment>
+                        {shareToken && (
                             <button
-                                onClick={() => { handleSave(false); if(isFab) setIsFabOpen(false); }}
+                                onClick={() => {
+                                    handleSave(true);
+                                    if (isFab) setIsFabOpen(false);
+                                }}
                                 disabled={isSaving}
-                                style={{ ...btnStyle, cursor: isSaving ? "not-allowed" : "pointer" }}
+                                style={{
+                                    ...btnStyle,
+                                    cursor: isSaving
+                                        ? "not-allowed"
+                                        : "pointer",
+                                }}
                                 {...hoverEffects}
                             >
-                                <SaveIcon fontSize="small" /> {isSaving ? "Saving..." : "Save Build"}
+                                <SaveIcon fontSize="small" /> Save as New
                             </button>
-                        </React.Fragment>
-                    )}
-    
-                    {(!shareToken && activeProfile && !activeProfile.isCustom) && (
+                        )}
                         <button
-                            onClick={() => { setIsModalOpen(true); if(isFab) setIsFabOpen(false); }}
-                            style={btnStyle}
+                            onClick={() => {
+                                handleSave(false);
+                                if (isFab) setIsFabOpen(false);
+                            }}
+                            disabled={isSaving}
+                            style={{
+                                ...btnStyle,
+                                cursor: isSaving ? "not-allowed" : "pointer",
+                            }}
                             {...hoverEffects}
                         >
-                            <InfoIcon style={{ marginRight: "6px", fontSize: "18px" }} /> Info
+                            <SaveIcon fontSize="small" />{" "}
+                            {isSaving ? "Saving..." : "Save Build"}
                         </button>
-                    )}
-                </React.Fragment>
-            );
-        };
-    
+                    </React.Fragment>
+                )}
+
+                {!shareToken && activeProfile && !activeProfile.isCustom && (
+                    <button
+                        onClick={() => {
+                            setIsModalOpen(true);
+                            if (isFab) setIsFabOpen(false);
+                        }}
+                        style={btnStyle}
+                        {...hoverEffects}
+                    >
+                        <InfoIcon
+                            style={{ marginRight: "6px", fontSize: "18px" }}
+                        />{" "}
+                        Info
+                    </button>
+                )}
+            </React.Fragment>
+        );
+    };
+
     return (
         <div
             style={{
@@ -615,8 +770,8 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             border: none !important;
                         }
                         
-                        .mobile-total-label { font-size: 16px !important; }
-                        .mobile-total-price { font-size: 16px !important; }
+                        .mobile-total-label { font-size: 18px !important; }
+                        .mobile-total-price { font-size: 18px !important; }
                         .mobile-add-btn { height: 44px !important; padding: 10px 16px !important; font-size: 14px !important; }
                         
                         .builder-header-row { font-size: 18px !important; }
@@ -728,16 +883,53 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         }
 
                         /* Product Cards overrides */
-                        .builder-product-card { flex-direction: column; align-items: stretch !important; padding: 16px !important; gap: 16px !important; }
-                        .builder-card-image { width: 100px !important; height: 100px !important; align-self: center; }
+                        .builder-product-card { flex-direction: column; align-items: stretch !important; padding: 12px !important; gap: 12px !important; }
+                        .builder-card-image { width: 80px !important; height: 80px !important; align-self: center; }
+                        
+                        /* Product title - reduce font size and add line clamping */
+                        .builder-product-card h3 { font-size: 13px !important; line-height: 1.3 !important; margin-bottom: 8px !important; 
+                            display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; 
+                            overflow: hidden !important; text-overflow: ellipsis !important; }
+                        
+                        /* Specs/tags - reduce font size and padding */
+                        .builder-product-card span[style*="backgroundColor: #f9fafb"] { 
+                            font-size: 10px !important; padding: 2px 6px !important; }
+                        
+                        /* Price - increase font size slightly (target the specific product price div) */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:first-child > div { 
+                            font-size: 16px !important; }
+                        
+                        /* Stock info - increase font size slightly */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:nth-child(2) > div:last-child { 
+                            font-size: 12px !important; }
+                        
+                        /* Select/Deselect button - reduce font size and min-width */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:nth-child(2) > button { 
+                            font-size: 12px !important; padding: 8px 16px !important; min-width: 90px !important; }
+                        
+                        /* Bottom section - stack vertically with relative positioning */
+                        .builder-product-card > div:nth-child(2) > div:last-child { 
+                            flex-direction: column !important; align-items: stretch !important; gap: 8px !important; 
+                            position: relative !important; }
+                        
+                        /* Stock+button container - make it just the stock text (row 1) */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:nth-child(2) {
+                            flex-direction: column !important; align-items: flex-start !important; order: 1 !important; }
+                        
+                        /* Price div - make it a flex row (row 2) with proper spacing */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:first-child { 
+                            display: flex !important; align-items: center !important; justify-content: space-between !important; 
+                            order: 2 !important; padding-right: 100px !important; }
+                        
+                        /* Move button to align with price row using absolute positioning from bottom */
+                        .builder-product-card > div:nth-child(2) > div:last-child > div:nth-child(2) > button {
+                            position: absolute !important; right: 12px !important; bottom: 0px !important; }
                     }
                     @media (max-width: 480px) {
                         .builder-sidebar { grid-template-columns: 1fr; }
                     }
                 `}</style>
             </Head>
-
-            
 
             <main
                 style={{
@@ -751,12 +943,20 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     paddingBottom: "120px",
                 }}
             >
-                <div style={{ marginBottom: "16px", display: "flex", gap: "12px" }}>
+                <div
+                    style={{
+                        marginBottom: "16px",
+                        display: "flex",
+                        gap: "12px",
+                    }}
+                >
                     {user && shareToken && (
                         <Link
                             href="/saved-builds"
                             style={{
-                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                padding: "17px 16px",
+                                height: "54px",
+                                boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
                                 color: "white",
                                 border: "none",
@@ -772,11 +972,14 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 fontSize: "14px",
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                e.currentTarget.style.transform =
+                                    "translateY(-2px)";
+                                e.currentTarget.style.boxShadow =
+                                    "0 6px 12px rgba(31, 122, 140, 0.4)";
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
                                 e.currentTarget.style.boxShadow = "none";
                             }}
                         >
@@ -785,14 +988,18 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         </Link>
                     )}
 
-                    {(!shareToken && !buildAuthorId) && (
+                    {!shareToken && !buildAuthorId && (
                         <button
                             onClick={() => {
                                 setActiveProfile(null);
-                                router.replace('/pc-builder', undefined, { shallow: true });
+                                router.replace("/pc-builder", undefined, {
+                                    shallow: true,
+                                });
                             }}
                             style={{
-                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                padding: "17px 16px",
+                                height: "54px",
+                                boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
                                 color: "white",
                                 border: "none",
@@ -807,11 +1014,14 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 fontSize: "14px",
                             }}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                                e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                e.currentTarget.style.transform =
+                                    "translateY(-2px)";
+                                e.currentTarget.style.boxShadow =
+                                    "0 6px 12px rgba(31, 122, 140, 0.4)";
                             }}
                             onMouseLeave={(e) => {
-                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.transform =
+                                    "translateY(0)";
                                 e.currentTarget.style.boxShadow = "none";
                             }}
                         >
@@ -822,129 +1032,226 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                 </div>
 
                 <React.Fragment>
-
-                {/* PILL TABS */}
-                <div className="mobile-only-tabs" style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
-                    <div style={{
-                        display: "inline-flex",
-                        background: "#e0e4e8",
-                        padding: "4px",
-                        borderRadius: "12px",
-                        gap: "4px"
-                    }}>
-                        <button
-                            onClick={() => setActiveTab("edit")}
+                    {/* PILL TABS */}
+                    <div
+                        className="mobile-only-tabs"
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginBottom: "24px",
+                        }}
+                    >
+                        <div
                             style={{
-                                padding: "8px 32px",
-                                background: activeTab === "edit" ? "#1f7a8c" : "transparent",
-                                color: activeTab === "edit" ? "#fff" : "#555",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontSize: "15px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                boxShadow: activeTab === "edit" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
+                                display: "inline-flex",
+                                background: "#e0e4e8",
+                                padding: "4px",
+                                borderRadius: "12px",
+                                gap: "4px",
                             }}
                         >
-                            Components
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("overview")}
-                            style={{
-                                padding: "8px 32px",
-                                background: activeTab === "overview" ? "#1f7a8c" : "transparent",
-                                color: activeTab === "overview" ? "#fff" : "#555",
-                                border: "none",
-                                borderRadius: "8px",
-                                fontSize: "15px",
-                                fontWeight: 600,
-                                cursor: "pointer",
-                                transition: "all 0.2s ease",
-                                boxShadow: activeTab === "overview" ? "0 2px 4px rgba(0,0,0,0.1)" : "none"
-                            }}
-                        >
-                            Overview
-                        </button>
-                    </div>
-                </div>
-
-                <div
-                    className="builder-header-row"
-                    style={{
-                        paddingBottom: "16px",
-                        color: "#333",
-                        fontWeight: 700,
-                        fontSize: "24px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                        gap: "16px"
-                    }}
-                >
-                    <div className="mobile-header-title-container" style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-                        <span>System Builder</span>
-                        <span className="mobile-hide" style={{color: "#ccc"}}>|</span>
-                        <div className="mobile-header-input-container" style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                            {(isModified || shareToken) && <EditIcon fontSize="small" style={{ color: "#aaa", cursor: "pointer" }} onClick={() => buildNameInputRef.current?.focus()} />}
-                            <input className="mobile-header-input" ref={buildNameInputRef} type="text" value={buildName} disabled={!isModified && !shareToken}
-                                onChange={(e) => { setBuildName(e.target.value); setIsModified(true); }}
-                                placeholder="My Build 1"
+                            <button
+                                onClick={() => setActiveTab("edit")}
                                 style={{
-                                    fontSize: "20px",
+                                    padding: "8px 32px",
+                                    background:
+                                        activeTab === "edit"
+                                            ? "#1f7a8c"
+                                            : "transparent",
+                                    color:
+                                        activeTab === "edit" ? "#fff" : "#555",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontSize: "15px",
                                     fontWeight: 600,
-                                    padding: "4px 8px",
-                                    border: "1px solid transparent",
-                                    borderRadius: "4px",
-                                    backgroundColor: "transparent",
-                                    outline: "none",
-                                    transition: "all 0.2s",
-                                    cursor: isModified ? "text" : "default",
-                                    width: "100%",
-                                    maxWidth: "400px",
-                                    textOverflow: "ellipsis",
-                                    overflow: "hidden",
-                                    whiteSpace: "nowrap",
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease",
+                                    boxShadow:
+                                        activeTab === "edit"
+                                            ? "0 2px 4px rgba(0,0,0,0.1)"
+                                            : "none",
                                 }}
-                                onFocus={(e) => { if(isModified) { e.target.style.backgroundColor = "#fff"; e.target.style.border = "1px solid #1f7a8c"; } }}
-                                onBlur={(e) => { if(isModified) { e.target.style.backgroundColor = "transparent"; e.target.style.border = "1px solid transparent"; } }}
-                            />
+                            >
+                                Components
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("overview")}
+                                style={{
+                                    padding: "8px 32px",
+                                    background:
+                                        activeTab === "overview"
+                                            ? "#1f7a8c"
+                                            : "transparent",
+                                    color:
+                                        activeTab === "overview"
+                                            ? "#fff"
+                                            : "#555",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontSize: "15px",
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s ease",
+                                    boxShadow:
+                                        activeTab === "overview"
+                                            ? "0 2px 4px rgba(0,0,0,0.1)"
+                                            : "none",
+                                }}
+                            >
+                                Overview
+                            </button>
                         </div>
                     </div>
-                    
-                    
-                    
-                        <div className="desktop-action-btns" style={{ display: "flex", alignItems: "center", gap: "12px", marginLeft: "auto" }}>
+
+                    <div
+                        className="builder-header-row"
+                        style={{
+                            paddingBottom: "16px",
+                            color: "#333",
+                            fontWeight: 700,
+                            fontSize: "24px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            flexWrap: "wrap",
+                            gap: "16px",
+                        }}
+                    >
+                        <div
+                            className="mobile-header-title-container"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "16px",
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <span>System Builder</span>
+                            <span
+                                className="mobile-hide"
+                                style={{ color: "#ccc" }}
+                            >
+                                |
+                            </span>
+                            <div
+                                className="mobile-header-input-container"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "4px",
+                                }}
+                            >
+                                {(isModified || shareToken) && (
+                                    <EditIcon
+                                        fontSize="small"
+                                        style={{
+                                            color: "#aaa",
+                                            cursor: "pointer",
+                                        }}
+                                        onClick={() =>
+                                            buildNameInputRef.current?.focus()
+                                        }
+                                    />
+                                )}
+                                <input
+                                    className="mobile-header-input"
+                                    ref={buildNameInputRef}
+                                    type="text"
+                                    value={buildName}
+                                    disabled={!isModified && !shareToken}
+                                    onChange={(e) => {
+                                        setBuildName(e.target.value);
+                                        setIsModified(true);
+                                    }}
+                                    placeholder="My Build 1"
+                                    style={{
+                                        fontSize: "20px",
+                                        fontWeight: 600,
+                                        padding: "4px 8px",
+                                        border: "1px solid transparent",
+                                        borderRadius: "4px",
+                                        backgroundColor: "transparent",
+                                        outline: "none",
+                                        transition: "all 0.2s",
+                                        cursor: isModified ? "text" : "default",
+                                        width: "100%",
+                                        maxWidth: "400px",
+                                        textOverflow: "ellipsis",
+                                        overflow: "hidden",
+                                        whiteSpace: "nowrap",
+                                    }}
+                                    onFocus={(e) => {
+                                        if (isModified) {
+                                            e.target.style.backgroundColor =
+                                                "#fff";
+                                            e.target.style.border =
+                                                "1px solid #1f7a8c";
+                                        }
+                                    }}
+                                    onBlur={(e) => {
+                                        if (isModified) {
+                                            e.target.style.backgroundColor =
+                                                "transparent";
+                                            e.target.style.border =
+                                                "1px solid transparent";
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            className="desktop-action-btns"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "12px",
+                                marginLeft: "auto",
+                            }}
+                        >
                             {renderActionButtons(false)}
                         </div>
-                </div>
+                    </div>
 
-                {/* BUDGET TRACKER */}
-                <div className={activeTab === "overview" ? "responsive-budget-visible" : "responsive-budget-hidden"}>
-                <div
-                    style={{
-                        position: "sticky",
-                        top: "var(--brand-height, 73px)",
-                        zIndex: 100,
-                        backgroundColor: "#f4f4f6", // Match main bg 
-                        paddingBottom: "8px",       // A little padding below
-                        paddingTop: "8px",
-                        margin: "0 -24px",          // Span edge to edge if needed, or keep to normal. Let's pad left/right
-                        paddingLeft: "24px",
-                        paddingRight: "24px"
-                    }}
-                >
-                    {activeProfile && <BudgetTracker selectedComponents={selectedComponents} targetBudget={activeProfile.targetBudget} activeProfile={activeProfile} setActiveCategory={setActiveCategory} onUpdateBudget={handleUpdateTargetBudget} />}
-                </div>
-                </div>
-
-                {validationMessages.length > 0 && (
-                    <div 
-                        className={`compatibility-warnings-container ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''}`}
-                        style={{ marginTop: "24px", marginBottom: "24px" }}
+                    {/* BUDGET TRACKER */}
+                    <div
+                        className={
+                            activeTab === "overview"
+                                ? "responsive-budget-visible"
+                                : "responsive-budget-hidden"
+                        }
                     >
-                        <style>{`
+                        <div
+                            style={{
+                                position: "sticky",
+                                top: "var(--brand-height, 73px)",
+                                zIndex: 100,
+                                backgroundColor: "#f4f4f6", // Match main bg
+                                paddingBottom: "8px", // A little padding below
+                                paddingTop: "8px",
+                                margin: "0 -24px", // Span edge to edge if needed, or keep to normal. Let's pad left/right
+                                paddingLeft: "24px",
+                                paddingRight: "24px",
+                            }}
+                        >
+                            {activeProfile && (
+                                <BudgetTracker
+                                    selectedComponents={selectedComponents}
+                                    targetBudget={activeProfile.targetBudget}
+                                    activeProfile={activeProfile}
+                                    setActiveCategory={setActiveCategory}
+                                    onUpdateBudget={handleUpdateTargetBudget}
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    {validationMessages.length > 0 && (
+                        <div
+                            className={`compatibility-warnings-container ${activeTab === "overview" ? "responsive-sidebar-hidden" : ""}`}
+                            style={{ marginTop: "24px", marginBottom: "24px" }}
+                        >
+                            <style>{`
                             /* Default desktop view: snackbars visible, stepper hidden */
                             .desktop-alerts { display: flex; flex-direction: column; gap: 8px; }
                             .mobile-stepper-view { display: none; }
@@ -955,350 +1262,840 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                 .mobile-stepper-view { display: flex; flex-direction: column; gap: 12px; }
                             }
                         `}</style>
-                        
-                        {/* Desktop Alerts (Snackbars) */}
-                        <div className="desktop-alerts">
-                            {validationMessages.map((msg, idx) => {
-                                const isError = msg.type === "error";
-                                const isWarning = msg.type === "warning";
-                                const isSuccess = msg.type === "success";
 
-                                let Icon = InfoIcon;
-                                let bgColor = "#e3f2fd";
-                                let borderColor = "#90caf9";
-                                let textColor = "#0277bd";
-
-                                if (isError) {
-                                    Icon = ReportProblemIcon;
-                                    bgColor = "#ffebee"; // red-ish
-                                    borderColor = "#ff8a80";
-                                    textColor = "#c62828";
-                                } else if (isWarning) {
-                                    Icon = ReportProblemIcon;
-                                    bgColor = "#fff3e0"; // orange-ish
-                                    borderColor = "#ffb74d";
-                                    textColor = "#e65100";
-                                } else if (isSuccess) {
-                                    Icon = CheckCircleIcon;
-                                    bgColor = "#e8f5e9";
-                                    borderColor = "#81c784";
-                                    textColor = "#2e7d32";
-                                }
-
-                                return (
-                                    <div key={idx} style={{
-                                        display: "flex", alignItems: "center", gap: "12px",
-                                        padding: "12px 16px",
-                                        backgroundColor: bgColor,
-                                        border: `1px solid ${borderColor}`,
-                                        borderRadius: "8px",
-                                        color: textColor,
-                                        fontSize: "15px",
-                                        fontWeight: 500
-                                    }}>
-                                        <Icon fontSize="small" />
-                                        {msg.message}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                        {/* Mobile Stepper View */}
-                        <div className="mobile-stepper-view">
-                            {/* Health Stepper Bar */}
-                            <div style={{ 
-                                display: "flex", 
-                                gap: "8px", 
-                                alignItems: "flex-end",
-                                justifyContent: "space-between",
-                                width: "100%",
-                                flexWrap: "wrap",
-                                paddingBottom: "4px"
-                            }}>
+                            {/* Desktop Alerts (Snackbars) */}
+                            <div className="desktop-alerts">
                                 {validationMessages.map((msg, idx) => {
-                                    const lower = msg.message.toLowerCase();
-                                    let shortLabel = "Status";
-                                    if (lower.includes("socket") || lower.includes("brand")) shortLabel = "Socket";
-                                    else if (lower.includes("memory") || lower.includes("ram") || lower.includes("slots")) shortLabel = "Memory";
-                                    else if (lower.includes("case") || lower.includes("form factor") || lower.includes("length") || lower.includes("fits")) shortLabel = "Case Fit";
-                                    else if (lower.includes("power") || lower.includes("wattage") || lower.includes("psu")) shortLabel = "Power";
-                                    else if (lower.includes("cooler") || lower.includes("cooling")) shortLabel = "Cooling";
-
                                     const isError = msg.type === "error";
                                     const isWarning = msg.type === "warning";
                                     const isSuccess = msg.type === "success";
 
-                                    let barColor = "#e0e0e0";
-                                    let dotColor = "transparent";
-                                    let textColor = "#666";
+                                    let Icon = InfoIcon;
+                                    let bgColor = "#e3f2fd";
+                                    let borderColor = "#90caf9";
+                                    let textColor = "#0277bd";
 
                                     if (isError) {
-                                        barColor = "#ef4444"; // red
-                                        dotColor = "#ef4444";
-                                        textColor = "#ef4444";
+                                        Icon = ReportProblemIcon;
+                                        bgColor = "#ffebee"; // red-ish
+                                        borderColor = "#ff8a80";
+                                        textColor = "#c62828";
                                     } else if (isWarning) {
-                                        barColor = "#f59e0b"; // yellow
-                                        dotColor = "#f59e0b";
-                                        textColor = "#f59e0b";
+                                        Icon = ReportProblemIcon;
+                                        bgColor = "#fff3e0"; // orange-ish
+                                        borderColor = "#ffb74d";
+                                        textColor = "#e65100";
                                     } else if (isSuccess) {
-                                        barColor = "#22c55e"; // green
-                                        dotColor = "#22c55e";
-                                        textColor = "#15803d";
+                                        Icon = CheckCircleIcon;
+                                        bgColor = "#e8f5e9";
+                                        borderColor = "#81c784";
+                                        textColor = "#2e7d32";
                                     }
 
                                     return (
-                                        <div key={`step-${idx}`} style={{ 
-                                            flex: "1 1 0",
-                                            minWidth: "18%", // allow wrap if more than 5
-                                            display: "flex", 
-                                            flexDirection: "column", 
-                                            alignItems: "center", 
-                                            gap: "4px" 
-                                        }}>
-                                            <span style={{ 
-                                                fontSize: "11px", 
-                                                fontWeight: 600, 
+                                        <div
+                                            key={idx}
+                                            style={{
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "12px",
+                                                padding: "12px 16px",
+                                                backgroundColor: bgColor,
+                                                border: `1px solid ${borderColor}`,
+                                                borderRadius: "8px",
                                                 color: textColor,
-                                                whiteSpace: "nowrap",
-                                                textAlign: "center"
-                                            }}>
-                                                {shortLabel}
-                                            </span>
-                                            <div style={{
-                                                width: "4px",
-                                                height: "4px",
-                                                borderRadius: "50%",
-                                                backgroundColor: dotColor,
-                                                marginBottom: "2px"
-                                            }}></div>
-                                            <div style={{ 
-                                                width: "100%", 
-                                                height: "6px", 
-                                                backgroundColor: barColor,
-                                                borderRadius: "4px"
-                                            }} />
+                                                fontSize: "15px",
+                                                fontWeight: 500,
+                                            }}
+                                        >
+                                            <Icon fontSize="small" />
+                                            {msg.message}
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            {/* Only show messages for Errors and Warnings on Mobile */}
-                            {validationMessages.filter(msg => msg.type === 'error' || msg.type === 'warning').length > 0 && (
-                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                    {validationMessages.filter(msg => msg.type === 'error' || msg.type === 'warning').map((msg, idx) => {
+                            {/* Mobile Stepper View */}
+                            <div className="mobile-stepper-view">
+                                {/* Health Stepper Bar */}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        gap: "8px",
+                                        alignItems: "flex-end",
+                                        justifyContent: "space-between",
+                                        width: "100%",
+                                        flexWrap: "wrap",
+                                        paddingBottom: "4px",
+                                    }}
+                                >
+                                    {validationMessages.map((msg, idx) => {
+                                        const lower = msg.message.toLowerCase();
+                                        let shortLabel = "Status";
+                                        if (
+                                            lower.includes("socket") ||
+                                            lower.includes("brand")
+                                        )
+                                            shortLabel = "Socket";
+                                        else if (
+                                            lower.includes("memory") ||
+                                            lower.includes("ram") ||
+                                            lower.includes("slots")
+                                        )
+                                            shortLabel = "Memory";
+                                        else if (
+                                            lower.includes("case") ||
+                                            lower.includes("form factor") ||
+                                            lower.includes("length") ||
+                                            lower.includes("fits")
+                                        )
+                                            shortLabel = "Case Fit";
+                                        else if (
+                                            lower.includes("power") ||
+                                            lower.includes("wattage") ||
+                                            lower.includes("psu")
+                                        )
+                                            shortLabel = "Power";
+                                        else if (
+                                            lower.includes("cooler") ||
+                                            lower.includes("cooling")
+                                        )
+                                            shortLabel = "Cooling";
+
                                         const isError = msg.type === "error";
-                                        
-                                        const bgColor = isError ? "#ffebee" : "#fff3e0";
-                                        const borderColor = isError ? "#ff8a80" : "#ffb74d";
-                                        const textColor = isError ? "#c62828" : "#e65100";
-                                        const Icon = isError ? ReportProblemIcon : ReportProblemIcon;
-                                        
+                                        const isWarning =
+                                            msg.type === "warning";
+                                        const isSuccess =
+                                            msg.type === "success";
+
+                                        let barColor = "#e0e0e0";
+                                        let dotColor = "transparent";
+                                        let textColor = "#666";
+
+                                        if (isError) {
+                                            barColor = "#ef4444"; // red
+                                            dotColor = "#ef4444";
+                                            textColor = "#ef4444";
+                                        } else if (isWarning) {
+                                            barColor = "#f59e0b"; // yellow
+                                            dotColor = "#f59e0b";
+                                            textColor = "#f59e0b";
+                                        } else if (isSuccess) {
+                                            barColor = "#22c55e"; // green
+                                            dotColor = "#22c55e";
+                                            textColor = "#15803d";
+                                        }
+
                                         return (
-                                            <div key={`err-${idx}`} style={{
-                                                display: "flex", alignItems: "center", gap: "8px",
-                                                padding: "8px 12px",
-                                                backgroundColor: bgColor,
-                                                border: `1px solid ${borderColor}`,
-                                                borderRadius: "6px",
-                                                color: textColor,
-                                                fontSize: "13px",
-                                                fontWeight: 500
-                                            }}>
-                                                <Icon style={{ fontSize: "16px" }} />
-                                                <span style={{ lineHeight: "1.3" }}>{msg.message}</span>
+                                            <div
+                                                key={`step-${idx}`}
+                                                style={{
+                                                    flex: "1 1 0",
+                                                    minWidth: "18%", // allow wrap if more than 5
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center",
+                                                    gap: "4px",
+                                                }}
+                                            >
+                                                <span
+                                                    style={{
+                                                        fontSize: "11px",
+                                                        fontWeight: 600,
+                                                        color: textColor,
+                                                        whiteSpace: "nowrap",
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {shortLabel}
+                                                </span>
+                                                <div
+                                                    style={{
+                                                        width: "4px",
+                                                        height: "4px",
+                                                        borderRadius: "50%",
+                                                        backgroundColor:
+                                                            dotColor,
+                                                        marginBottom: "2px",
+                                                    }}
+                                                ></div>
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        height: "6px",
+                                                        backgroundColor:
+                                                            barColor,
+                                                        borderRadius: "4px",
+                                                    }}
+                                                />
                                             </div>
                                         );
                                     })}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                )}
 
-                <div 
-                    className={`mobile-drawer-overlay ${isCategoryDrawerOpen || isFilterDrawerOpen ? 'drawer-open' : ''}`}
-                    onClick={() => { setIsCategoryDrawerOpen(false); setIsFilterDrawerOpen(false); }}
-                />
-
-                <div id="part-picker" className="builder-layout-row" style={{}}>
-                    {/* Left Sidebar - Categories */}
-                    <div
-                        className={`builder-sidebar ${activeTab === 'overview' ? 'responsive-sidebar-hidden' : ''} ${isCategoryDrawerOpen ? 'drawer-open' : ''}`}
-                        style={{
-                            backgroundColor: "transparent",
-                            margin: 0
-                        }}
-                    >
-                        <div className="mobile-only-tabs mobile-drawer-header category-drawer-header">
-                            <span>Select a Category</span>
-                            <CloseIcon style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.54)' }} onClick={() => setIsCategoryDrawerOpen(false)} />
-                        </div>
-                        {CATEGORIES.map((cat) => {
-                            const isSelected = activeCategory === cat.id;
-                            const selectedItem = selectedComponents[cat.id];
-                            const IconComponent = CategoryIconMap[cat.id] || ComputerIcon;
-                            const customImage = CategoryImageMap[cat.id];
-
-                            return (
-                                <div
-                                    key={cat.id}
-                                    onClick={() => { setActiveCategory(cat.id); setIsCategoryDrawerOpen(false); }}
-                                    className={isSelected ? 'active-cat' : ''}
-                                    style={{
-                                        flexShrink: 0,
-                                        display: "flex",
-                                        alignItems: "center",
-                                        padding: "12px",
-                                        backgroundColor: "#fff",
-                                        border: isSelected
-                                            ? "1px solid #1f7a8c"
-                                            : "1px solid #e0e0e0",
-                                        borderRadius: "6px",
-                                        cursor: "pointer",
-                                        boxShadow: isSelected
-                                            ? "0 4px 12px rgba(31,122,140,0.1)"
-                                            : "0 1px 2px rgba(0,0,0,0.02)",
-                                        transition: "all 0.15s ease",
-                                        position: "relative",
-                                        overflow: "hidden",
-                                    }}
-                                >
-                                    {/* Accent line for active column */}
-                                    {isSelected && (
-                                        <div
-                                            style={{
-                                                position: "absolute",
-                                                left: 0,
-                                                top: 0,
-                                                bottom: 0,
-                                                width: "4px",
-                                                backgroundColor: "#1f7a8c",
-                                            }}
-                                        />
-                                    )}
-
+                                {/* Only show messages for Errors and Warnings on Mobile */}
+                                {validationMessages.filter(
+                                    (msg) =>
+                                        msg.type === "error" ||
+                                        msg.type === "warning",
+                                ).length > 0 && (
                                     <div
                                         style={{
-                                            width: "50px",
-                                            height: "50px",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "6px",
+                                        }}
+                                    >
+                                        {validationMessages
+                                            .filter(
+                                                (msg) =>
+                                                    msg.type === "error" ||
+                                                    msg.type === "warning",
+                                            )
+                                            .map((msg, idx) => {
+                                                const isError =
+                                                    msg.type === "error";
+
+                                                const bgColor = isError
+                                                    ? "#ffebee"
+                                                    : "#fff3e0";
+                                                const borderColor = isError
+                                                    ? "#ff8a80"
+                                                    : "#ffb74d";
+                                                const textColor = isError
+                                                    ? "#c62828"
+                                                    : "#e65100";
+                                                const Icon = isError
+                                                    ? ReportProblemIcon
+                                                    : ReportProblemIcon;
+
+                                                return (
+                                                    <div
+                                                        key={`err-${idx}`}
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems:
+                                                                "center",
+                                                            gap: "8px",
+                                                            padding: "8px 12px",
+                                                            backgroundColor:
+                                                                bgColor,
+                                                            border: `1px solid ${borderColor}`,
+                                                            borderRadius: "6px",
+                                                            color: textColor,
+                                                            fontSize: "13px",
+                                                            fontWeight: 500,
+                                                        }}
+                                                    >
+                                                        <Icon
+                                                            style={{
+                                                                fontSize:
+                                                                    "16px",
+                                                            }}
+                                                        />
+                                                        <span
+                                                            style={{
+                                                                lineHeight:
+                                                                    "1.3",
+                                                            }}
+                                                        >
+                                                            {msg.message}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    <div
+                        className={`mobile-drawer-overlay ${isCategoryDrawerOpen || isFilterDrawerOpen ? "drawer-open" : ""}`}
+                        onClick={() => {
+                            setIsCategoryDrawerOpen(false);
+                            setIsFilterDrawerOpen(false);
+                        }}
+                    />
+
+                    <div
+                        id="part-picker"
+                        className="builder-layout-row"
+                        style={{}}
+                    >
+                        {/* Left Sidebar - Categories */}
+                        <div
+                            className={`builder-sidebar ${activeTab === "overview" ? "responsive-sidebar-hidden" : ""} ${isCategoryDrawerOpen ? "drawer-open" : ""}`}
+                            style={{
+                                backgroundColor: "transparent",
+                                margin: 0,
+                            }}
+                        >
+                            <div className="mobile-only-tabs mobile-drawer-header category-drawer-header">
+                                <span>Select a Category</span>
+                                <CloseIcon
+                                    style={{
+                                        cursor: "pointer",
+                                        color: "rgba(0,0,0,0.54)",
+                                    }}
+                                    onClick={() =>
+                                        setIsCategoryDrawerOpen(false)
+                                    }
+                                />
+                            </div>
+                            {CATEGORIES.map((cat) => {
+                                const isSelected = activeCategory === cat.id;
+                                const selectedItem = selectedComponents[cat.id];
+                                const IconComponent =
+                                    CategoryIconMap[cat.id] || ComputerIcon;
+                                const customImage = CategoryImageMap[cat.id];
+
+                                return (
+                                    <div
+                                        key={cat.id}
+                                        onClick={() => {
+                                            setActiveCategory(cat.id);
+                                            setIsCategoryDrawerOpen(false);
+                                        }}
+                                        className={
+                                            isSelected ? "active-cat" : ""
+                                        }
+                                        style={{
                                             flexShrink: 0,
-                                            backgroundColor: selectedItem
-                                                ? "#fff"
-                                                : "#f0f4f5",
-                                            borderRadius: "4px",
                                             display: "flex",
                                             alignItems: "center",
-                                            justifyContent: "center",
-                                            marginRight: "14px",
-                                            color: "#1f7a8c",
-                                            border: selectedItem
-                                                ? "1px solid #eee"
-                                                : "none",
+                                            padding: "12px",
+                                            backgroundColor: "#fff",
+                                            border: isSelected
+                                                ? "1px solid #1f7a8c"
+                                                : "1px solid #e0e0e0",
+                                            borderRadius: "6px",
+                                            cursor: "pointer",
+                                            boxShadow: isSelected
+                                                ? "0 4px 12px rgba(31,122,140,0.1)"
+                                                : "0 1px 2px rgba(0,0,0,0.02)",
+                                            transition: "all 0.15s ease",
+                                            position: "relative",
+                                            overflow: "hidden",
                                         }}
                                     >
-                                        {selectedItem?.thumbnail ? (
-                                            <img
-                                                src={selectedItem.thumbnail}
-                                                alt={selectedItem.title}
+                                        {/* Accent line for active column */}
+                                        {isSelected && (
+                                            <div
                                                 style={{
-                                                    maxWidth: "90%",
-                                                    maxHeight: "90%",
-                                                    objectFit: "contain",
+                                                    position: "absolute",
+                                                    left: 0,
+                                                    top: 0,
+                                                    bottom: 0,
+                                                    width: "4px",
+                                                    backgroundColor: "#1f7a8c",
                                                 }}
                                             />
-                                        ) : customImage ? (
-                                            <img src={customImage} alt={cat.name} style={{ width: 28, height: 28 }} />
-                                        ) : (
-                                            <IconComponent style={{ width: 24, height: 24, fill: "currentColor" }} />
                                         )}
-                                    </div>
 
-                                    <div
-                                        style={{
-                                            flex: 1,
-                                            minWidth: 0,
-                                            paddingRight: "10px",
-                                        }}
-                                    >
                                         <div
                                             style={{
-                                                fontWeight: 700,
-                                                color: "#333",
-                                                fontSize: "15px",
-                                                marginBottom: "2px",
+                                                width: "50px",
+                                                height: "50px",
+                                                flexShrink: 0,
+                                                backgroundColor: selectedItem
+                                                    ? "#fff"
+                                                    : "#f0f4f5",
+                                                borderRadius: "4px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                marginRight: "14px",
+                                                color: "#1f7a8c",
+                                                border: selectedItem
+                                                    ? "1px solid #eee"
+                                                    : "none",
                                             }}
                                         >
-                                            {cat.name}
+                                            {selectedItem?.thumbnail ? (
+                                                <img
+                                                    src={selectedItem.thumbnail}
+                                                    alt={selectedItem.title}
+                                                    style={{
+                                                        maxWidth: "90%",
+                                                        maxHeight: "90%",
+                                                        objectFit: "contain",
+                                                    }}
+                                                />
+                                            ) : customImage ? (
+                                                <img
+                                                    src={customImage}
+                                                    alt={cat.name}
+                                                    style={{
+                                                        width: 28,
+                                                        height: 28,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <IconComponent
+                                                    style={{
+                                                        width: 24,
+                                                        height: 24,
+                                                        fill: "currentColor",
+                                                    }}
+                                                />
+                                            )}
                                         </div>
-                                        {selectedItem ? (
-                                            <>
+
+                                        <div
+                                            style={{
+                                                flex: 1,
+                                                minWidth: 0,
+                                                paddingRight: "10px",
+                                            }}
+                                        >
+                                            <div
+                                                style={{
+                                                    fontWeight: 700,
+                                                    color: "#333",
+                                                    fontSize: "15px",
+                                                    marginBottom: "2px",
+                                                }}
+                                            >
+                                                {cat.name}
+                                            </div>
+                                            {selectedItem ? (
+                                                <>
+                                                    <div
+                                                        style={{
+                                                            fontSize: "12px",
+                                                            color: "#555",
+                                                            whiteSpace:
+                                                                "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow:
+                                                                "ellipsis",
+                                                        }}
+                                                    >
+                                                        {selectedItem.title}
+                                                    </div>
+                                                    <div
+                                                        style={{
+                                                            fontSize: "14px",
+                                                            color: "#1f7a8c",
+                                                            fontWeight: 700,
+                                                            marginTop: "2px",
+                                                        }}
+                                                    >
+                                                        R{" "}
+                                                        {(
+                                                            selectedItem
+                                                                .current_price
+                                                                ?.amount_cents /
+                                                                100 || 0
+                                                        ).toLocaleString(
+                                                            "en-ZA",
+                                                            {
+                                                                minimumFractionDigits: 0,
+                                                            },
+                                                        )}
+                                                    </div>
+                                                </>
+                                            ) : (
                                                 <div
                                                     style={{
                                                         fontSize: "12px",
-                                                        color: "#555",
-                                                        whiteSpace: "nowrap",
-                                                        overflow: "hidden",
-                                                        textOverflow:
-                                                            "ellipsis",
+                                                        color: "#888",
+                                                        fontWeight: 500,
                                                     }}
                                                 >
-                                                    {selectedItem.title}
+                                                    PLEASE SELECT
                                                 </div>
-                                                <div
-                                                    style={{
-                                                        fontSize: "14px",
-                                                        color: "#1f7a8c",
-                                                        fontWeight: 700,
-                                                        marginTop: "2px",
-                                                    }}
-                                                >
-                                                    R{" "}
-                                                    {(
-                                                        selectedItem
-                                                            .current_price
-                                                            ?.amount_cents /
-                                                            100 || 0
-                                                    ).toLocaleString("en-ZA", {
-                                                        minimumFractionDigits: 0,
-                                                    })}
-                                                </div>
-                                            </>
-                                        ) : (
+                                            )}
+                                        </div>
+
+                                        {selectedItem && (
                                             <div
                                                 style={{
-                                                    fontSize: "12px",
-                                                    color: "#888",
-                                                    fontWeight: 500,
+                                                    padding: "8px",
+                                                    color: "#999",
+                                                    cursor: "pointer",
+                                                    transition: "color 0.2s",
                                                 }}
+                                                onClick={(e) =>
+                                                    handleRemove(e, cat.id)
+                                                }
+                                                onMouseOver={(e) =>
+                                                    (e.currentTarget.style.color =
+                                                        "#dc2626")
+                                                }
+                                                onMouseOut={(e) =>
+                                                    (e.currentTarget.style.color =
+                                                        "#999")
+                                                }
                                             >
-                                                PLEASE SELECT
+                                                <svg
+                                                    width="18"
+                                                    height="18"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                >
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
                                             </div>
                                         )}
                                     </div>
+                                );
+                            })}
+                        </div>
 
-                                    {selectedItem && (
+                        {/* Right column: mobile toolbar sits above the white catalog card (decoupled) */}
+                        <div className="builder-catalog-column">
+                            {activeTab === "edit" && (
+                                <div className="mobile-sticky-catalog-header">
+                                    <div
+                                        className="mobile-catalog-cat-trigger"
+                                        onClick={() =>
+                                            setIsCategoryDrawerOpen(true)
+                                        }
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                            ) {
+                                                e.preventDefault();
+                                                setIsCategoryDrawerOpen(true);
+                                            }
+                                        }}
+                                    >
+                                        <span className="mobile-catalog-cat-name">
+                                            {
+                                                CATEGORIES.find(
+                                                    (c) =>
+                                                        c.id === activeCategory,
+                                                )?.name
+                                            }
+                                        </span>
+                                        <span
+                                            className="mobile-catalog-count-pill"
+                                            style={{
+                                                backgroundColor: "#e2e8f0",
+                                                padding: "2px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                color: "#555",
+                                                fontWeight: 600,
+                                                flexShrink: 0,
+                                            }}
+                                        >
+                                            {activeProducts.length}
+                                        </span>
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="#1f7a8c"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            style={{ flexShrink: 0 }}
+                                        >
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div
+                                        className="mobile-catalog-filter-trigger"
+                                        onClick={() =>
+                                            setIsFilterDrawerOpen(true)
+                                        }
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                            ) {
+                                                e.preventDefault();
+                                                setIsFilterDrawerOpen(true);
+                                            }
+                                        }}
+                                    >
+                                        <span style={{ flexShrink: 0 }}>
+                                            Filtering
+                                        </span>
+                                        <svg
+                                            width="16"
+                                            height="16"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="#1f7a8c"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            style={{ flexShrink: 0 }}
+                                        >
+                                            <line
+                                                x1="4"
+                                                y1="21"
+                                                x2="4"
+                                                y2="14"
+                                            ></line>
+                                            <line
+                                                x1="4"
+                                                y1="10"
+                                                x2="4"
+                                                y2="3"
+                                            ></line>
+                                            <line
+                                                x1="12"
+                                                y1="21"
+                                                x2="12"
+                                                y2="12"
+                                            ></line>
+                                            <line
+                                                x1="12"
+                                                y1="8"
+                                                x2="12"
+                                                y2="3"
+                                            ></line>
+                                            <line
+                                                x1="20"
+                                                y1="21"
+                                                x2="20"
+                                                y2="16"
+                                            ></line>
+                                            <line
+                                                x1="20"
+                                                y1="12"
+                                                x2="20"
+                                                y2="3"
+                                            ></line>
+                                            <line
+                                                x1="1"
+                                                y1="14"
+                                                x2="7"
+                                                y2="14"
+                                            ></line>
+                                            <line
+                                                x1="9"
+                                                y1="8"
+                                                x2="15"
+                                                y2="8"
+                                            ></line>
+                                            <line
+                                                x1="17"
+                                                y1="16"
+                                                x2="23"
+                                                y2="16"
+                                            ></line>
+                                        </svg>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Right Pane - Product Selection */}
+                            <div
+                                className={`builder-catalog ${activeTab === "edit" ? "responsive-catalog-visible" : "responsive-catalog-hidden"}`}
+                                style={{
+                                    backgroundColor: "#fff",
+                                    border: "1px solid #e0e0e0",
+                                    borderRadius: "8px",
+                                    overflow: "hidden",
+                                }}
+                            >
+                                {/* Right Drawer Filters (Mobile) */}
+                                <div
+                                    className={`mobile-filter-drawer ${isFilterDrawerOpen ? "drawer-open" : ""}`}
+                                >
+                                    <div className="mobile-only-tabs mobile-drawer-header">
+                                        <span>Filtering</span>
+                                        <CloseIcon
+                                            style={{
+                                                cursor: "pointer",
+                                                color: "rgba(0,0,0,0.54)",
+                                            }}
+                                            onClick={() =>
+                                                setIsFilterDrawerOpen(false)
+                                            }
+                                        />
+                                    </div>
+
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            gap: "24px",
+                                            marginTop: "16px",
+                                        }}
+                                    >
+                                        <div>
+                                            <div
+                                                style={{
+                                                    fontSize: "14px",
+                                                    fontWeight: 700,
+                                                    marginBottom: "8px",
+                                                    color: "#555",
+                                                }}
+                                            >
+                                                Sort By:
+                                            </div>
+                                            <select
+                                                value={sortOrder}
+                                                onChange={(e) =>
+                                                    setSortOrder(e.target.value)
+                                                }
+                                                style={{
+                                                    padding: "12px 14px",
+                                                    border: "1px solid #e0e0e0",
+                                                    borderRadius: "8px",
+                                                    fontSize: "16px",
+                                                    backgroundColor: "#fff",
+                                                    color: "#333",
+                                                    outline: "none",
+                                                    width: "100%",
+                                                    boxSizing: "border-box",
+                                                }}
+                                            >
+                                                <option value="recommended">
+                                                    Most popular
+                                                </option>
+                                                <option value="price_asc">
+                                                    Price: Low to High
+                                                </option>
+                                                <option value="price_desc">
+                                                    Price: High to Low
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <div
+                                                style={{
+                                                    fontSize: "14px",
+                                                    fontWeight: 700,
+                                                    marginBottom: "8px",
+                                                    color: "#555",
+                                                }}
+                                            >
+                                                Quick Filter:
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder="Quick Filter"
+                                                value={searchQuery}
+                                                onChange={(e) =>
+                                                    setSearchQuery(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                style={{
+                                                    padding: "12px 14px",
+                                                    border: "1px solid #e0e0e0",
+                                                    borderRadius: "8px",
+                                                    fontSize: "16px",
+                                                    width: "100%",
+                                                    outline: "none",
+                                                    backgroundColor: "#fff",
+                                                    color: "#333",
+                                                    boxSizing: "border-box",
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Desktop Header */}
+                                <div
+                                    className="desktop-catalog-header"
+                                    style={{
+                                        padding: "16px 24px",
+                                        borderBottom: "1px solid #e0e0e0",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        backgroundColor: "#fafafa",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "12px",
+                                            color: "#333",
+                                        }}
+                                    >
+                                        <h2
+                                            style={{
+                                                fontSize: "18px",
+                                                fontWeight: 700,
+                                                margin: 0,
+                                            }}
+                                        >
+                                            {
+                                                CATEGORIES.find(
+                                                    (c) =>
+                                                        c.id === activeCategory,
+                                                )?.name
+                                            }
+                                        </h2>
+                                        <span
+                                            style={{
+                                                backgroundColor: "#e2e8f0",
+                                                padding: "2px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                color: "#555",
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {activeProducts.length}
+                                        </span>
+                                    </div>
+
+                                    <div
+                                        className="builder-filters-row"
+                                        style={{
+                                            display: "flex",
+                                            gap: "12px",
+                                            alignItems: "center",
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="Quick Filter"
+                                            value={searchQuery}
+                                            onChange={(e) =>
+                                                setSearchQuery(e.target.value)
+                                            }
+                                            className="builder-filter-input"
+                                            style={{
+                                                padding: "8px 14px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "5px",
+                                                fontSize: "13px",
+                                                width: "200px",
+                                                maxWidth: "100%",
+                                                outline: "none",
+                                            }}
+                                        />
                                         <div
                                             style={{
-                                                padding: "8px",
-                                                color: "#999",
-                                                cursor: "pointer",
-                                                transition: "color 0.2s",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "8px",
+                                                color: "#555",
+                                                fontSize: "13px",
+                                                fontWeight: 600,
                                             }}
-                                            onClick={(e) =>
-                                                handleRemove(e, cat.id)
-                                            }
-                                            onMouseOver={(e) =>
-                                                (e.currentTarget.style.color =
-                                                    "#dc2626")
-                                            }
-                                            onMouseOut={(e) =>
-                                                (e.currentTarget.style.color =
-                                                    "#999")
-                                            }
                                         >
+                                            Filtering{" "}
                                             <svg
-                                                width="18"
-                                                height="18"
+                                                width="14"
+                                                height="14"
                                                 viewBox="0 0 24 24"
                                                 fill="none"
                                                 stroke="currentColor"
@@ -1306,652 +2103,583 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                             >
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                <line
+                                                    x1="4"
+                                                    y1="21"
+                                                    x2="4"
+                                                    y2="14"
+                                                ></line>
+                                                <line
+                                                    x1="4"
+                                                    y1="10"
+                                                    x2="4"
+                                                    y2="3"
+                                                ></line>
+                                                <line
+                                                    x1="12"
+                                                    y1="21"
+                                                    x2="12"
+                                                    y2="12"
+                                                ></line>
+                                                <line
+                                                    x1="12"
+                                                    y1="8"
+                                                    x2="12"
+                                                    y2="3"
+                                                ></line>
+                                                <line
+                                                    x1="20"
+                                                    y1="21"
+                                                    x2="20"
+                                                    y2="16"
+                                                ></line>
+                                                <line
+                                                    x1="20"
+                                                    y1="12"
+                                                    x2="20"
+                                                    y2="3"
+                                                ></line>
+                                                <line
+                                                    x1="1"
+                                                    y1="14"
+                                                    x2="7"
+                                                    y2="14"
+                                                ></line>
+                                                <line
+                                                    x1="9"
+                                                    y1="8"
+                                                    x2="15"
+                                                    y2="8"
+                                                ></line>
+                                                <line
+                                                    x1="17"
+                                                    y1="16"
+                                                    x2="23"
+                                                    y2="16"
+                                                ></line>
                                             </svg>
+                                        </div>
+                                        <select
+                                            value={sortOrder}
+                                            onChange={(e) =>
+                                                setSortOrder(e.target.value)
+                                            }
+                                            style={{
+                                                padding: "8px 14px",
+                                                border: "1px solid #ccc",
+                                                borderRadius: "5px",
+                                                fontSize: "13px",
+                                                backgroundColor: "#fff",
+                                                outline: "none",
+                                            }}
+                                        >
+                                            <option value="recommended">
+                                                Recommended
+                                            </option>
+                                            <option value="price_asc">
+                                                Price: Low to High
+                                            </option>
+                                            <option value="price_desc">
+                                                Price: High to Low
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* Product List */}
+                                <div
+                                    style={{
+                                        overflowY: "auto",
+                                        flex: 1,
+                                        backgroundColor: "#fafafa",
+                                        padding: "16px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: "16px",
+                                    }}
+                                >
+                                    {loadingCategory ? (
+                                        <div
+                                            style={{
+                                                padding: "80px",
+                                                textAlign: "center",
+                                                color: "#666",
+                                            }}
+                                        >
+                                            Loading components...
+                                        </div>
+                                    ) : sortedActiveProducts.length > 0 ? (
+                                        <AnimatePresence mode="popLayout">
+                                            {sortedActiveProducts.map(
+                                                (product: any) => {
+                                                    const compatError =
+                                                        !selectedComponents[
+                                                            activeCategory
+                                                        ]
+                                                            ? getComponentCompatibility(
+                                                                  activeCategory,
+                                                                  product,
+                                                                  {
+                                                                      cpu: selectedComponents[
+                                                                          "cpus"
+                                                                      ],
+                                                                      motherboard:
+                                                                          selectedComponents[
+                                                                              "motherboards"
+                                                                          ],
+                                                                      ram: selectedComponents[
+                                                                          "ram"
+                                                                      ],
+                                                                      gpu: selectedComponents[
+                                                                          "gpus"
+                                                                      ],
+                                                                      psu: selectedComponents[
+                                                                          "psus"
+                                                                      ],
+                                                                      case: selectedComponents[
+                                                                          "cases"
+                                                                      ],
+                                                                      system_cooling:
+                                                                          selectedComponents[
+                                                                              "coolers"
+                                                                          ],
+                                                                  },
+                                                              )
+                                                            : null;
+
+                                                    const isItemActive =
+                                                        selectedComponents[
+                                                            activeCategory
+                                                        ]?.variant_id ===
+                                                        product.variant_id;
+                                                    const specs =
+                                                        getSpecs(product);
+
+                                                    return (
+                                                        <motion.div
+                                                            layout
+                                                            initial={{
+                                                                opacity: 0,
+                                                                y: 10,
+                                                            }}
+                                                            animate={{
+                                                                opacity: 1,
+                                                                y: 0,
+                                                            }}
+                                                            exit={{
+                                                                opacity: 0,
+                                                                scale: 0.9,
+                                                            }}
+                                                            transition={{
+                                                                type: "spring",
+                                                                stiffness: 300,
+                                                                damping: 30,
+                                                            }}
+                                                            key={
+                                                                product.variant_id
+                                                            }
+                                                            className="builder-product-card"
+                                                            style={{
+                                                                display: "flex",
+                                                                flexWrap:
+                                                                    "wrap",
+                                                                padding: "24px",
+                                                                border: isItemActive
+                                                                    ? "1px solid #1f7a8c"
+                                                                    : "1px solid #eaeaea",
+                                                                borderRadius:
+                                                                    "8px",
+                                                                gap: "24px",
+                                                                alignItems:
+                                                                    "stretch",
+                                                                backgroundColor:
+                                                                    isItemActive
+                                                                        ? "#fcfdfd"
+                                                                        : "#fff",
+                                                                boxShadow:
+                                                                    isItemActive
+                                                                        ? "0 4px 12px rgba(31,122,140,0.08)"
+                                                                        : "0 2px 8px rgba(0,0,0,0.02)",
+                                                            }}
+                                                        >
+                                                            <div
+                                                                className="builder-card-image"
+                                                                style={{
+                                                                    width: "140px",
+                                                                    height: "140px",
+                                                                    flexShrink: 0,
+                                                                    backgroundColor:
+                                                                        "#fff",
+                                                                    borderRadius:
+                                                                        "4px",
+                                                                    border: "1px solid #eee",
+                                                                    display:
+                                                                        "flex",
+                                                                    alignItems:
+                                                                        "center",
+                                                                    justifyContent:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                {product.thumbnail ? (
+                                                                    <img
+                                                                        src={
+                                                                            product.thumbnail
+                                                                        }
+                                                                        alt={
+                                                                            product.title
+                                                                        }
+                                                                        style={{
+                                                                            maxWidth:
+                                                                                "85%",
+                                                                            maxHeight:
+                                                                                "85%",
+                                                                            objectFit:
+                                                                                "contain",
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <div
+                                                                        style={{
+                                                                            color: "#ccc",
+                                                                        }}
+                                                                    >
+                                                                        No Image
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            <div
+                                                                style={{
+                                                                    flex: 1,
+                                                                    display:
+                                                                        "flex",
+                                                                    flexDirection:
+                                                                        "column",
+                                                                    justifyContent:
+                                                                        "space-between",
+                                                                }}
+                                                            >
+                                                                <div>
+                                                                    <a
+                                                                        href={`/product/${
+                                                                            product.slug
+                                                                                ? product.slug
+                                                                                : encodeURIComponent(
+                                                                                      product.title
+                                                                                          .replace(
+                                                                                              /[^a-zA-Z0-9- ]/g,
+                                                                                              "",
+                                                                                          )
+                                                                                          .replace(
+                                                                                              /\\s+/g,
+                                                                                              "-",
+                                                                                          )
+                                                                                          .toLowerCase(),
+                                                                                  )
+                                                                        }`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        style={{
+                                                                            textDecoration:
+                                                                                "none",
+                                                                            color: "inherit",
+                                                                        }}
+                                                                    >
+                                                                        <h3
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "16px",
+                                                                                color: "#111",
+                                                                                marginBottom:
+                                                                                    "12px",
+                                                                                lineHeight: 1.4,
+                                                                                fontWeight: 600,
+                                                                                cursor: "pointer",
+                                                                                transition:
+                                                                                    "color 0.2s ease",
+                                                                            }}
+                                                                            onMouseOver={(
+                                                                                e,
+                                                                            ) =>
+                                                                                (e.currentTarget.style.color =
+                                                                                    "#1f7a8c")
+                                                                            }
+                                                                            onMouseOut={(
+                                                                                e,
+                                                                            ) =>
+                                                                                (e.currentTarget.style.color =
+                                                                                    "#111")
+                                                                            }
+                                                                            title={`View specs for ${product.title} in new tab`}
+                                                                        >
+                                                                            {
+                                                                                product.title
+                                                                            }
+                                                                        </h3>
+                                                                    </a>
+
+                                                                    <div
+                                                                        style={{
+                                                                            display:
+                                                                                "flex",
+                                                                            flexWrap:
+                                                                                "wrap",
+                                                                            gap: "8px",
+                                                                            marginBottom:
+                                                                                "16px",
+                                                                        }}
+                                                                    >
+                                                                        {specs.map(
+                                                                            (
+                                                                                spec: string,
+                                                                                idx: number,
+                                                                            ) => (
+                                                                                <span
+                                                                                    key={
+                                                                                        idx
+                                                                                    }
+                                                                                    style={{
+                                                                                        padding:
+                                                                                            "4px 8px",
+                                                                                        backgroundColor:
+                                                                                            "#f9fafb",
+                                                                                        color: "#4b5563",
+                                                                                        border: "1px solid #e5e7eb",
+                                                                                        borderRadius:
+                                                                                            "4px",
+                                                                                        fontSize:
+                                                                                            "12px",
+                                                                                    }}
+                                                                                >
+                                                                                    {
+                                                                                        spec
+                                                                                    }
+                                                                                </span>
+                                                                            ),
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+
+                                                                <div
+                                                                    style={{
+                                                                        display:
+                                                                            "flex",
+                                                                        justifyContent:
+                                                                            "space-between",
+                                                                        alignItems:
+                                                                            "flex-end",
+                                                                    }}
+                                                                >
+                                                                    <div>
+                                                                        <div
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "24px",
+                                                                                fontWeight: 800,
+                                                                                color: "#1f7a8c",
+                                                                            }}
+                                                                        >
+                                                                            R{" "}
+                                                                            {(
+                                                                                product
+                                                                                    .current_price
+                                                                                    ?.amount_cents /
+                                                                                    100 ||
+                                                                                0
+                                                                            ).toLocaleString(
+                                                                                "en-ZA",
+                                                                                {
+                                                                                    minimumFractionDigits: 0,
+                                                                                },
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div
+                                                                        style={{
+                                                                            display:
+                                                                                "flex",
+                                                                            alignItems:
+                                                                                "center",
+                                                                            gap: "24px",
+                                                                        }}
+                                                                    >
+                                                                        {compatError &&
+                                                                            !isItemActive && (
+                                                                                <div
+                                                                                    style={{
+                                                                                        color: "#c62828",
+                                                                                        fontSize:
+                                                                                            "13px",
+                                                                                        display:
+                                                                                            "flex",
+                                                                                        alignItems:
+                                                                                            "center",
+                                                                                        gap: "4px",
+                                                                                        maxWidth:
+                                                                                            "200px",
+                                                                                    }}
+                                                                                >
+                                                                                    <ReportProblemIcon
+                                                                                        style={{
+                                                                                            fontSize:
+                                                                                                "16px",
+                                                                                        }}
+                                                                                    />
+                                                                                    {
+                                                                                        compatError.message
+                                                                                    }
+                                                                                </div>
+                                                                            )}
+                                                                        <div
+                                                                            style={{
+                                                                                color:
+                                                                                    product
+                                                                                        .stock
+                                                                                        ?.status ===
+                                                                                    "in_stock"
+                                                                                        ? "green"
+                                                                                        : product
+                                                                                                .stock
+                                                                                                ?.status ===
+                                                                                            "out_of_stock"
+                                                                                          ? "#c00"
+                                                                                          : product
+                                                                                                  .stock
+                                                                                                  ?.status ===
+                                                                                              "reserved"
+                                                                                            ? "#f59e0b"
+                                                                                            : "#999",
+                                                                                fontSize:
+                                                                                    "13px",
+                                                                                display:
+                                                                                    "flex",
+                                                                                alignItems:
+                                                                                    "center",
+                                                                                gap: "4px",
+                                                                                fontWeight: 600,
+                                                                            }}
+                                                                        >
+                                                                            {product
+                                                                                .stock
+                                                                                ?.status ===
+                                                                            "in_stock"
+                                                                                ? "In stock"
+                                                                                : product
+                                                                                        .stock
+                                                                                        ?.status ===
+                                                                                    "out_of_stock"
+                                                                                  ? "Out of stock"
+                                                                                  : product
+                                                                                          .stock
+                                                                                          ?.status ===
+                                                                                      "reserved"
+                                                                                    ? "Reserved"
+                                                                                    : "Check stock"}
+                                                                        </div>
+
+                                                                        <button
+                                                                            onClick={() =>
+                                                                                handleSelectToggle(
+                                                                                    activeCategory,
+                                                                                    product,
+                                                                                )
+                                                                            }
+                                                                            style={{
+                                                                                padding:
+                                                                                    "10px 24px",
+                                                                                backgroundColor:
+                                                                                    isItemActive
+                                                                                        ? "#fef2f2"
+                                                                                        : "#fff",
+                                                                                color: isItemActive
+                                                                                    ? "#dc2626"
+                                                                                    : "#1f7a8c",
+                                                                                border: `2px solid ${isItemActive ? "#dc2626" : "#1f7a8c"}`,
+                                                                                borderRadius:
+                                                                                    "4px",
+                                                                                fontWeight: 700,
+                                                                                fontSize:
+                                                                                    "14px",
+                                                                                cursor: "pointer",
+                                                                                transition:
+                                                                                    "all 0.2s ease",
+                                                                                minWidth:
+                                                                                    "120px",
+                                                                            }}
+                                                                        >
+                                                                            {isItemActive
+                                                                                ? "Deselect"
+                                                                                : "Select"}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </motion.div>
+                                                    );
+                                                },
+                                            )}
+                                        </AnimatePresence>
+                                    ) : (
+                                        <div
+                                            style={{
+                                                padding: "80px",
+                                                textAlign: "center",
+                                                color: "#888",
+                                            }}
+                                        >
+                                            <svg
+                                                width="48"
+                                                height="48"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="1"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            >
+                                                <circle
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                ></circle>
+                                                <line
+                                                    x1="12"
+                                                    y1="8"
+                                                    x2="12"
+                                                    y2="12"
+                                                ></line>
+                                                <line
+                                                    x1="12"
+                                                    y1="16"
+                                                    x2="12.01"
+                                                    y2="16"
+                                                ></line>
+                                            </svg>
+                                            <h3
+                                                style={{
+                                                    marginTop: "16px",
+                                                    color: "#333",
+                                                }}
+                                            >
+                                                No Products Found
+                                            </h3>
                                         </div>
                                     )}
                                 </div>
-                            );
-                        })}
+                            </div>
+                        </div>
+
+                        {/* Allocation Modal */}
+                        <AllocationModal
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            activeProfile={activeProfile}
+                            selectedComponents={selectedComponents}
+                        />
                     </div>
-
-                    {/* Right column: mobile toolbar sits above the white catalog card (decoupled) */}
-                    <div className="builder-catalog-column">
-                        {activeTab === "edit" && (
-                        <div className="mobile-sticky-catalog-header">
-                            <div
-                                className="mobile-catalog-cat-trigger"
-                                onClick={() => setIsCategoryDrawerOpen(true)}
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsCategoryDrawerOpen(true); } }}
-                            >
-                                <span className="mobile-catalog-cat-name">
-                                    {CATEGORIES.find((c) => c.id === activeCategory)?.name}
-                                </span>
-                                <span className="mobile-catalog-count-pill" style={{ backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontSize: '12px', color: '#555', fontWeight: 600, flexShrink: 0 }}>
-                                    {activeProducts.length}
-                                </span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </div>
-                            <div
-                                className="mobile-catalog-filter-trigger"
-                                onClick={() => setIsFilterDrawerOpen(true)}
-                                role="button"
-                                tabIndex={0}
-                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsFilterDrawerOpen(true); } }}
-                            >
-                                <span style={{ flexShrink: 0 }}>Filtering</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1f7a8c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                            </div>
-                        </div>
-                        )}
-
-                    {/* Right Pane - Product Selection */}
-                    <div
-                        className={`builder-catalog ${activeTab === "edit" ? "responsive-catalog-visible" : "responsive-catalog-hidden"}`}
-                        style={{
-                            backgroundColor: "#fff",
-                            border: "1px solid #e0e0e0",
-                            borderRadius: "8px",
-                            overflow: "hidden",
-                        }}
-                    >
-                        {/* Right Drawer Filters (Mobile) */}
-                        <div className={`mobile-filter-drawer ${isFilterDrawerOpen ? 'drawer-open' : ''}`}>
-                            <div className="mobile-only-tabs mobile-drawer-header">
-                                <span>Filtering</span>
-                                <CloseIcon style={{ cursor: 'pointer', color: 'rgba(0,0,0,0.54)' }} onClick={() => setIsFilterDrawerOpen(false)} />
-                            </div>
-                            
-                            <div style={{ display: "flex", flexDirection: "column", gap: "24px", marginTop: "16px" }}>
-                                <div>
-                                    <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "8px", color: "#555" }}>Sort By:</div>
-                                    <select
-                                        value={sortOrder}
-                                        onChange={(e) => setSortOrder(e.target.value)}
-                                        style={{
-                                            padding: "12px 14px", border: "1px solid #e0e0e0", borderRadius: "8px",
-                                            fontSize: "16px", backgroundColor: "#fff", color: "#333", outline: "none", width: "100%",
-                                            boxSizing: "border-box",
-                                        }}
-                                    >
-                                        <option value="recommended">Most popular</option>
-                                        <option value="price_asc">Price: Low to High</option>
-                                        <option value="price_desc">Price: High to Low</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "8px", color: "#555" }}>Quick Filter:</div>
-                                    <input
-                                        type="text"
-                                        placeholder="Quick Filter"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        style={{
-                                            padding: "12px 14px", border: "1px solid #e0e0e0", borderRadius: "8px",
-                                            fontSize: "16px", width: "100%", outline: "none", backgroundColor: "#fff", color: "#333",
-                                            boxSizing: "border-box",
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Desktop Header */}
-                        <div
-                            className="desktop-catalog-header"
-                            style={{
-                                padding: "16px 24px",
-                                borderBottom: "1px solid #e0e0e0",
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                backgroundColor: "#fafafa",
-                            }}
-                        >
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "12px",
-                                    color: "#333",
-                                }}
-                            >
-                                <h2
-                                    style={{
-                                        fontSize: "18px",
-                                        fontWeight: 700,
-                                        margin: 0,
-                                    }}
-                                >
-                                    {
-                                        CATEGORIES.find(
-                                            (c) => c.id === activeCategory,
-                                        )?.name
-                                    }
-                                </h2>
-                                <span
-                                    style={{
-                                        backgroundColor: "#e2e8f0",
-                                        padding: "2px 8px",
-                                        borderRadius: "12px",
-                                        fontSize: "12px",
-                                        color: "#555",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    {activeProducts.length}
-                                </span>
-                            </div>
-
-                            <div
-                                className="builder-filters-row"
-                                style={{
-                                    display: "flex",
-                                    gap: "12px",
-                                    alignItems: "center",
-                                    flexWrap: "wrap",
-                                }}
-                            >
-                                <input
-                                    type="text"
-                                    placeholder="Quick Filter"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="builder-filter-input"
-                                    style={{
-                                        padding: "8px 14px",
-                                        border: "1px solid #ccc",
-                                        borderRadius: "5px",
-                                        fontSize: "13px",
-                                        width: "200px",
-                                        maxWidth: "100%",
-                                        outline: "none",
-                                    }}
-                                />
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "8px",
-                                        color: "#555",
-                                        fontSize: "13px",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Filtering{" "}
-                                    <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <line
-                                            x1="4"
-                                            y1="21"
-                                            x2="4"
-                                            y2="14"
-                                        ></line>
-                                        <line
-                                            x1="4"
-                                            y1="10"
-                                            x2="4"
-                                            y2="3"
-                                        ></line>
-                                        <line
-                                            x1="12"
-                                            y1="21"
-                                            x2="12"
-                                            y2="12"
-                                        ></line>
-                                        <line
-                                            x1="12"
-                                            y1="8"
-                                            x2="12"
-                                            y2="3"
-                                        ></line>
-                                        <line
-                                            x1="20"
-                                            y1="21"
-                                            x2="20"
-                                            y2="16"
-                                        ></line>
-                                        <line
-                                            x1="20"
-                                            y1="12"
-                                            x2="20"
-                                            y2="3"
-                                        ></line>
-                                        <line
-                                            x1="1"
-                                            y1="14"
-                                            x2="7"
-                                            y2="14"
-                                        ></line>
-                                        <line
-                                            x1="9"
-                                            y1="8"
-                                            x2="15"
-                                            y2="8"
-                                        ></line>
-                                        <line
-                                            x1="17"
-                                            y1="16"
-                                            x2="23"
-                                            y2="16"
-                                        ></line>
-                                    </svg>
-                                </div>
-                                <select
-                                    value={sortOrder}
-                                    onChange={(e) => setSortOrder(e.target.value)}
-                                    style={{
-                                        padding: "8px 14px",
-                                        border: "1px solid #ccc",
-                                        borderRadius: "5px",
-                                        fontSize: "13px",
-                                        backgroundColor: "#fff",
-                                        outline: "none",
-                                    }}
-                                >
-                                    <option value="recommended">Recommended</option>
-                                    <option value="price_asc">Price: Low to High</option>
-                                    <option value="price_desc">Price: High to Low</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Product List */}
-                        <div
-                            style={{
-                                overflowY: "auto",
-                                flex: 1,
-                                backgroundColor: "#fafafa",
-                                padding: "16px",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "16px",
-                            }}
-                        >
-                            {loadingCategory ? (
-                                <div
-                                    style={{
-                                        padding: "80px",
-                                        textAlign: "center",
-                                        color: "#666",
-                                    }}
-                                >
-                                    Loading components...
-                                </div>
-                            ) : sortedActiveProducts.length > 0 ? (
-                                <AnimatePresence mode="popLayout">
-                                    {sortedActiveProducts.map((product: any) => {
-                                        const compatError = !selectedComponents[activeCategory]
-                                        ? getComponentCompatibility(activeCategory, product, {
-                                            cpu: selectedComponents["cpus"],
-                                            motherboard: selectedComponents["motherboards"],
-                                            ram: selectedComponents["ram"],
-                                            gpu: selectedComponents["gpus"],
-                                            psu: selectedComponents["psus"],
-                                            case: selectedComponents["cases"],
-                                            system_cooling: selectedComponents["coolers"],
-                                        })
-                                        : null;
-                                        
-                                    const isItemActive =
-                                        selectedComponents[activeCategory]
-                                            ?.variant_id === product.variant_id;
-                                    const specs = getSpecs(product);
-
-                                    return (
-                                        <motion.div
-                                            layout
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, scale: 0.9 }}
-                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                            key={product.variant_id}
-                                            className="builder-product-card"
-                                            style={{
-                                                display: "flex",
-                                                flexWrap: "wrap",
-                                                padding: "24px",
-                                                border: isItemActive
-                                                    ? "1px solid #1f7a8c"
-                                                    : "1px solid #eaeaea",
-                                                borderRadius: "8px",
-                                                gap: "24px",
-                                                alignItems: "stretch",
-                                                backgroundColor: isItemActive
-                                                    ? "#fcfdfd"
-                                                    : "#fff",
-                                                boxShadow: isItemActive
-                                                    ? "0 4px 12px rgba(31,122,140,0.08)"
-                                                    : "0 2px 8px rgba(0,0,0,0.02)",
-                                            }}
-                                        >
-                                            <div
-                                                className="builder-card-image"
-                                                style={{
-                                                    width: "140px",
-                                                    height: "140px",
-                                                    flexShrink: 0,
-                                                    backgroundColor: "#fff",
-                                                    borderRadius: "4px",
-                                                    border: "1px solid #eee",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
-                                                }}
-                                            >
-                                                {product.thumbnail ? (
-                                                    <img
-                                                        src={product.thumbnail}
-                                                        alt={product.title}
-                                                        style={{
-                                                            maxWidth: "85%",
-                                                            maxHeight: "85%",
-                                                            objectFit:
-                                                                "contain",
-                                                        }}
-                                                    />
-                                                ) : (
-                                                    <div
-                                                        style={{
-                                                            color: "#ccc",
-                                                        }}
-                                                    >
-                                                        No Image
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    flex: 1,
-                                                    display: "flex",
-                                                    flexDirection: "column",
-                                                    justifyContent:
-                                                        "space-between",
-                                                }}
-                                            >
-                                                <div>
-                                                    <a
-                                                        href={`/product/${
-                                                            product.slug
-                                                                ? product.slug
-                                                                : encodeURIComponent(
-                                                                      product.title
-                                                                          .replace(
-                                                                              /[^a-zA-Z0-9- ]/g,
-                                                                              "",
-                                                                          )
-                                                                          .replace(
-                                                                              /\\s+/g,
-                                                                              "-",
-                                                                          )
-                                                                          .toLowerCase(),
-                                                                  )
-                                                        }`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{
-                                                            textDecoration:
-                                                                "none",
-                                                            color: "inherit",
-                                                        }}
-                                                    >
-                                                        <h3
-                                                            style={{
-                                                                fontSize:
-                                                                    "16px",
-                                                                color: "#111",
-                                                                marginBottom:
-                                                                    "12px",
-                                                                lineHeight: 1.4,
-                                                                fontWeight: 600,
-                                                                cursor: "pointer",
-                                                                transition:
-                                                                    "color 0.2s ease",
-                                                            }}
-                                                            onMouseOver={(e) =>
-                                                                (e.currentTarget.style.color =
-                                                                    "#1f7a8c")
-                                                            }
-                                                            onMouseOut={(e) =>
-                                                                (e.currentTarget.style.color =
-                                                                    "#111")
-                                                            }
-                                                            title={`View specs for ${product.title} in new tab`}
-                                                        >
-                                                            {product.title}
-                                                        </h3>
-                                                    </a>
-
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            flexWrap: "wrap",
-                                                            gap: "8px",
-                                                            marginBottom:
-                                                                "16px",
-                                                        }}
-                                                    >
-                                                        {specs.map(
-                                                            (
-                                                                spec: string,
-                                                                idx: number,
-                                                            ) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    style={{
-                                                                        padding:
-                                                                            "4px 8px",
-                                                                        backgroundColor:
-                                                                            "#f9fafb",
-                                                                        color: "#4b5563",
-                                                                        border: "1px solid #e5e7eb",
-                                                                        borderRadius:
-                                                                            "4px",
-                                                                        fontSize:
-                                                                            "12px",
-                                                                    }}
-                                                                >
-                                                                    {spec}
-                                                                </span>
-                                                            ),
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        display: "flex",
-                                                        justifyContent:
-                                                            "space-between",
-                                                        alignItems: "flex-end",
-                                                    }}
-                                                >
-                                                    <div>
-                                                        <div
-                                                            style={{
-                                                                fontSize:
-                                                                    "24px",
-                                                                fontWeight: 800,
-                                                                color: "#1f7a8c",
-                                                            }}
-                                                        >
-                                                            R{" "}
-                                                            {(
-                                                                product
-                                                                    .current_price
-                                                                    ?.amount_cents /
-                                                                    100 || 0
-                                                            ).toLocaleString(
-                                                                "en-ZA",
-                                                                {
-                                                                    minimumFractionDigits: 0,
-                                                                },
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
-                                                            gap: "24px",
-                                                        }}
-                                                    >
-                                                        {compatError && !isItemActive && (
-                                                            <div style={{ color: "#c62828", fontSize: "13px", display: "flex", alignItems: "center", gap: "4px", maxWidth: "200px" }}>
-                                                                <ReportProblemIcon style={{ fontSize: "16px" }} />
-                                                                {compatError.message}
-                                                            </div>
-                                                        )}
-                                                        <div
-                                                            style={{
-                                                                color:
-                                                                    product
-                                                                        .stock
-                                                                        ?.status ===
-                                                                    "in_stock"
-                                                                        ? "green"
-                                                                        : product
-                                                                                .stock
-                                                                                ?.status ===
-                                                                            "out_of_stock"
-                                                                          ? "#c00"
-                                                                          : product
-                                                                                  .stock
-                                                                                  ?.status ===
-                                                                              "reserved"
-                                                                            ? "#f59e0b"
-                                                                            : "#999",
-                                                                fontSize:
-                                                                    "13px",
-                                                                display: "flex",
-                                                                alignItems:
-                                                                    "center",
-                                                                gap: "4px",
-                                                                fontWeight: 600,
-                                                            }}
-                                                        >
-                                                            {product.stock
-                                                                ?.status ===
-                                                            "in_stock"
-                                                                ? "In stock"
-                                                                : product.stock
-                                                                        ?.status ===
-                                                                    "out_of_stock"
-                                                                  ? "Out of stock"
-                                                                  : product
-                                                                          .stock
-                                                                          ?.status ===
-                                                                      "reserved"
-                                                                    ? "Reserved"
-                                                                    : "Check stock"}
-                                                        </div>
-
-                                                        <button
-                                                            onClick={() =>
-                                                                handleSelectToggle(
-                                                                    activeCategory,
-                                                                    product,
-                                                                )
-                                                            }
-                                                            style={{
-                                                                padding:
-                                                                    "10px 24px",
-                                                                backgroundColor:
-                                                                    isItemActive
-                                                                        ? "#fef2f2"
-                                                                        : "#fff",
-                                                                color: isItemActive
-                                                                    ? "#dc2626"
-                                                                    : "#1f7a8c",
-                                                                border: `2px solid ${isItemActive ? "#dc2626" : "#1f7a8c"}`,
-                                                                borderRadius:
-                                                                    "4px",
-                                                                fontWeight: 700,
-                                                                fontSize:
-                                                                    "14px",
-                                                                cursor: "pointer",
-                                                                transition:
-                                                                    "all 0.2s ease",
-                                                                minWidth:
-                                                                    "120px",
-                                                            }}
-                                                        >
-                                                            {isItemActive
-                                                                ? "Deselect"
-                                                                : "Select"}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })}
-                                </AnimatePresence>
-                            ) : (
-                                <div
-                                    style={{
-                                        padding: "80px",
-                                        textAlign: "center",
-                                        color: "#888",
-                                    }}
-                                >
-                                    <svg
-                                        width="48"
-                                        height="48"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="1"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line
-                                            x1="12"
-                                            y1="8"
-                                            x2="12"
-                                            y2="12"
-                                        ></line>
-                                        <line
-                                            x1="12"
-                                            y1="16"
-                                            x2="12.01"
-                                            y2="16"
-                                        ></line>
-                                    </svg>
-                                    <h3
-                                        style={{
-                                            marginTop: "16px",
-                                            color: "#333",
-                                        }}
-                                    >
-                                        No Products Found
-                                    </h3>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    </div>
-
-                    {/* Allocation Modal */}
-                    <AllocationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} activeProfile={activeProfile} selectedComponents={selectedComponents} />
-                </div>
-            </React.Fragment>
+                </React.Fragment>
             </main>
 
             {/* Bottom Sticky Bar */}
@@ -2021,13 +2749,16 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                         <button
                             className="mobile-add-btn"
                             style={{
-                                padding: "17px 16px", height: "54px", boxSizing: "border-box",
+                                padding: "17px 16px",
+                                height: "54px",
+                                boxSizing: "border-box",
                                 backgroundColor: "#1f7a8c",
                                 color: "white",
                                 border: "none",
                                 borderRadius: "8px",
                                 fontWeight: 600,
-                                cursor: totalPrice > 0 ? "pointer" : "not-allowed",
+                                cursor:
+                                    totalPrice > 0 ? "pointer" : "not-allowed",
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: "6px",
@@ -2038,17 +2769,21 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                             }}
                             onMouseEnter={(e) => {
                                 if (totalPrice > 0) {
-                                    e.currentTarget.style.transform = "translateY(-2px)";
-                                    e.currentTarget.style.boxShadow = "0 6px 12px rgba(31, 122, 140, 0.4)";
+                                    e.currentTarget.style.transform =
+                                        "translateY(-2px)";
+                                    e.currentTarget.style.boxShadow =
+                                        "0 6px 12px rgba(31, 122, 140, 0.4)";
                                 }
                             }}
                             onMouseLeave={(e) => {
                                 if (totalPrice > 0) {
-                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.transform =
+                                        "translateY(0)";
                                     e.currentTarget.style.boxShadow = "none";
                                 }
                             }}
-                            onClick={handleAddAllToCart} disabled={totalPrice === 0}
+                            onClick={handleAddAllToCart}
+                            disabled={totalPrice === 0}
                         >
                             <svg
                                 width="20"
@@ -2069,28 +2804,32 @@ const markAsCustomModified = (extraUpdates: any = {}) => {
                     </div>
                 </div>
             </div>
-        
-                {/* Mobile Floating Action Button */}
-                {!hideFab && (
+
+            {/* Mobile Floating Action Button */}
+            {!hideFab && (
                 <div className="fab-wrapper">
-                    <div 
-                        className={`fab-overlay ${isFabOpen ? 'open' : ''}`} 
+                    <div
+                        className={`fab-overlay ${isFabOpen ? "open" : ""}`}
                         onClick={() => setIsFabOpen(false)}
                     />
                     <div className="fab-container">
-                        <div className={`fab-menu ${isFabOpen ? 'open' : ''}`}>
+                        <div className={`fab-menu ${isFabOpen ? "open" : ""}`}>
                             {renderActionButtons(true)}
                         </div>
-                        <button 
+                        <button
                             className="fab-trigger"
                             onClick={() => setIsFabOpen(!isFabOpen)}
                             aria-label="Toggle Actions"
                         >
-                            {isFabOpen ? <CloseIcon style={{ fontSize: "24px" }} /> : <MoreVertIcon style={{ fontSize: "24px" }} />}
+                            {isFabOpen ? (
+                                <CloseIcon style={{ fontSize: "24px" }} />
+                            ) : (
+                                <MoreVertIcon style={{ fontSize: "24px" }} />
+                            )}
                         </button>
                     </div>
                 </div>
-                )}
-    </div>
+            )}
+        </div>
     );
 }
