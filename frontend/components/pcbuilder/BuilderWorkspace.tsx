@@ -119,11 +119,37 @@ const getSpecs = (prod: any) => {
     const productType = (prod.product_type || "").toLowerCase();
     const isGpu = productType === "gpus" || productType === "gpu";
     const isCpu = productType === "cpus" || productType === "cpu";
+    const isCase = productType === "cases" || productType === "computer-cases";
+    const isMotherboard = productType === "motherboards" || productType === "motherboard";
+    const isRam = productType === "ram" || productType === "memory" || productType === "rams";
+    const isStorage = productType === "ssds" || productType === "hdds" || productType === "ssd" || productType === "hdd";
 
     // 1. Brand / manufacturer
     const brand = prod.brand || prod.manufacturer;
     if (brand) {
         pills.push(brand.toString());
+    }
+
+    if (isCase) {
+        // 2. Motherboard form factors (e.g. ATX, Micro ATX, Mini ITX)
+        const mbFormFactors = norm.mb_form_factors;
+        if (Array.isArray(mbFormFactors) && mbFormFactors.length > 0) {
+            for (const f of mbFormFactors.slice(0, 2)) {
+                if (f) pills.push(f.toString());
+            }
+        }
+
+        // 3. Max GPU length
+        const maxGpuLength = norm.max_gpu_length_mm;
+        if (maxGpuLength !== undefined && maxGpuLength !== null && maxGpuLength !== "") {
+            pills.push(`GPU ${maxGpuLength}mm`);
+        }
+
+        // 4. Case type/size (e.g. Mid Tower) — only if short and sane
+        const caseType = norm.case_type;
+        if (caseType && typeof caseType === "string" && caseType.length <= 40 && !caseType.toLowerCase().includes("ryzen")) {
+            pills.push(caseType);
+        }
     }
 
     if (isGpu) {
@@ -170,6 +196,79 @@ const getSpecs = (prod: any) => {
         const busWidth = prod.bus_width ?? norm.bus_width;
         if (busWidth) {
             pills.push(busWidth.toString());
+        }
+    }
+
+    if (isRam) {
+        // 2. Memory type (e.g. DDR5)
+        const memoryType = prod.memory_type ?? norm.memory_type;
+        if (memoryType) {
+            pills.push(memoryType.toString());
+        }
+
+        // 3. Kit size (e.g. 32GB, 64GB)
+        const modules = norm.modules;
+        if (modules && typeof modules === "object") {
+            const count = modules.count ?? 1;
+            const sizeGb = modules.size_gb ?? 0;
+            if (count && sizeGb) {
+                const total = count * sizeGb;
+                pills.push(`${total}GB`);
+                pills.push(`${count} x ${sizeGb}GB`);
+            }
+        }
+
+        // 4. Total capacity fallback
+        const capacity = prod.capacity_gb ?? norm.capacity_gb;
+        if (capacity) {
+            pills.push(`${capacity}GB`);
+        }
+    }
+
+    if (isStorage) {
+        // 2. Capacity parsed from title (e.g. 1TB, 2TB, 4TB)
+        const capacityMatch = title.match(/(\d+(?:\.\d+)?)\s*(TB|GB|tb|gb)/i);
+        if (capacityMatch) {
+            const value = capacityMatch[1];
+            const unit = capacityMatch[2].toUpperCase();
+            pills.push(`${value}${unit}`);
+        }
+
+        // 3. First useful short specs (interface, form factor, speed)
+        if (prod.short_specs && Array.isArray(prod.short_specs)) {
+            for (const s of prod.short_specs) {
+                const text = typeof s === "string" ? s : JSON.stringify(s);
+                if (text && !pills.includes(text)) {
+                    pills.push(text);
+                }
+                if (pills.length >= 4) break;
+            }
+        }
+    }
+
+    if (isMotherboard) {
+        // 2. Socket
+        const socket = formatSocket(prod.socket ?? norm.socket, title);
+        if (socket) {
+            pills.push(socket);
+        }
+
+        // 3. Form factor
+        const formFactor = prod.form_factor ?? norm.form_factor;
+        if (formFactor) {
+            pills.push(formFactor.toString());
+        }
+
+        // 4. Memory type
+        const memoryType = prod.memory_type ?? norm.memory_type;
+        if (memoryType) {
+            pills.push(memoryType.toString());
+        }
+
+        // 5. Memory slots
+        const memorySlots = prod.memory_slots ?? norm.memory_slots;
+        if (memorySlots !== undefined && memorySlots !== null && memorySlots !== "") {
+            pills.push(`${memorySlots} Slots`);
         }
     }
 
@@ -776,8 +875,8 @@ export function BuilderWorkspace() {
                         }
     
                     .builder-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding-bottom: 16px; }
-                    .builder-layout-row { display: flex; gap: 24px; flex: 1; margin-top: 24px; scroll-margin-top: 270px; }
-                    .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 270px; max-height: calc(100vh - 380px); overflow-y: auto; overscroll-behavior: contain; }
+                    .builder-layout-row { display: flex; gap: 24px; flex: 1; margin-top: 24px; scroll-margin-top: 120px; }
+                    .builder-sidebar { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 120px; max-height: calc(100vh - 160px); overflow-y: auto; overscroll-behavior: contain; padding-bottom: 120px; }
                     .builder-catalog-column { flex: 1; display: flex; flex-direction: column; min-width: 0; gap: 0; }
                     .builder-catalog { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; padding-right: 24px; }
                     
