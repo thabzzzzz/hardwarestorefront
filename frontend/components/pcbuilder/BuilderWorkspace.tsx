@@ -92,36 +92,47 @@ const ENDPOINT_MAP: Record<string, string> = {
 };
 
 const getSpecs = (prod: any) => {
-    const skip = [
-        "variant_id",
-        "title",
-        "sku",
-        "current_price",
-        "thumbnail",
-        "stock",
-        "slug",
-        "manufacturer",
-        "product_type",
-        "board_partner",
-        "description",
-        "images",
-        "id",
-        "category_id",
-        "created_at",
-        "updated_at",
-        "brand_id",
-    ];
     const pills: string[] = [];
-    for (const key of Object.keys(prod)) {
-        if (skip.includes(key)) continue;
-        if (
-            prod[key] &&
-            (typeof prod[key] === "string" || typeof prod[key] === "number")
-        ) {
-            const label = key.replace(/_/g, " ");
-            pills.push(prod[key].toString());
+
+    // 1. Brand / manufacturer (e.g. Intel, AMD)
+    const brand = prod.brand || prod.manufacturer;
+    if (brand) {
+        pills.push(brand.toString());
+    }
+
+    // 2. Cores (e.g. "20-Core", "8-Core")
+    const cores = prod.cores;
+    if (cores !== undefined && cores !== null && cores !== "") {
+        pills.push(`${cores}-Core`);
+    }
+
+    // 3. Platform / socket (e.g. LGA 1851, AM4)
+    const socket = prod.socket;
+    if (socket !== undefined && socket !== null && socket !== "") {
+        pills.push(socket.toString());
+    }
+
+    // 4. Optional: boost clock for CPUs if present
+    const boost = prod.boost_clock;
+    if (boost !== undefined && boost !== null && boost !== "") {
+        pills.push(boost.toString());
+    }
+
+    // Fallback to short_specs if we have too few useful tags
+    if (
+        pills.length < 3 &&
+        prod.short_specs &&
+        Array.isArray(prod.short_specs)
+    ) {
+        for (const s of prod.short_specs) {
+            const text = typeof s === "string" ? s : JSON.stringify(s);
+            if (text && !pills.includes(text)) {
+                pills.push(text);
+            }
+            if (pills.length >= 3) break;
         }
     }
+
     return pills.slice(0, 5);
 };
 
