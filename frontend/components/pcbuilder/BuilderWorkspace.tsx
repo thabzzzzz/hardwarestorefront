@@ -1228,16 +1228,17 @@ export function BuilderWorkspace() {
                         <div
                             style={{
                                 display: "inline-flex",
-                                background: "#e0e4e8",
+                                background: "#f4f4f6",
                                 padding: "4px",
-                                borderRadius: "12px",
+                                borderRadius: "9999px",
                                 gap: "4px",
+                                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)",
                             }}
                         >
                             <button
                                 onClick={() => setActiveTab("edit")}
                                 style={{
-                                    padding: "8px 32px",
+                                    padding: "8px 28px",
                                     background:
                                         activeTab === "edit"
                                             ? "#1f7a8c"
@@ -1245,14 +1246,14 @@ export function BuilderWorkspace() {
                                     color:
                                         activeTab === "edit" ? "#fff" : "#555",
                                     border: "none",
-                                    borderRadius: "8px",
+                                    borderRadius: "9999px",
                                     fontSize: "15px",
                                     fontWeight: 600,
                                     cursor: "pointer",
                                     transition: "all 0.2s ease",
                                     boxShadow:
                                         activeTab === "edit"
-                                            ? "0 2px 4px rgba(0,0,0,0.1)"
+                                            ? "0 1px 2px rgba(0,0,0,0.1)"
                                             : "none",
                                 }}
                             >
@@ -1261,7 +1262,7 @@ export function BuilderWorkspace() {
                             <button
                                 onClick={() => setActiveTab("overview")}
                                 style={{
-                                    padding: "8px 32px",
+                                    padding: "8px 28px",
                                     background:
                                         activeTab === "overview"
                                             ? "#1f7a8c"
@@ -1271,14 +1272,14 @@ export function BuilderWorkspace() {
                                             ? "#fff"
                                             : "#555",
                                     border: "none",
-                                    borderRadius: "8px",
+                                    borderRadius: "9999px",
                                     fontSize: "15px",
                                     fontWeight: 600,
                                     cursor: "pointer",
                                     transition: "all 0.2s ease",
                                     boxShadow:
                                         activeTab === "overview"
-                                            ? "0 2px 4px rgba(0,0,0,0.1)"
+                                            ? "0 1px 2px rgba(0,0,0,0.1)"
                                             : "none",
                                 }}
                             >
