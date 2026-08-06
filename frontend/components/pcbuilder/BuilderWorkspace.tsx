@@ -91,39 +91,113 @@ const ENDPOINT_MAP: Record<string, string> = {
     hdds: "hdds",
 };
 
+const formatCores = (cores: any, title: string = ""): string | null => {
+    if (cores !== undefined && cores !== null && cores !== "") {
+        const c = cores.toString().trim();
+        if (/\d+\s*-?\s*Core/i.test(c)) return c;
+        if (/^\d+$/.test(c)) return `${c}-Core`;
+        return c;
+    }
+    const match = title.match(/(\d+)\s*-?\s*Core/i);
+    if (match) return `${match[1]}-Core`;
+    return null;
+};
+
+const formatSocket = (socket: any, title: string = ""): string | null => {
+    if (socket !== undefined && socket !== null && socket !== "") {
+        return socket.toString().trim();
+    }
+    const match = title.match(/\b(AM[345]|LGA\s*\d+|sTRX4|TR4|sWRX8|SP3)\b/i);
+    if (match) return match[0].toUpperCase().replace(/\s+/g, " ");
+    return null;
+};
+
 const getSpecs = (prod: any) => {
     const pills: string[] = [];
+    const norm = prod.normalized_specs || {};
+    const title = prod.title || prod.name || "";
+    const productType = (prod.product_type || "").toLowerCase();
+    const isGpu = productType === "gpus" || productType === "gpu";
+    const isCpu = productType === "cpus" || productType === "cpu";
 
-    // 1. Brand / manufacturer (e.g. Intel, AMD)
+    // 1. Brand / manufacturer
     const brand = prod.brand || prod.manufacturer;
     if (brand) {
         pills.push(brand.toString());
     }
 
-    // 2. Cores (e.g. "20-Core", "8-Core")
-    const cores = prod.cores;
-    if (cores !== undefined && cores !== null && cores !== "") {
-        pills.push(`${cores}-Core`);
+    if (isGpu) {
+        // 2. GPU board partner (e.g. ASUS, Gigabyte)
+        const boardPartner = prod.board_partner;
+        if (boardPartner && boardPartner.toString().toLowerCase() !== (brand || "").toString().toLowerCase()) {
+            pills.push(boardPartner.toString());
+        }
+
+        // 3. VRAM
+        const vram = prod.vram_gb ?? norm.vram_gb ?? norm.vram;
+        if (vram !== undefined && vram !== null && vram !== "") {
+            pills.push(`${vram}GB`);
+        }
+
+        // 4. VRAM type
+        const vramType = prod.vram_type ?? norm.vram_type;
+        if (vramType) {
+            pills.push(vramType.toString());
+        }
+
+        // 5. TDP
+        const tdp = prod.tdp_watts ?? norm.tdp_watts ?? norm.tdp;
+        if (tdp !== undefined && tdp !== null && tdp !== "") {
+            pills.push(`${tdp}W`);
+        }
+
+        // 6. Boost clock
+        const boost = prod.boost_clock_mhz ?? norm.boost_clock_mhz ?? prod.boost_clock;
+        if (boost !== undefined && boost !== null && boost !== "") {
+            const num = Number(boost);
+            if (!isNaN(num)) {
+                if (num >= 1000) {
+                    pills.push(`${(num / 1000).toFixed(2)} GHz`);
+                } else {
+                    pills.push(`${num} MHz`);
+                }
+            } else {
+                pills.push(boost.toString());
+            }
+        }
+
+        // 7. Bus width
+        const busWidth = prod.bus_width ?? norm.bus_width;
+        if (busWidth) {
+            pills.push(busWidth.toString());
+        }
     }
 
-    // 3. Platform / socket (e.g. LGA 1851, AM4)
-    const socket = prod.socket;
-    if (socket !== undefined && socket !== null && socket !== "") {
-        pills.push(socket.toString());
-    }
+    if (isCpu) {
+        // 2. Cores
+        const cores = formatCores(
+            prod.cores ?? norm.cores ?? norm.core_count,
+            title,
+        );
+        if (cores) {
+            pills.push(cores);
+        }
 
-    // 4. Optional: boost clock for CPUs if present
-    const boost = prod.boost_clock;
-    if (boost !== undefined && boost !== null && boost !== "") {
-        pills.push(boost.toString());
+        // 3. Socket
+        const socket = formatSocket(prod.socket ?? norm.socket, title);
+        if (socket) {
+            pills.push(socket);
+        }
+
+        // 4. Boost clock
+        const boost = prod.boost_clock ?? norm.boost_clock;
+        if (boost !== undefined && boost !== null && boost !== "") {
+            pills.push(boost.toString());
+        }
     }
 
     // Fallback to short_specs if we have too few useful tags
-    if (
-        pills.length < 3 &&
-        prod.short_specs &&
-        Array.isArray(prod.short_specs)
-    ) {
+    if (pills.length < 3 && prod.short_specs && Array.isArray(prod.short_specs)) {
         for (const s of prod.short_specs) {
             const text = typeof s === "string" ? s : JSON.stringify(s);
             if (text && !pills.includes(text)) {

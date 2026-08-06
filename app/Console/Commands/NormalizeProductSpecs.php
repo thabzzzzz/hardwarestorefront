@@ -31,31 +31,31 @@ class NormalizeProductSpecs extends Command
             if (is_string($rawSpecs)) {
                 $rawSpecs = json_decode($rawSpecs, true) ?? [];
             }
-            if (empty($rawSpecs)) {
-                $bar->advance();
-                continue;
-            }
-
             $cleanedSpecs = [];
-            foreach ($rawSpecs as $group) {
-                if (is_array($group)) {
-                    foreach ($group as $tuple) {
-                        if (is_array($tuple) && count($tuple) >= 2) {
-                            $k = $tuple[0];
-                            $v = $tuple[1];
-                            $cleanKey = preg_replace('/^(.*?)\s+\1$/', '$1', $k);
-                            $cleanKeySlug = Str::slug($cleanKey, '_');
-                            $cleanedSpecs[$cleanKeySlug] = $v;
+            if (!empty($rawSpecs)) {
+                foreach ($rawSpecs as $group) {
+                    if (is_array($group)) {
+                        foreach ($group as $tuple) {
+                            if (is_array($tuple) && count($tuple) >= 2) {
+                                $k = $tuple[0];
+                                $v = $tuple[1];
+                                $cleanKey = preg_replace('/^(.*?)\s+\1$/', '$1', $k);
+                                $cleanKeySlug = Str::slug($cleanKey, '_');
+                                $cleanedSpecs[$cleanKeySlug] = $v;
+                            }
                         }
                     }
                 }
             }
 
+            $title = $variant->title ?? $variant->product->name ?? '';
+
             $normalized = [];
 
             switch ($cat) {
                 case 'cpus':
-                    $normalized['socket'] = $this->extractSocket($cleanedSpecs);
+                    $normalized['socket'] = $this->extractSocket($cleanedSpecs, $title);
+                    $normalized['cores'] = $this->extractCores($cleanedSpecs, $title);
                     $normalized['includes_cooler'] = $this->extractIncludedCooler($cleanedSpecs);
                     break;
                 case 'motherboards':
@@ -78,6 +78,11 @@ class NormalizeProductSpecs extends Command
                 case 'gpu':
                 case 'gpus':
                 case 'video-cards':
+                    $normalized['vram_gb'] = $this->extractGPUVramGB($cleanedSpecs);
+                    $normalized['vram_type'] = $this->extractGPUVramType($cleanedSpecs);
+                    $normalized['bus_width'] = $this->extractGPUBusWidth($cleanedSpecs);
+                    $normalized['boost_clock_mhz'] = $this->extractGPUBoostClock($cleanedSpecs);
+                    $normalized['tdp_watts'] = $this->extractGPUTDP($cleanedSpecs);
                     $normalized['length_mm'] = $this->extractGPULength($cleanedSpecs);
                     $normalized['recommended_psu'] = $this->extractRecommendedPSU($cleanedSpecs);
                     break;
@@ -131,15 +136,35 @@ class NormalizeProductSpecs extends Command
         return null;
     }
 
-    private function extractSocket($specs)
+    private function extractSocket($specs, $title = '')
     {
         $val = $this->getValuesByKeywords($specs, ['socket']);
-        if (!$val) return null;
-        if (preg_match('/(AM[45]|LGA\s?\d+)/i', $val, $matches)) {
+        if ($val && preg_match('/(AM[45]|LGA\s?\d+)/i', $val, $matches)) {
             $socket = strtoupper(trim($matches[1]));
             return preg_replace('/LGA(\d+)/', 'LGA $1', $socket);
         }
-        return $val;
+        if (preg_match('/\b(AM[45]|LGA\s*\d+)\b/i', $title, $matches)) {
+            $socket = strtoupper(trim($matches[1]));
+            return preg_replace('/LGA(\d+)/', 'LGA $1', $socket);
+        }
+        return null;
+    }
+
+    private function extractCores($specs, $title = '')
+    {
+        $val = $this->getValuesByKeywords($specs, ['core', 'cores', 'cpu_core_count', 'number_of_cores']);
+        if ($val) {
+            if (preg_match('/(\d+)\s*-?\s*Core/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+            if (preg_match('/(\d+)/', $val, $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        if (preg_match('/(\d+)\s*-?\s*Core/i', $title, $matches)) {
+            return (int) $matches[1];
+        }
+        return null;
     }
 
     private function extractIncludedCooler($specs)
@@ -215,6 +240,70 @@ class NormalizeProductSpecs extends Command
             return strtoupper($matches[1]);
         }
         return 'ATX';
+    }
+
+    private function extractGPUVramGB($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['video_memory', 'memory_size', 'vram', 'memory']);
+        if ($val) {
+            if (preg_match('/(\d+)\s*GB/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+            if (preg_match('/(\d+)\s*G/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return null;
+    }
+
+    private function extractGPUVramType($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['memory_type', 'video_memory_type']);
+        if ($val) {
+            if (preg_match('/(GDDR[6X7])/i', $val, $matches)) {
+                return strtoupper($matches[1]);
+            }
+        }
+        return null;
+    }
+
+    private function extractGPUBusWidth($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['bus', 'memory_bus', 'memory_interface']);
+        if ($val) {
+            if (preg_match('/(\d+)\s*-?\s*Bit/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+            if (preg_match('/(\d+)\s*bit/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return null;
+    }
+
+    private function extractGPUBoostClock($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['boost_clock', 'core_clock', 'gpu_clock', 'clock_speed']);
+        if ($val) {
+            if (preg_match('/(\d+(?:\.\d+)?)\s*GHz/i', $val, $matches)) {
+                return (int) round((float) $matches[1] * 1000);
+            }
+            if (preg_match('/(\d+)\s*MHz/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return null;
+    }
+
+    private function extractGPUTDP($specs)
+    {
+        $val = $this->getValuesByKeywords($specs, ['tdp', 'thermal_design_power', 'power_consumption', 'wattage']);
+        if ($val) {
+            if (preg_match('/(\d+)\s*W/i', $val, $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return null;
     }
 
     private function extractGPULength($specs)
