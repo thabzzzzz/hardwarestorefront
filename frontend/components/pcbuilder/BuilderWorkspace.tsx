@@ -77,7 +77,7 @@ const CATEGORIES = [
 const API_BASE =
     typeof window === "undefined"
         ? process.env.SERVER_API_BASE_URL || "http://web"
-        : process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+        : (process.env.NEXT_PUBLIC_API_BASE_URL ?? "");
 
 const ENDPOINT_MAP: Record<string, string> = {
     cases: "cases",
