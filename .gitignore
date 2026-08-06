@@ -66,3 +66,21 @@ docker-compose.dev.yml
 tmp/
 tools/
 scripts/
+
+# Temp/fix/seed scripts and scratch files
+fix_*.cjs
+fix_*.js
+seed_*.cjs
+rewrite_*.cjs
+temp_*.js
+temp_*.txt
+temp_*.json
+temp_*.patch
+tmp_*.json
+*.bak
+*.dump
+dev.err
+pc-builder-backup.txt
+get_coolers.php
+frontend/test-compat.ts
+frontend/tsconfig.tsbuildinfo
