@@ -1,511 +1,1118 @@
-import React, { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
-import styles from './header.module.css'
-import useWishlist from '../../hooks/useWishlist'
-import useCart from '../../hooks/useCart'
-import { useAuth } from '../../hooks/useAuth'
-import getDisplayTitle from '../../lib/getDisplayTitle'
-import { useRouter } from 'next/router'
-import TextField from '@mui/material/node/TextField/index.js'
-import InputAdornment from '@mui/material/node/InputAdornment/index.js'
-import IconButton from '@mui/material/node/IconButton/index.js'
-import SearchIcon from '@mui/icons-material/Search.js'
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import styles from "./header.module.css";
+import useWishlist from "../../hooks/useWishlist";
+import useCart from "../../hooks/useCart";
+import { useAuth } from "../../hooks/useAuth";
+import getDisplayTitle from "../../lib/getDisplayTitle";
+import { useRouter } from "next/router";
+import TextField from "@mui/material/node/TextField/index.js";
+import InputAdornment from "@mui/material/node/InputAdornment/index.js";
+import IconButton from "@mui/material/node/IconButton/index.js";
+import SearchIcon from "@mui/icons-material/Search.js";
 
-const API_BASE = typeof window === 'undefined'
-  ? (process.env.SERVER_API_BASE_URL || 'http://web')
-  : (process.env.NEXT_PUBLIC_API_BASE_URL || '')
+const API_BASE =
+    typeof window === "undefined"
+        ? process.env.SERVER_API_BASE_URL || "http://web"
+        : process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export default function Header({ hideSearchOnMobile = false }: { hideSearchOnMobile?: boolean }): JSX.Element {
-  const topbarRef = useRef<HTMLDivElement | null>(null)
-  const brandRef = useRef<HTMLDivElement | null>(null)
-  const profileRef = useRef<HTMLDivElement | null>(null)
-  const [atTop, setAtTop] = useState<boolean>(true)
-  const [topbarHeight, setTopbarHeight] = useState<number>(0)
-  const [brandHeight, setBrandHeight] = useState<number>(0)
-  const { user, loading, login, logout } = useAuth()
+export default function Header({
+    hideSearchOnMobile = false,
+}: {
+    hideSearchOnMobile?: boolean;
+}): JSX.Element {
+    const topbarRef = useRef<HTMLDivElement | null>(null);
+    const brandRef = useRef<HTMLDivElement | null>(null);
+    const profileRef = useRef<HTMLDivElement | null>(null);
+    const [atTop, setAtTop] = useState<boolean>(true);
+    const [topbarHeight, setTopbarHeight] = useState<number>(0);
+    const [brandHeight, setBrandHeight] = useState<number>(0);
+    const { user, loading, login, logout } = useAuth();
 
-  useEffect(() => {
-    function updateHeights() {
-      setTopbarHeight(topbarRef.current?.offsetHeight ?? 0)
-      setBrandHeight(brandRef.current?.offsetHeight ?? 0)
+    useEffect(() => {
+        function updateHeights() {
+            setTopbarHeight(topbarRef.current?.offsetHeight ?? 0);
+            setBrandHeight(brandRef.current?.offsetHeight ?? 0);
+        }
+
+        updateHeights();
+
+        const onScroll = () => setAtTop(window.scrollY === 0);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", updateHeights);
+
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", updateHeights);
+        };
+    }, []);
+
+    // export heights as CSS variables (avoid inline JSX styles)
+    useEffect(() => {
+        try {
+            document.documentElement.style.setProperty(
+                "--topbar-height",
+                `${topbarHeight}px`,
+            );
+            document.documentElement.style.setProperty(
+                "--brand-height",
+                `${brandHeight}px`,
+            );
+        } catch (e) {
+            // ignore
+        }
+    }, [topbarHeight, brandHeight]);
+
+    const wishlist = useWishlist();
+    const cart = useCart();
+    const router = useRouter();
+
+    // search state
+    const [query, setQuery] = useState("");
+    const [suggestions, setSuggestions] = useState<Array<any>>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const debounceRef = useRef<number | null>(null);
+
+    const [profileOpen, setProfileOpen] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileMenuVisible, setMobileMenuVisible] = useState(false);
+    const [mobileMenuActive, setMobileMenuActive] = useState(false);
+    const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+
+    useEffect(() => {
+        let openTimer: number | undefined;
+        let closeTimer: number | undefined;
+
+        if (mobileMenuOpen) {
+            setMobileMenuVisible(true);
+            openTimer = window.setTimeout(() => setMobileMenuActive(true), 20);
+        } else {
+            setMobileMenuActive(false);
+            closeTimer = window.setTimeout(
+                () => setMobileMenuVisible(false),
+                220,
+            );
+        }
+
+        return () => {
+            if (openTimer) window.clearTimeout(openTimer);
+            if (closeTimer) window.clearTimeout(closeTimer);
+        };
+    }, [mobileMenuOpen]);
+
+    useEffect(() => {
+        function handleClickOutside(event: PointerEvent) {
+            if (
+                profileRef.current &&
+                !profileRef.current.contains(event.target as Node)
+            ) {
+                setProfileOpen(false);
+            }
+        }
+
+        if (profileOpen) {
+            document.addEventListener("pointerdown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("pointerdown", handleClickOutside);
+        };
+    }, [profileOpen]);
+
+    function doSearchNavigate(q: string) {
+        if (!q || String(q).trim().length === 0) return;
+        router.push(`/search?q=${encodeURIComponent(q)}`);
+        setShowSuggestions(false);
     }
 
-    updateHeights()
-
-    const onScroll = () => setAtTop(window.scrollY === 0)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', updateHeights)
-
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', updateHeights)
-    }
-  }, [])
-
-  // export heights as CSS variables (avoid inline JSX styles)
-  useEffect(() => {
-    try {
-      document.documentElement.style.setProperty('--topbar-height', `${topbarHeight}px`)
-      document.documentElement.style.setProperty('--brand-height', `${brandHeight}px`)
-    } catch (e) {
-      // ignore
-    }
-  }, [topbarHeight, brandHeight])
-
-  const wishlist = useWishlist()
-  const cart = useCart()
-  const router = useRouter()
-
-
-  // search state
-  const [query, setQuery] = useState('')
-  const [suggestions, setSuggestions] = useState<Array<any>>([])
-  const [showSuggestions, setShowSuggestions] = useState(false)
-  const debounceRef = useRef<number | null>(null)
-
-  const [profileOpen, setProfileOpen] = useState(false)
-  const [profileVisible, setProfileVisible] = useState(false)
-  const [profileActive, setProfileActive] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [mobileMenuVisible, setMobileMenuVisible] = useState(false)
-  const [mobileMenuActive, setMobileMenuActive] = useState(false)
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
-
-  useEffect(() => {
-    let openTimer: number | undefined
-    let closeTimer: number | undefined
-
-    if (mobileMenuOpen) {
-      setMobileMenuVisible(true)
-      openTimer = window.setTimeout(() => setMobileMenuActive(true), 20)
-    } else {
-      setMobileMenuActive(false)
-      closeTimer = window.setTimeout(() => setMobileMenuVisible(false), 220)
+    async function fetchSuggestions(q: string) {
+        if (!q || q.trim().length < 2) {
+            setSuggestions([]);
+            return;
+        }
+        try {
+            // fetch a modest page and filter client-side
+            const res = await fetch(`${API_BASE}/api/products?per_page=100`);
+            if (!res.ok) return;
+            const js = await res.json();
+            const list = js.data || [];
+            const needle = q.trim().toLowerCase();
+            const matches = list
+                .filter((it: any) => {
+                    const title = String(it.title || "").toLowerCase();
+                    const name = String((it as any).name || "").toLowerCase();
+                    const sku = String(it.sku || "").toLowerCase();
+                    const manufacturer = String(
+                        (it as any).manufacturer || "",
+                    ).toLowerCase();
+                    return (
+                        title.includes(needle) ||
+                        name.includes(needle) ||
+                        sku.includes(needle) ||
+                        manufacturer.includes(needle)
+                    );
+                })
+                .slice(0, 3);
+            setSuggestions(matches);
+            setShowSuggestions(true);
+        } catch (e) {
+            console.error("suggestions failed", e);
+        }
     }
 
-    return () => {
-      if (openTimer) window.clearTimeout(openTimer)
-      if (closeTimer) window.clearTimeout(closeTimer)
-    }
-  }, [mobileMenuOpen])
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
-        setProfileOpen(false)
-      }
+    function onQueryChange(v: string) {
+        setQuery(v);
+        if (debounceRef.current) window.clearTimeout(debounceRef.current);
+        debounceRef.current = window.setTimeout(() => fetchSuggestions(v), 250);
     }
 
-    if (profileOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [profileOpen])
-
-  useEffect(() => {
-    let openTimer: number | undefined
-    let closeTimer: number | undefined
-
-    if (profileOpen) {
-      setProfileVisible(true)
-      openTimer = window.setTimeout(() => setProfileActive(true), 20)
-    } else {
-      setProfileActive(false)
-      closeTimer = window.setTimeout(() => setProfileVisible(false), 220)
-    }
-
-    return () => {
-      if (openTimer) window.clearTimeout(openTimer)
-      if (closeTimer) window.clearTimeout(closeTimer)
-    }
-  }, [profileOpen])
-
-  function doSearchNavigate(q: string) {
-    if (!q || String(q).trim().length === 0) return
-    router.push(`/search?q=${encodeURIComponent(q)}`)
-    setShowSuggestions(false)
-  }
-
-  async function fetchSuggestions(q: string) {
-    if (!q || q.trim().length < 2) {
-      setSuggestions([])
-      return
-    }
-    try {
-      // fetch a modest page and filter client-side
-      const res = await fetch(`${API_BASE}/api/products?per_page=100`)
-      if (!res.ok) return
-      const js = await res.json()
-      const list = js.data || []
-      const needle = q.trim().toLowerCase()
-      const matches = list.filter((it: any) => {
-        const title = String(it.title || '').toLowerCase()
-        const name = String((it as any).name || '').toLowerCase()
-        const sku = String(it.sku || '').toLowerCase()
-        const manufacturer = String((it as any).manufacturer || '').toLowerCase()
-        return title.includes(needle) || name.includes(needle) || sku.includes(needle) || manufacturer.includes(needle)
-      }).slice(0, 3)
-      setSuggestions(matches)
-      setShowSuggestions(true)
-    } catch (e) {
-      console.error('suggestions failed', e)
-    }
-  }
-
-  function onQueryChange(v: string) {
-    setQuery(v)
-    if (debounceRef.current) window.clearTimeout(debounceRef.current)
-    debounceRef.current = window.setTimeout(() => fetchSuggestions(v), 250)
-  }
-
-  return (
-    <>
-      <header className={styles.header}>
-        {/* Mobile header: shown only on small screens via CSS */}
-        <div className={styles.mobileHeader}>
-          <div className={styles.mobileRow1}>
-            <div className={styles.mobileLogo}>
-              <Link href="/">
-                <img src="/images/logo/logo2.svg" alt="WiredWorkshop" className={styles.logoImage} />
-              </Link>
-            </div>
-            <div className={styles.mobileIcons}>
-              <button aria-label="Open menu" className={styles.iconButton} onClick={() => setMobileMenuOpen(true)}>
-                <img src="/images/icons/burger-menu.svg" alt="Menu" />
-              </button>
-              <div className={styles.profileWrap}>
-                <Link href="/wishlist" className={styles.iconButton} aria-label="Wishlist">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                    <path d="M20.8 8.6c0 4.2-3.4 7.3-8.1 11.8L12 21.35l-0.7-0.85C6.6 15.9 3.2 12.8 3.2 8.6 3.2 6 5.2 4 7.8 4c1.9 0 3.7 1 4.2 2.4.5-1.4 2.3-2.4 4.2-2.4 2.6 0 4.6 2 4.6 4.6z" />
-                  </svg>
-                </Link>
-              </div>
-              <Link href="/cart" className={styles.iconButton} aria-label="View cart">
-                <img src="/images/icons/cart.svg" alt="Cart" />
-                <span className={styles.cartCount}>({cart.count})</span>
-              </Link>
-            </div>
-          </div>
-          <div className={styles.mobileRow2} style={{ display: hideSearchOnMobile ? 'none' : undefined }}>
-              <div className={styles.searchBoxMobile}>
-              <TextField
-                placeholder="Search..."
-                value={query}
-                size="small"
-                fullWidth
-                onChange={(e) => onQueryChange(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }}
-                onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon style={{ fontSize: 16, color: '#666' }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
-                        <img src="/icons/search.svg" alt="Search" />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <div ref={topbarRef} className={styles.topbar}>
-          <div className={styles.topbarLeft}>
-            {loading ? (
-              <span style={{ display: 'inline-block', width: '80px', opacity: 0 }}>...</span>
-            ) : user ? (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#666' }}>
-                {user.name} 
-                <span style={{margin: '0 4px', opacity: 0.5}}>|</span>
-                <Link href="/profile" className={styles.topbarLink}>Profile</Link>
-                <span style={{margin: '0 4px', opacity: 0.5}}>|</span>
-                <a href="#" onClick={(e) => { e.preventDefault(); logout(); }} className={styles.topbarLink}>Logout</a>
-              </span>
-            ) : (
-              <a href="#" onClick={(e)=>{ e.preventDefault(); login(); }} className={styles.topbarLink}>Login</a>
-            )}
-            <a href="#" onClick={(e)=>e.preventDefault()} className={styles.disabledLink}>Blog <span className={styles.coming}>(Coming soon)</span></a>
-          </div>
-          <div className={styles.topbarRight}>
-            <Link href="/wishlist" className={styles.wishlistLink} aria-label="View wishlist">
-              <svg className={styles.wishlistIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6.5 3.5 5 5.5 5c1.54 0 3.04.99 3.57 2.36h.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-              <span>Wishlist ({wishlist.count})</span>
-            </Link>
-          </div>
-        </div>
-        <div ref={brandRef} className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ''}`}>
-          <div className={styles.logo}>
-            <Link href="/">
-              <img src="/images/logo/logo2.svg" alt="WiredWorkshop" className={styles.logoImage} />
-            </Link>
-          </div>
-          <nav className={styles.nav}>
-            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <span className={styles.navLabel} aria-hidden="true">Computer Components
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </span>
-              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
-                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
-                  <div className={styles.category}>
-                    <ul>
-                      <li><a href="/products/gpus">Graphics Cards</a></li>
-                      <li><a href="/products/processors">Processors / CPUs</a></li>
-                      <li><a href="/products/motherboards">Motherboards</a></li>
-                      <li><a href="/products/cases">Cases</a></li>
-                      <li><a href="/products/ram">Memory / RAM</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <span className={styles.navLabel} aria-hidden="true">Storage Devices
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </span>
-              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
-                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
-                  <div className={styles.category}>
-                    <ul>
-                      <li><a href="/products/ssds">Solid State Drives / SSDs</a></li>
-                      <li><a href="/products/hdds">Internal Hard Drives</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <span className={styles.navLabel} aria-hidden="true">Peripherals
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </span>
-              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
-                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
-                  <div className={styles.category}>
-                    <ul>
-                      <li><a href="/products/monitors">Monitors / Screens</a></li>
-                      <li><a href="/products/keyboards">Keyboards</a></li>
-                      <li><a href="/products/mice">Mice & Controllers</a></li>
-                      <li><a href="/products/headsets">Headsets & Audio</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <span className={styles.navLabel} aria-hidden="true">Networking
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </span>
-              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
-                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
-                  <div className={styles.category}>
-                    <ul>
-                      <li><a href="/products/routers">Routers</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={`${styles.navItem} ${styles.hasSubmenu}`}>
-              <span className={styles.navLabel} aria-hidden="true">Accessories
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" /></svg>
-              </span>
-              <div className={styles.submenu} style={{ width: 'auto', minWidth: '250px' }}>
-                <div className={styles.submenuGrid} style={{ gridTemplateColumns: '1fr', gap: '12px' }}>
-                  <div className={styles.category}>
-                    <ul>
-                      <li><a href="/products/case-fans">Fans & Coolers</a></li>
-                      <li><a href="/products/psus">PSUs / Power Supplies</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className={styles.navItem}>
-              <Link 
-                href="/pc-builder" 
-                className={styles.navLabel} 
-                style={{textDecoration:'none', color:'#1f7a8c', fontWeight: 700, cursor: 'pointer'}}
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.removeItem("builder_draft");
-                  }
-                }}
-              >
-                PC Builder
-              </Link>
-            </div>
-          </nav>
-          <div className={styles.brandDivider} aria-hidden="true" />
-          <div className={styles.brandActions}>
-            <div className={styles.searchBox}>
-              <TextField
-                placeholder="search"
-                value={query}
-                size="small"
-                fullWidth
-                onChange={(e) => onQueryChange(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { doSearchNavigate(query) } }}
-                onFocus={() => { if (suggestions.length) setShowSuggestions(true) }}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon style={{ fontSize: 18, color: '#666' }} />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton edge="end" size="small" onClick={() => doSearchNavigate(query)}>
-                        <img src="/icons/search.svg" alt="Search" />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <div className={styles.suggestions}>
-                  {suggestions.map((s: any) => (
-                    <div key={s.variant_id || s.id || s.slug} className={styles.suggestionItem} onMouseDown={() => { /* mousedown to avoid blur */ router.push(s.slug ? `/product/${s.slug}` : `/product/${encodeURIComponent(s.title)}`) }}>
-                      <img src={s.thumbnail || '/images/products/placeholder.png'} className={styles.suggestionThumb} />
-                      <div className={styles.suggestionMeta}>
-                        <div className={styles.suggestionTitle}>{getDisplayTitle({ title: s.title, name: (s as any).name, manufacturer: (s as any).manufacturer, productType: (s as any).product_type || (s as any).productType })}</div>
-                        <div className={styles.suggestionPrice}>{s.current_price ? (new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format((s.current_price.amount_cents || 0) / 100)) : ''}</div>
-                      </div>
+    return (
+        <>
+            <header className={styles.header}>
+                {/* Mobile header: shown only on small screens via CSS */}
+                <div className={styles.mobileHeader}>
+                    <div className={styles.mobileRow1}>
+                        <div className={styles.mobileLogo}>
+                            <Link href="/">
+                                <img
+                                    src="/images/logo/logo2.svg"
+                                    alt="WiredWorkshop"
+                                    className={styles.logoImage}
+                                />
+                            </Link>
+                        </div>
+                        <div className={styles.mobileIcons}>
+                            <button
+                                aria-label="Open menu"
+                                className={styles.iconButton}
+                                onClick={() => setMobileMenuOpen(true)}
+                            >
+                                <img
+                                    src="/images/icons/burger-menu.svg"
+                                    alt="Menu"
+                                />
+                            </button>
+                            <div
+                                className={styles.profileWrap}
+                                ref={profileRef}
+                            >
+                                <button
+                                    type="button"
+                                    className={styles.iconButton}
+                                    aria-label="Account"
+                                    aria-haspopup="true"
+                                    aria-expanded={profileOpen}
+                                    onClick={() => {
+                                        setMobileMenuOpen(false);
+                                        setProfileOpen(!profileOpen);
+                                    }}
+                                >
+                                    <svg
+                                        width="22"
+                                        height="22"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="1.6"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 20c0-3.87 4.03-6 8-6s8 2.13 8 6" />
+                                    </svg>
+                                </button>
+                                <div
+                                    className={`${styles.profileMenu} ${profileOpen ? styles.profileMenuOpen : ""}`}
+                                >
+                                    {loading ? (
+                                        <Link
+                                            href="/wishlist"
+                                            onClick={() =>
+                                                setProfileOpen(false)
+                                            }
+                                        >
+                                            Wishlist ({wishlist.count})
+                                        </Link>
+                                    ) : user ? (
+                                        <>
+                                            <Link
+                                                href="/profile"
+                                                onClick={() =>
+                                                    setProfileOpen(false)
+                                                }
+                                            >
+                                                Profile
+                                            </Link>
+                                            <Link
+                                                href="/wishlist"
+                                                onClick={() =>
+                                                    setProfileOpen(false)
+                                                }
+                                            >
+                                                Wishlist ({wishlist.count})
+                                            </Link>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    logout();
+                                                }}
+                                            >
+                                                Logout
+                                            </a>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    login();
+                                                }}
+                                            >
+                                                Login
+                                            </a>
+                                            <Link
+                                                href="/wishlist"
+                                                onClick={() =>
+                                                    setProfileOpen(false)
+                                                }
+                                            >
+                                                Wishlist ({wishlist.count})
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <Link
+                                href="/cart"
+                                className={styles.iconButton}
+                                aria-label="View cart"
+                            >
+                                <img src="/images/icons/cart.svg" alt="Cart" />
+                                <span className={styles.cartCount}>
+                                    ({cart.count})
+                                </span>
+                            </Link>
+                        </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <Link href="/cart" className={styles.cartButton} aria-label="View cart">
-              <img src="/images/icons/cart.svg" alt="Cart" />
-              <span className={styles.cartCount}>({cart.count})</span>
-            </Link>
-          </div>
-        </div>
-        {mobileMenuVisible && (
-          <div className={styles.mobileMenuOverlay} role="dialog" aria-modal="true" onClick={() => setMobileMenuOpen(false)}>
-            <div className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ''}`} onClick={(e) => e.stopPropagation()}>
-              <button className={styles.mobileMenuClose} onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>
-              <nav className={styles.mobileNav}>
-
-                <div className={styles.mobileGroup}>
-                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'comp' ? null : 'comp')}>
-                    Computer Components
-                    <span className={styles.arrow}>{expandedGroup === 'comp' ? '−' : '+'}</span>
-                  </div>
-                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'comp' ? styles.open : ''}`}>
-                    <div className={styles.accordionInner}>
-                      <div className={styles.mobileSubnav}>
-                        <Link href="/products/gpus">Graphics Cards</Link>
-                        <Link href="/products/processors">Processors / CPUs</Link>
-                        <Link href="/products/motherboards">Motherboards</Link>
-                        <Link href="/products/cases">Cases</Link>
-                        <Link href="/products/ram">Memory / RAM</Link>
-                      </div>
+                    <div
+                        className={styles.mobileRow2}
+                        style={{
+                            display: hideSearchOnMobile ? "none" : undefined,
+                        }}
+                    >
+                        <div className={styles.searchBoxMobile}>
+                            <TextField
+                                placeholder="Search..."
+                                value={query}
+                                size="small"
+                                fullWidth
+                                onChange={(e) => onQueryChange(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        doSearchNavigate(query);
+                                    }
+                                }}
+                                onFocus={() => {
+                                    if (suggestions.length)
+                                        setShowSuggestions(true);
+                                }}
+                                onBlur={() =>
+                                    setTimeout(
+                                        () => setShowSuggestions(false),
+                                        150,
+                                    )
+                                }
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon
+                                                style={{
+                                                    fontSize: 16,
+                                                    color: "#666",
+                                                }}
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                edge="end"
+                                                size="small"
+                                                onClick={() =>
+                                                    doSearchNavigate(query)
+                                                }
+                                            >
+                                                <img
+                                                    src="/icons/search.svg"
+                                                    alt="Search"
+                                                />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </div>
                     </div>
-                  </div>
                 </div>
-
-                <div className={styles.mobileGroup}>
-                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'storage' ? null : 'storage')}>
-                    Storage Devices
-                    <span className={styles.arrow}>{expandedGroup === 'storage' ? '−' : '+'}</span>
-                  </div>
-                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'storage' ? styles.open : ''}`}>
-                    <div className={styles.accordionInner}>
-                      <div className={styles.mobileSubnav}>
-                        <Link href="/products/ssds">Solid State Drives / SSDs</Link>
-                        <Link href="/products/hdds">Internal Hard Drives</Link>
-                      </div>
+                <div ref={topbarRef} className={styles.topbar}>
+                    <div className={styles.topbarLeft}>
+                        {loading ? (
+                            <span
+                                style={{
+                                    display: "inline-block",
+                                    width: "80px",
+                                    opacity: 0,
+                                }}
+                            >
+                                ...
+                            </span>
+                        ) : user ? (
+                            <span
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "6px",
+                                    fontSize: "12px",
+                                    color: "#666",
+                                }}
+                            >
+                                {user.name}
+                                <span style={{ margin: "0 4px", opacity: 0.5 }}>
+                                    |
+                                </span>
+                                <Link
+                                    href="/profile"
+                                    className={styles.topbarLink}
+                                >
+                                    Profile
+                                </Link>
+                                <span style={{ margin: "0 4px", opacity: 0.5 }}>
+                                    |
+                                </span>
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        logout();
+                                    }}
+                                    className={styles.topbarLink}
+                                >
+                                    Logout
+                                </a>
+                            </span>
+                        ) : (
+                            <a
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    login();
+                                }}
+                                className={styles.topbarLink}
+                            >
+                                Login
+                            </a>
+                        )}
+                        <a
+                            href="#"
+                            onClick={(e) => e.preventDefault()}
+                            className={styles.disabledLink}
+                        >
+                            Blog{" "}
+                            <span className={styles.coming}>(Coming soon)</span>
+                        </a>
                     </div>
-                  </div>
-                </div>
-
-                <div className={styles.mobileGroup}>
-                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'periph' ? null : 'periph')}>
-                    Peripherals
-                    <span className={styles.arrow}>{expandedGroup === 'periph' ? '−' : '+'}</span>
-                  </div>
-                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'periph' ? styles.open : ''}`}>
-                    <div className={styles.accordionInner}>
-                      <div className={styles.mobileSubnav}>
-                        <Link href="/products/monitors">Monitors / Screens</Link>
-                        <Link href="/products/keyboards">Keyboards</Link>
-                        <Link href="/products/mice">Mice & Controllers</Link>
-                        <Link href="/products/headsets">Headsets & Audio</Link>
-                      </div>
+                    <div className={styles.topbarRight}>
+                        <Link
+                            href="/wishlist"
+                            className={styles.wishlistLink}
+                            aria-label="View wishlist"
+                        >
+                            <svg
+                                className={styles.wishlistIcon}
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                                focusable="false"
+                            >
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6.5 3.5 5 5.5 5c1.54 0 3.04.99 3.57 2.36h.87C13.46 5.99 14.96 5 16.5 5 18.5 5 20 6.5 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                            </svg>
+                            <span>Wishlist ({wishlist.count})</span>
+                        </Link>
                     </div>
-                  </div>
                 </div>
-
-                <div className={styles.mobileGroup}>
-                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'net' ? null : 'net')}>
-                    Networking
-                    <span className={styles.arrow}>{expandedGroup === 'net' ? '−' : '+'}</span>
-                  </div>
-                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'net' ? styles.open : ''}`}>
-                    <div className={styles.accordionInner}>
-                      <div className={styles.mobileSubnav}>
-                        <Link href="/products/routers">Routers</Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.mobileGroup}>
-                  <div className={styles.mobileSummary} onClick={() => setExpandedGroup(expandedGroup === 'acc' ? null : 'acc')}>
-                    Accessories
-                    <span className={styles.arrow}>{expandedGroup === 'acc' ? '−' : '+'}</span>
-                  </div>
-                  <div className={`${styles.accordionWrapper} ${expandedGroup === 'acc' ? styles.open : ''}`}>
-                    <div className={styles.accordionInner}>
-                      <div className={styles.mobileSubnav}>
-                        <Link href="/products/case-fans">Fans & Coolers</Link>
-                        <Link href="/products/psus">PSUs / Power Supplies</Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <Link 
-                  href="/pc-builder" 
-                  className={styles.mobileSummary} 
-                  style={{color:'#1f7a8c', textDecoration:'none', fontWeight: 600, display: 'block', marginTop: '16px', marginBottom: '8px', cursor: 'pointer'}}
-                  onClick={() => {
-                    if (typeof window !== 'undefined') {
-                      sessionStorage.removeItem("builder_draft");
-                    }
-                  }}
+                <div
+                    ref={brandRef}
+                    className={`${styles.brandRow} ${atTop ? styles.brandRowShifted : ""}`}
                 >
-                  PC Builder
-                </Link>
+                    <div className={styles.logo}>
+                        <Link href="/">
+                            <img
+                                src="/images/logo/logo2.svg"
+                                alt="WiredWorkshop"
+                                className={styles.logoImage}
+                            />
+                        </Link>
+                    </div>
+                    <nav className={styles.nav}>
+                        <div
+                            className={`${styles.navItem} ${styles.hasSubmenu}`}
+                        >
+                            <span
+                                className={styles.navLabel}
+                                aria-hidden="true"
+                            >
+                                Computer Components
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+                                </svg>
+                            </span>
+                            <div
+                                className={styles.submenu}
+                                style={{ width: "auto", minWidth: "250px" }}
+                            >
+                                <div
+                                    className={styles.submenuGrid}
+                                    style={{
+                                        gridTemplateColumns: "1fr",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <div className={styles.category}>
+                                        <ul>
+                                            <li>
+                                                <a href="/products/gpus">
+                                                    Graphics Cards
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/processors">
+                                                    Processors / CPUs
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/motherboards">
+                                                    Motherboards
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/cases">
+                                                    Cases
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/ram">
+                                                    Memory / RAM
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                 {/* Wishlist intentionally omitted from mobile side menu */}
-              </nav>
-            </div>
-          </div>
-        )}
-      </header>
-      {/* spacer to prevent layout jump because brandRow is fixed */}
-      <div className={styles.spacer} aria-hidden="true" />
-    </>
-  )
+                        <div
+                            className={`${styles.navItem} ${styles.hasSubmenu}`}
+                        >
+                            <span
+                                className={styles.navLabel}
+                                aria-hidden="true"
+                            >
+                                Storage Devices
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+                                </svg>
+                            </span>
+                            <div
+                                className={styles.submenu}
+                                style={{ width: "auto", minWidth: "250px" }}
+                            >
+                                <div
+                                    className={styles.submenuGrid}
+                                    style={{
+                                        gridTemplateColumns: "1fr",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <div className={styles.category}>
+                                        <ul>
+                                            <li>
+                                                <a href="/products/ssds">
+                                                    Solid State Drives / SSDs
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/hdds">
+                                                    Internal Hard Drives
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            className={`${styles.navItem} ${styles.hasSubmenu}`}
+                        >
+                            <span
+                                className={styles.navLabel}
+                                aria-hidden="true"
+                            >
+                                Peripherals
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+                                </svg>
+                            </span>
+                            <div
+                                className={styles.submenu}
+                                style={{ width: "auto", minWidth: "250px" }}
+                            >
+                                <div
+                                    className={styles.submenuGrid}
+                                    style={{
+                                        gridTemplateColumns: "1fr",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <div className={styles.category}>
+                                        <ul>
+                                            <li>
+                                                <a href="/products/monitors">
+                                                    Monitors / Screens
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/keyboards">
+                                                    Keyboards
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/mice">
+                                                    Mice & Controllers
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/headsets">
+                                                    Headsets & Audio
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            className={`${styles.navItem} ${styles.hasSubmenu}`}
+                        >
+                            <span
+                                className={styles.navLabel}
+                                aria-hidden="true"
+                            >
+                                Networking
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+                                </svg>
+                            </span>
+                            <div
+                                className={styles.submenu}
+                                style={{ width: "auto", minWidth: "250px" }}
+                            >
+                                <div
+                                    className={styles.submenuGrid}
+                                    style={{
+                                        gridTemplateColumns: "1fr",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <div className={styles.category}>
+                                        <ul>
+                                            <li>
+                                                <a href="/products/routers">
+                                                    Routers
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            className={`${styles.navItem} ${styles.hasSubmenu}`}
+                        >
+                            <span
+                                className={styles.navLabel}
+                                aria-hidden="true"
+                            >
+                                Accessories
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                    focusable="false"
+                                >
+                                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
+                                </svg>
+                            </span>
+                            <div
+                                className={styles.submenu}
+                                style={{ width: "auto", minWidth: "250px" }}
+                            >
+                                <div
+                                    className={styles.submenuGrid}
+                                    style={{
+                                        gridTemplateColumns: "1fr",
+                                        gap: "12px",
+                                    }}
+                                >
+                                    <div className={styles.category}>
+                                        <ul>
+                                            <li>
+                                                <a href="/products/case-fans">
+                                                    Fans & Coolers
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/products/psus">
+                                                    PSUs / Power Supplies
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.navItem}>
+                            <Link
+                                href="/pc-builder"
+                                className={styles.navLabel}
+                                style={{
+                                    textDecoration: "none",
+                                    color: "#1f7a8c",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                    if (typeof window !== "undefined") {
+                                        sessionStorage.removeItem(
+                                            "builder_draft",
+                                        );
+                                    }
+                                }}
+                            >
+                                PC Builder
+                            </Link>
+                        </div>
+                    </nav>
+                    <div className={styles.brandDivider} aria-hidden="true" />
+                    <div className={styles.brandActions}>
+                        <div className={styles.searchBox}>
+                            <TextField
+                                placeholder="search"
+                                value={query}
+                                size="small"
+                                fullWidth
+                                onChange={(e) => onQueryChange(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        doSearchNavigate(query);
+                                    }
+                                }}
+                                onFocus={() => {
+                                    if (suggestions.length)
+                                        setShowSuggestions(true);
+                                }}
+                                onBlur={() =>
+                                    setTimeout(
+                                        () => setShowSuggestions(false),
+                                        150,
+                                    )
+                                }
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon
+                                                style={{
+                                                    fontSize: 18,
+                                                    color: "#666",
+                                                }}
+                                            />
+                                        </InputAdornment>
+                                    ),
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                edge="end"
+                                                size="small"
+                                                onClick={() =>
+                                                    doSearchNavigate(query)
+                                                }
+                                            >
+                                                <img
+                                                    src="/icons/search.svg"
+                                                    alt="Search"
+                                                />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            {showSuggestions && suggestions.length > 0 && (
+                                <div className={styles.suggestions}>
+                                    {suggestions.map((s: any) => (
+                                        <div
+                                            key={s.variant_id || s.id || s.slug}
+                                            className={styles.suggestionItem}
+                                            onMouseDown={() => {
+                                                /* mousedown to avoid blur */ router.push(
+                                                    s.slug
+                                                        ? `/product/${s.slug}`
+                                                        : `/product/${encodeURIComponent(s.title)}`,
+                                                );
+                                            }}
+                                        >
+                                            <img
+                                                src={
+                                                    s.thumbnail ||
+                                                    "/images/products/placeholder.png"
+                                                }
+                                                className={
+                                                    styles.suggestionThumb
+                                                }
+                                            />
+                                            <div
+                                                className={
+                                                    styles.suggestionMeta
+                                                }
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.suggestionTitle
+                                                    }
+                                                >
+                                                    {getDisplayTitle({
+                                                        title: s.title,
+                                                        name: (s as any).name,
+                                                        manufacturer: (s as any)
+                                                            .manufacturer,
+                                                        productType:
+                                                            (s as any)
+                                                                .product_type ||
+                                                            (s as any)
+                                                                .productType,
+                                                    })}
+                                                </div>
+                                                <div
+                                                    className={
+                                                        styles.suggestionPrice
+                                                    }
+                                                >
+                                                    {s.current_price
+                                                        ? new Intl.NumberFormat(
+                                                              "en-ZA",
+                                                              {
+                                                                  style: "currency",
+                                                                  currency:
+                                                                      "ZAR",
+                                                              },
+                                                          ).format(
+                                                              (s.current_price
+                                                                  .amount_cents ||
+                                                                  0) / 100,
+                                                          )
+                                                        : ""}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <Link
+                            href="/cart"
+                            className={styles.cartButton}
+                            aria-label="View cart"
+                        >
+                            <img src="/images/icons/cart.svg" alt="Cart" />
+                            <span className={styles.cartCount}>
+                                ({cart.count})
+                            </span>
+                        </Link>
+                    </div>
+                </div>
+                {mobileMenuVisible && (
+                    <div
+                        className={styles.mobileMenuOverlay}
+                        role="dialog"
+                        aria-modal="true"
+                        onClick={() => setMobileMenuOpen(false)}
+                    >
+                        <div
+                            className={`${styles.mobileMenuInner} ${mobileMenuActive ? styles.mobileMenuInnerOpen : ""}`}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                className={styles.mobileMenuClose}
+                                onClick={() => setMobileMenuOpen(false)}
+                                aria-label="Close menu"
+                            >
+                                <svg
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                </svg>
+                            </button>
+                            <nav className={styles.mobileNav}>
+                                <div className={styles.mobileGroup}>
+                                    <div
+                                        className={styles.mobileSummary}
+                                        onClick={() =>
+                                            setExpandedGroup(
+                                                expandedGroup === "comp"
+                                                    ? null
+                                                    : "comp",
+                                            )
+                                        }
+                                    >
+                                        Computer Components
+                                        <span className={styles.arrow}>
+                                            {expandedGroup === "comp"
+                                                ? "−"
+                                                : "+"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`${styles.accordionWrapper} ${expandedGroup === "comp" ? styles.open : ""}`}
+                                    >
+                                        <div className={styles.accordionInner}>
+                                            <div
+                                                className={styles.mobileSubnav}
+                                            >
+                                                <Link href="/products/gpus">
+                                                    Graphics Cards
+                                                </Link>
+                                                <Link href="/products/processors">
+                                                    Processors / CPUs
+                                                </Link>
+                                                <Link href="/products/motherboards">
+                                                    Motherboards
+                                                </Link>
+                                                <Link href="/products/cases">
+                                                    Cases
+                                                </Link>
+                                                <Link href="/products/ram">
+                                                    Memory / RAM
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.mobileGroup}>
+                                    <div
+                                        className={styles.mobileSummary}
+                                        onClick={() =>
+                                            setExpandedGroup(
+                                                expandedGroup === "storage"
+                                                    ? null
+                                                    : "storage",
+                                            )
+                                        }
+                                    >
+                                        Storage Devices
+                                        <span className={styles.arrow}>
+                                            {expandedGroup === "storage"
+                                                ? "−"
+                                                : "+"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`${styles.accordionWrapper} ${expandedGroup === "storage" ? styles.open : ""}`}
+                                    >
+                                        <div className={styles.accordionInner}>
+                                            <div
+                                                className={styles.mobileSubnav}
+                                            >
+                                                <Link href="/products/ssds">
+                                                    Solid State Drives / SSDs
+                                                </Link>
+                                                <Link href="/products/hdds">
+                                                    Internal Hard Drives
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.mobileGroup}>
+                                    <div
+                                        className={styles.mobileSummary}
+                                        onClick={() =>
+                                            setExpandedGroup(
+                                                expandedGroup === "periph"
+                                                    ? null
+                                                    : "periph",
+                                            )
+                                        }
+                                    >
+                                        Peripherals
+                                        <span className={styles.arrow}>
+                                            {expandedGroup === "periph"
+                                                ? "−"
+                                                : "+"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`${styles.accordionWrapper} ${expandedGroup === "periph" ? styles.open : ""}`}
+                                    >
+                                        <div className={styles.accordionInner}>
+                                            <div
+                                                className={styles.mobileSubnav}
+                                            >
+                                                <Link href="/products/monitors">
+                                                    Monitors / Screens
+                                                </Link>
+                                                <Link href="/products/keyboards">
+                                                    Keyboards
+                                                </Link>
+                                                <Link href="/products/mice">
+                                                    Mice & Controllers
+                                                </Link>
+                                                <Link href="/products/headsets">
+                                                    Headsets & Audio
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.mobileGroup}>
+                                    <div
+                                        className={styles.mobileSummary}
+                                        onClick={() =>
+                                            setExpandedGroup(
+                                                expandedGroup === "net"
+                                                    ? null
+                                                    : "net",
+                                            )
+                                        }
+                                    >
+                                        Networking
+                                        <span className={styles.arrow}>
+                                            {expandedGroup === "net"
+                                                ? "−"
+                                                : "+"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`${styles.accordionWrapper} ${expandedGroup === "net" ? styles.open : ""}`}
+                                    >
+                                        <div className={styles.accordionInner}>
+                                            <div
+                                                className={styles.mobileSubnav}
+                                            >
+                                                <Link href="/products/routers">
+                                                    Routers
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.mobileGroup}>
+                                    <div
+                                        className={styles.mobileSummary}
+                                        onClick={() =>
+                                            setExpandedGroup(
+                                                expandedGroup === "acc"
+                                                    ? null
+                                                    : "acc",
+                                            )
+                                        }
+                                    >
+                                        Accessories
+                                        <span className={styles.arrow}>
+                                            {expandedGroup === "acc"
+                                                ? "−"
+                                                : "+"}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className={`${styles.accordionWrapper} ${expandedGroup === "acc" ? styles.open : ""}`}
+                                    >
+                                        <div className={styles.accordionInner}>
+                                            <div
+                                                className={styles.mobileSubnav}
+                                            >
+                                                <Link href="/products/case-fans">
+                                                    Fans & Coolers
+                                                </Link>
+                                                <Link href="/products/psus">
+                                                    PSUs / Power Supplies
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Link
+                                    href="/pc-builder"
+                                    className={styles.mobileSummary}
+                                    style={{
+                                        color: "#1f7a8c",
+                                        textDecoration: "none",
+                                        fontWeight: 600,
+                                        display: "block",
+                                        marginTop: "16px",
+                                        marginBottom: "8px",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                        if (typeof window !== "undefined") {
+                                            sessionStorage.removeItem(
+                                                "builder_draft",
+                                            );
+                                        }
+                                    }}
+                                >
+                                    PC Builder
+                                </Link>
+
+                                {/* Wishlist intentionally omitted from mobile side menu */}
+                            </nav>
+                        </div>
+                    </div>
+                )}
+            </header>
+            {/* spacer to prevent layout jump because brandRow is fixed */}
+            <div className={styles.spacer} aria-hidden="true" />
+        </>
+    );
 }
 
-  // HMR test: appended comment
+// HMR test: appended comment
