@@ -54,6 +54,15 @@
       cursor: pointer;
 }
 
+.topbarDivider {
+      margin: 0 4px;
+      color: #999;
+      opacity: 0.6;
+      font-size: 12px;
+      -webkit-user-select: none;
+      user-select: none;
+}
+
 .coming {
       font-size: 11px;
       color: #999;

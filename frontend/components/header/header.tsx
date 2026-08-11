@@ -414,6 +414,14 @@ export default function Header({
                                 Login
                             </a>
                         )}
+                        <span className={styles.topbarDivider}>|</span>
+                        <Link
+                            href="/about"
+                            className={styles.topbarLink}
+                        >
+                            About
+                        </Link>
+                        <span className={styles.topbarDivider}>|</span>
                         <a
                             href="#"
                             onClick={(e) => e.preventDefault()}
