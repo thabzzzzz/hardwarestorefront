@@ -1088,6 +1088,20 @@ export default function Header({
                                     </div>
                                 </div>
 
+                                <div className={styles.mobileGroup}>
+                                    <Link
+                                        href="/about"
+                                        className={styles.mobileSummary}
+                                        style={{
+                                            color: "#1f7a8c",
+                                            textDecoration: "none",
+                                            display: "block",
+                                        }}
+                                    >
+                                        About
+                                    </Link>
+                                </div>
+
                                 <Link
                                     href="/pc-builder"
                                     className={styles.mobileSummary}
