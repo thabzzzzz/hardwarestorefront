@@ -17,12 +17,12 @@ type Card = {
 const cards: Card[] = [
     {
         id: "project",
-        title: "About Wootclone",
+        title: "About  Wired Workshop",
         category: "project",
         status: "Portfolio project",
         statusVariant: "green",
         description:
-            "Wootclone is a project site I built out of my love for the PC hardware scene. It is inspired by daily-deal hardware sites and is intended as a portfolio piece, not a real storefront. The catalog, search, wishlist, cart, and PC builder exist to show how a full-stack e-commerce-style app can come together.",
+            " Wired Workshop is a project site I built out of my love for the PC hardware scene. It is inspired by daily-deal hardware sites and is intended as a portfolio piece, not a real storefront. The catalog, search, wishlist, cart, and PC builder exist to show how a full-stack e-commerce-style app can come together.",
     },
     {
         id: "features",
@@ -40,7 +40,7 @@ const cards: Card[] = [
         status: "Demo data",
         statusVariant: "orange",
         description:
-            "Product images, names, and specifications are used for demonstration only. Wootclone does not sell real hardware, and no transactions can be completed on this site.",
+            "Product images, names, and specifications are used for demonstration only.  Wired Workshop does not sell real hardware, and no transactions can be completed on this site.",
     },
     {
         id: "stack",
@@ -107,10 +107,10 @@ const About: NextPage = () => {
     return (
         <>
             <Head>
-                <title>About | Wootclone</title>
+                <title>About | Wired Workshop</title>
                 <meta
                     name="description"
-                    content="Learn more about Wootclone, a portfolio project for PC hardware enthusiasts."
+                    content="Learn more about  Wired Workshop, a portfolio project for PC hardware enthusiasts."
                 />
             </Head>
 
@@ -120,7 +120,7 @@ const About: NextPage = () => {
                 <header className={styles.pageHeader}>
                     <h1 className={styles.title}>About</h1>
                     <p className={styles.subtitle}>
-                        Wootclone: Under the Hood
+                        Wired Workshop: Under the Hood
                     </p>
                 </header>
 
