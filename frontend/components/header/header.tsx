@@ -800,11 +800,13 @@ export default function Header({
                                             <img
                                                 src={
                                                     s.thumbnail ||
-                                                    "/images/products/placeholder.png"
+                                                    "/images/Image-not-found.png"
                                                 }
                                                 className={
                                                     styles.suggestionThumb
                                                 }
+                                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }}
+                                                alt=""
                                             />
                                             <div
                                                 className={

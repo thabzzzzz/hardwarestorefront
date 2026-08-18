@@ -107,7 +107,7 @@ export default function CartPage(): JSX.Element {
                   <tr key={item.id} className={styles.row}>
                     <td className={styles.cell}>
                       <div className={styles.productCell}>
-                        <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.thumb} />
+                        <img src={item.thumbnail || '/images/Image-not-found.png'} alt={item.title} className={styles.thumb} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }} />
                         <div>
                           <Typography component="div" variant="body1" className={styles.prodTitle} sx={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif', fontWeight: 600 }}>
                             <a 
@@ -184,7 +184,7 @@ export default function CartPage(): JSX.Element {
                     </div>
 
                     <div className={styles.mobileThumbWrap}>
-                      <img src={item.thumbnail || '/images/products/placeholder.png'} alt={item.title} className={styles.mobileThumb} />
+                      <img src={item.thumbnail || '/images/Image-not-found.png'} alt={item.title} className={styles.mobileThumb} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }} />
                     </div>
 
                       <div className={styles.mobileTitleLink}>

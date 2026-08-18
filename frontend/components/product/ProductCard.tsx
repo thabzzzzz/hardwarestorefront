@@ -96,8 +96,8 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
 
   // If `tClean` is an absolute path (starts with '/'), use it directly so Next.js serves from frontend/public
   const src = tClean
-    ? (typeof tClean === 'string' ? (tClean.startsWith('http') ? tClean : tClean) : '/images/products/placeholder.png')
-    : '/images/products/placeholder.png'
+    ? (typeof tClean === 'string' ? (tClean.startsWith('http') ? tClean : tClean) : '/images/Image-not-found.png')
+    : '/images/Image-not-found.png'
 
   function escapeRegExp(s: string) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -171,7 +171,7 @@ export default function ProductCard({ name, title, vendor, sku, stock, thumbnail
     <>
       <div className={styles.title}>{displayTitle}</div>
       <div className={styles.imageWrapper}>
-        <img src={src} alt={title} className={styles.img} />
+        <img src={src} alt={title} className={styles.img} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }} />
       </div>
       <div className={styles.priceWrap}>
         {price ? (

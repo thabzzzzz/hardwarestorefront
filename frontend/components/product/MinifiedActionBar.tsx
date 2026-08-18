@@ -195,9 +195,7 @@ export default function MinifiedActionBar({ visible, product }: Props) {
       ) : (
         <>
           <div className={styles.leftSection}>
-            {thumbnail && (
-              <img src={thumbnail} alt={title} className={styles.thumbnail} />
-            )}
+            <img src={thumbnail || '/images/Image-not-found.png'} alt={title} className={styles.thumbnail} onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }} />
             <div className={styles.productInfo}>
               <Typography className={styles.title}>{title}</Typography>
               <Typography className={styles.stock} variant="caption">

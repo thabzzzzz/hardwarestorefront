@@ -29,12 +29,12 @@ export default function ProductGallery({ imageUrl, images, alt }: Props) {
     setBroken(false)
   }, [candidates.join('|')])
 
-  const handleError = () => {
-    // mark broken and stop attempting alternative URLs to avoid flicker
-    setBroken(true)
+  const handleError = (e: any) => {
+    e.currentTarget.onerror = null
+    e.currentTarget.src = '/images/Image-not-found.png'
   }
 
-  const src = candidates.length > 0 && !broken ? candidates[0] : null
+  const src = candidates.length > 0 && !broken ? candidates[0] : '/images/Image-not-found.png'
   // alt preference: explicit prop, then images[0].alt if available
   let imgAlt = alt || ''
   if ((!imgAlt || imgAlt.length === 0) && images && images.length > 0) {

@@ -1801,6 +1801,7 @@ export function BuilderWorkspace() {
                                                 <img
                                                     src={selectedItem.thumbnail}
                                                     alt={selectedItem.title}
+                                                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }}
                                                     style={{
                                                         maxWidth: "90%",
                                                         maxHeight: "90%",
@@ -1811,17 +1812,20 @@ export function BuilderWorkspace() {
                                                 <img
                                                     src={customImage}
                                                     alt={cat.name}
+                                                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }}
                                                     style={{
                                                         width: 28,
                                                         height: 28,
                                                     }}
                                                 />
                                             ) : (
-                                                <IconComponent
+                                                <img
+                                                    src={'/images/Image-not-found.png'}
+                                                    alt={'No image'}
                                                     style={{
-                                                        width: 24,
-                                                        height: 24,
-                                                        fill: "currentColor",
+                                                        width: 28,
+                                                        height: 28,
+                                                        objectFit: "contain",
                                                     }}
                                                 />
                                             )}
@@ -2514,6 +2518,7 @@ export function BuilderWorkspace() {
                                                                         alt={
                                                                             product.title
                                                                         }
+                                                                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/images/Image-not-found.png'; }}
                                                                         style={{
                                                                             maxWidth:
                                                                                 "85%",
@@ -2524,13 +2529,15 @@ export function BuilderWorkspace() {
                                                                         }}
                                                                     />
                                                                 ) : (
-                                                                    <div
+                                                                    <img
+                                                                        src={'/images/Image-not-found.png'}
+                                                                        alt={'No image'}
                                                                         style={{
-                                                                            color: "#ccc",
+                                                                            maxWidth: "85%",
+                                                                            maxHeight: "85%",
+                                                                            objectFit: "contain",
                                                                         }}
-                                                                    >
-                                                                        No Image
-                                                                    </div>
+                                                                    />
                                                                 )}
                                                             </div>
 
