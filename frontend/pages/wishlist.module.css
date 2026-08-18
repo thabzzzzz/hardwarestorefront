@@ -37,6 +37,7 @@
 .colQty { width: 140px; text-align: center; }
 .colSubtotal { width: 160px; text-align: center; }
 .colActions { width: 120px; text-align: center; }
+.colAddToCart { width: 140px; text-align: center; }
 
 /* Center subtotal column cells (desktop table) */
 .table td:nth-child(6), .table th:nth-child(6), .table tfoot td:nth-child(6) {

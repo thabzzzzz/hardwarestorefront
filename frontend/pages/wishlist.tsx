@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import Head from 'next/head'
 import useWishlist from '../hooks/useWishlist'
+import useCart from '../hooks/useCart'
+import { toast } from '../lib/toast'
 import Header from '../components/header/header'
 import styles from './wishlist.module.css'
 
@@ -17,6 +19,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
+  const cart = useCart()
   const [errors, setErrors] = useState<Record<string,string>>({})
 
   function fmtDate(dateStr?: string) {
@@ -44,6 +47,38 @@ export default function WishlistPage(): JSX.Element {
 
   function onRemove(id: string) {
     w.remove(id)
+  }
+
+  function addItemToCart(item: typeof w.items[0]) {
+    const entry = {
+      id: item.id,
+      slug: item.slug,
+      title: item.title,
+      thumbnail: item.thumbnail || '/images/products/placeholder.png',
+      price: item.price ? { amount_cents: item.price.amount_cents } : null,
+      stock: item.stock || null,
+    }
+    const res = cart.addOrUpdate(entry, item.qty)
+    if (res.ok) {
+      toast.success(res.message || `Added ${item.title} to cart`)
+    } else {
+      toast.error(res.message || 'Failed to add to cart')
+    }
+  }
+
+  function addAllToCart() {
+    w.items.forEach(item => {
+      const entry = {
+        id: item.id,
+        slug: item.slug,
+        title: item.title,
+        thumbnail: item.thumbnail || '/images/products/placeholder.png',
+        price: item.price ? { amount_cents: item.price.amount_cents } : null,
+        stock: item.stock || null,
+      }
+      cart.addOrUpdate(entry, item.qty)
+    })
+    toast.success(`Added ${w.items.length} item(s) to cart`)
   }
 
   // Calculate total for internal use if strictly needed, though w.totalCents exists
@@ -96,6 +131,7 @@ export default function WishlistPage(): JSX.Element {
                     Qty
                   </th>
                   <th className={`${styles.cell} ${styles.colSubtotal}`}>Subtotal</th>
+                  <th className={`${styles.cell} ${styles.colAddToCart}`}>Add to cart</th>
                   <th className={`${styles.cell} ${styles.colActions}`}></th>
                 </tr>
               </thead>
@@ -183,6 +219,18 @@ export default function WishlistPage(): JSX.Element {
                         <Typography variant="body1" component="span">{w.formatPrice((item.price?.amount_cents ?? 0) * item.qty)}</Typography>
                       </td>
 
+                      <td className={`${styles.cell} ${styles.colAddToCart}`}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="primary"
+                          onClick={() => addItemToCart(item)}
+                          sx={{ textTransform: 'none', fontWeight: 700, whiteSpace: 'nowrap' }}
+                        >
+                          Add to cart
+                        </Button>
+                      </td>
+
                       <td className={`${styles.cell} ${styles.colActions}`}>
                         <IconButton size="small" color="error" onClick={() => onRemove(item.id)} aria-label="Remove">
                           <DeleteOutlineIcon fontSize="small" />
@@ -200,10 +248,16 @@ export default function WishlistPage(): JSX.Element {
                   <td></td>
                   <td className={styles.cellBold}>Total</td>
                   <td className={styles.cellBold}><Typography variant="body1" component="span" sx={{ fontWeight: 700 }}>{w.formatPrice(w.totalCents)}</Typography></td>
+                  <td className={styles.cell}></td>
                   <td>
-                    <Button size="small" variant="outlined" color="error" onClick={() => w.clear()} sx={{ fontWeight: 700 }}>
-                      Clear list
-                    </Button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      <Button size="small" variant="outlined" color="error" onClick={() => w.clear()} sx={{ fontWeight: 700, textTransform: 'none', minHeight: '36px' }}>
+                        Clear list
+                      </Button>
+                      <Button size="small" variant="contained" color="primary" onClick={addAllToCart} sx={{ fontWeight: 700, textTransform: 'none', whiteSpace: 'nowrap', minHeight: '36px' }}>
+                        Add all to cart
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               </tfoot>
