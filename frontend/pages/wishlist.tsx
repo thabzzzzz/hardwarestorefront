@@ -16,6 +16,7 @@ import Button from '@mui/material/node/Button/index.js'
 import FormControl from '@mui/material/node/FormControl/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart.js'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
@@ -272,6 +273,9 @@ export default function WishlistPage(): JSX.Element {
                 return (
                   <div key={item.id} className={styles.mobileCard}>
                     <div className={styles.cardHeaderRow}>
+                      <IconButton className={styles.iconBtn} onClick={() => addItemToCart(item)} aria-label="Add to cart" style={{ color: '#1f7a8c' }}>
+                        <AddShoppingCartIcon fontSize="small" />
+                      </IconButton>
                       <div style={{ flex: 1 }} />
                       <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)} aria-label="Remove">
                         <DeleteOutlineIcon fontSize="small" />
@@ -349,14 +353,26 @@ export default function WishlistPage(): JSX.Element {
              })}
               
              <Box sx={{ px: 0 }}>
-                  <Button 
-                    variant="outlined" 
-                    color="error" 
-                    fullWidth 
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    fullWidth
                     onClick={() => w.clear()}
-                    sx={{ fontWeight: 700, bgcolor: 'white' }}
+                    sx={{ fontWeight: 700, bgcolor: 'white', textTransform: 'none' }}
                   >
                     Clear Wishlist
+                  </Button>
+             </Box>
+
+             <Box sx={{ px: 0, mt: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={addAllToCart}
+                    sx={{ fontWeight: 700, textTransform: 'none' }}
+                  >
+                    Add all to cart
                   </Button>
              </Box>
 
