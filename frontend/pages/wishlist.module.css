@@ -240,11 +240,17 @@ tr.row td:last-child {
   .mobileDate {
     font-size: 12px;
     color: #767676;
-    margin-top: 4px;
+    margin-top: 12px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
+  }
+
+  .mobileDateLeft {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
   }
 
 .mobileDateText { color: #767676; font-size: 12px }
@@ -325,6 +331,24 @@ tr.row td:last-child {
   }
   .qtyBtn:active { background: #f5f5f5; }
 
+  .mobileAddToCart {
+    height: 36px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1f7a8c;
+    border: 1px solid #1f7a8c;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    text-transform: none;
+    white-space: nowrap;
+  }
+  .mobileAddToCart:active { background: #155a6b; }
+
   .qtyVal {
     min-width: 20px;
     text-align: center;
@@ -356,7 +380,8 @@ tr.row td:last-child {
     margin-bottom: 16px;
   }
   
-  .totalLabel { font-size: 16px; font-weight: 500; color: #333; }
+  .totalLeft { display: flex; align-items: baseline; gap: 4px; }
+  .totalLabel { font-size: 14px; font-weight: 500; color: #555; }
   .totalAmt { font-size: 22px; font-weight: 700; color: #111; }
 
   .checkoutBtn {

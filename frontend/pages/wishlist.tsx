@@ -16,7 +16,6 @@ import Button from '@mui/material/node/Button/index.js'
 import FormControl from '@mui/material/node/FormControl/index.js'
 import IconButton from '@mui/material/node/IconButton/index.js'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline.js'
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart.js'
 
 export default function WishlistPage(): JSX.Element {
   const w = useWishlist()
@@ -273,9 +272,6 @@ export default function WishlistPage(): JSX.Element {
                 return (
                   <div key={item.id} className={styles.mobileCard}>
                     <div className={styles.cardHeaderRow}>
-                      <IconButton className={styles.iconBtn} onClick={() => addItemToCart(item)} aria-label="Add to cart" style={{ color: '#1f7a8c' }}>
-                        <AddShoppingCartIcon fontSize="small" />
-                      </IconButton>
                       <div style={{ flex: 1 }} />
                       <IconButton className={styles.iconBtn} onClick={() => onRemove(item.id)} aria-label="Remove">
                         <DeleteOutlineIcon fontSize="small" />
@@ -345,8 +341,11 @@ export default function WishlistPage(): JSX.Element {
                     </div>
 
                     <div className={styles.mobileDate}>
-                      <span className={styles.mobileDateText}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</span>
-                      <span className={`${styles.mobileStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>{item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}</span>
+                      <div className={styles.mobileDateLeft}>
+                        <span className={styles.mobileDateText}>Date Added: {item.added_at ? new Date(item.added_at).toLocaleDateString() : 'Unknown'}</span>
+                        <span className={`${styles.mobileStock} ${item.stock?.status === 'out_of_stock' ? styles.stockOut : item.stock?.status === 'reserved' ? styles.stockReserved : ''}`}>{item.stock?.status === 'out_of_stock' ? 'Out of stock' : item.stock?.status === 'reserved' ? 'Reserved' : ''}</span>
+                      </div>
+                      <button className={styles.mobileAddToCart} onClick={() => addItemToCart(item)}>Add to cart</button>
                     </div>
                   </div>
                 )
@@ -364,22 +363,13 @@ export default function WishlistPage(): JSX.Element {
                   </Button>
              </Box>
 
-             <Box sx={{ px: 0, mt: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={addAllToCart}
-                    sx={{ fontWeight: 700, textTransform: 'none' }}
-                  >
-                    Add all to cart
-                  </Button>
-             </Box>
-
              <div className={styles.footerCta}>
                  <div className={styles.estTotalLine} style={{marginBottom: 0}}>
-                    <span className={styles.totalLabel}>Total Value</span>
-                    <span className={styles.totalAmt}>{w.formatPrice(w.totalCents)}</span>
+                    <button className={styles.mobileAddToCart} onClick={addAllToCart}>Add all to cart</button>
+                    <div className={styles.totalLeft}>
+                      <span className={styles.totalLabel}>Total: </span>
+                      <span className={styles.totalAmt}>{w.formatPrice(w.totalCents)}</span>
+                    </div>
                  </div>
              </div>
           </div>
