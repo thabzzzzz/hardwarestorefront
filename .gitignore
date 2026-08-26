@@ -37,7 +37,7 @@ yarn-error.log*
 *.tgz
 *.zip
 dist/
-build/
+/build/
 
 # OS and editor files
 Thumbs.db
